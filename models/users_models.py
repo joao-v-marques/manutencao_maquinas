@@ -55,3 +55,37 @@ class UsersModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # GET de um único usuário pelo username
+    @staticmethod
+    def get_by_username(username):
+        cursor = None
+        conn = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, u.is_active
+                FROM users u
+                INNER JOIN roles r ON r.id = u.role_id
+                WHERE u.username = %s
+            """
+            values = (username,)
+
+            cursor.execute(sql_query, values)
+            userData = cursor.fetchone()
+
+            # tranforma o dict do objeto em modelo Users
+            if not userData:
+                return None
+            
+            user = Users(**userData)
+
+            return user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
