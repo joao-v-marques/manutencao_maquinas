@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipamentos · Manutenção de Máquinas</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/equipments.css') }}">
+</head>
+<body>
+
+  <!-- ===================== NAVBAR PADRÃO ===================== -->
+  <header class="navbar">
+    <div class="navbar__brand">
+      <span class="navbar__brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </span>
+      <span>Manutenção de Máquinas</span>
+    </div>
+
+    <!-- Links de navegação serão adicionados aqui -->
+    <nav class="navbar__links" aria-label="Navegação principal"></nav>
+
+    <div class="navbar__actions">
+      <button class="navbar__toggle" aria-label="Abrir menu de navegação" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+      <div class="navbar__menu">
+        <button class="navbar__user" id="userMenuButton" aria-haspopup="true" aria-expanded="false" aria-controls="userMenuDropdown">
+          <span class="navbar__avatar" id="userAvatarInitials">--</span>
+          <span class="navbar__user-info">
+            <span class="navbar__user-name" id="userNameLabel">Carregando…</span>
+            <span class="navbar__user-role" id="userRoleLabel">&nbsp;</span>
+          </span>
+          <svg class="navbar__chevron" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        <div class="navbar__dropdown" id="userMenuDropdown" role="menu">
+          <button class="navbar__dropdown-item" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Configurações
+          </button>
+          <div class="navbar__dropdown-divider"></div>
+          <button class="navbar__dropdown-item navbar__dropdown-item--danger" role="menuitem" id="logoutButton">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== CONTEÚDO ===================== -->
+  <main class="page">
+
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Equipamentos</h1>
+        <p class="page__subtitle">Gerencie o cadastro e o histórico dos equipamentos</p>
+      </div>
+    </div>
+
+    <!-- ===================== TOOLBAR: busca, filtros e ações ===================== -->
+    <!-- COLOCAR FILTROS NESSA PARTE -->
+
+    <div class="toolbar">
+      <div class="toolbar__actions">
+        <button class="btn btn-secondary" id="exportButton" aria-label="Exportar lista para Excel">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Exportar Excel
+        </button>
+        <button class="btn btn-primary" id="openCreateModalButton">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Novo equipamento
+        </button>
+      </div>
+    </div>
+
+    <!-- Chips de filtros ativos -->
+    <div class="active-filters" id="activeFilters"></div>
+
+    <!-- ===================== TABELA ===================== -->
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tag</th>
+              <th>Equipamento</th>
+              <th>Tipo</th>
+              <th>Setor</th>
+              <th>Responsável</th>
+              <th>Marca</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="equipmentTableBody">
+            <!-- Linhas renderizadas via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-empty" id="tableEmptyState">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <strong>Nenhum equipamento encontrado</strong>
+        <span>Tente ajustar a busca ou os filtros aplicados.</span>
+      </div>
+
+      <div class="table-footer">
+        <span id="resultsCountLabel">0 equipamentos</span>
+        <span id="paginationLabel"></span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===================== MODAL: CADASTRO / EDIÇÃO ===================== -->
+  <div class="overlay" id="formModalOverlay">
+    <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+      <div class="modal__header">
+        <div class="modal__title-group">
+          <span class="modal__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+          </span>
+          <div>
+            <h2 class="modal__title" id="formModalTitle">Novo equipamento</h2>
+            <p class="modal__subtitle" id="formModalSubtitle">Preencha os dados para cadastrar</p>
+          </div>
+        </div>
+        <button class="modal__close" id="closeFormModalButton" aria-label="Fechar formulário">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <form id="equipmentForm">
+          <input type="hidden" id="equipmentId">
+
+          <!-- Identificação -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+              Identificação
+            </h3>
+            <div class="form-grid">
+              <div class="form-field form-field--required">
+                <label for="fieldTag">Tag</label>
+                <input type="text" id="fieldTag" name="tag" placeholder="Ex: EQ-0231" required>
+              </div>
+              <div class="form-field form-field--required">
+                <label for="fieldPatrimonio">Patrimônio</label>
+                <input type="text" id="fieldPatrimonio" name="patrimonio" placeholder="Ex: 100345" required>
+              </div>
+              <div class="form-field form-field--full">
+                <label for="fieldSerial">Serial Number</label>
+                <input type="text" id="fieldSerial" name="serial" placeholder="Ex: SN-88213A">
+              </div>
+            </div>
+          </div>
+
+          <!-- Características -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              Características
+            </h3>
+            <div class="form-grid">
+              <div class="form-field form-field--required">
+                <label for="fieldTipo">Tipo</label>
+                <select id="fieldTipo" name="tipo" required>
+                  <option value="">Selecione…</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="fieldMarca">Marca</label>
+                <select id="fieldMarca" name="marca">
+                  <option value="">Selecione…</option>
+                </select>
+              </div>
+              <div class="form-field form-field--full">
+                <label for="fieldModelo">Modelo</label>
+                <input type="text" id="fieldModelo" name="modelo" placeholder="Ex: CNC-3000X">
+              </div>
+            </div>
+          </div>
+
+          <!-- Localização -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Localização
+            </h3>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="fieldUnidade">Unidade</label>
+                <select id="fieldUnidade" name="unidade">
+                  <option value="">Selecione…</option>
+                </select>
+              </div>
+              <div class="form-field form-field--required">
+                <label for="fieldSetor">Setor</label>
+                <select id="fieldSetor" name="setor" required>
+                  <option value="">Selecione…</option>
+                </select>
+              </div>
+              <div class="form-field form-field--full">
+                <label for="fieldResponsavel">Responsável</label>
+                <select id="fieldResponsavel" name="responsavel">
+                  <option value="">Selecione…</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controle -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Controle
+            </h3>
+            <div class="form-grid">
+              <div class="form-field form-field--required">
+                <label for="fieldDataAquisicao">Data de aquisição</label>
+                <input type="date" id="fieldDataAquisicao" name="dataAquisicao" required>
+              </div>
+              <div class="form-field form-field--required">
+                <label for="fieldPeriodicidade">Periodicidade da manutenção</label>
+                <select id="fieldPeriodicidade" name="periodicidade" required>
+                  <option value="">Selecione…</option>
+                  <option value="30">A cada 30 dias</option>
+                  <option value="60">A cada 60 dias</option>
+                  <option value="90">A cada 90 dias</option>
+                  <option value="180">A cada 180 dias</option>
+                  <option value="365">A cada 365 dias</option>
+                </select>
+              </div>
+              <div class="form-field form-field--full form-field--required">
+                <label for="fieldStatus">Status</label>
+                <select id="fieldStatus" name="status" required>
+                  <option value="operacao">Em operação</option>
+                  <option value="manutencao">Em manutenção</option>
+                  <option value="parado">Parado</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal__footer">
+        <button class="btn btn-ghost" id="cancelFormButton" type="button">Cancelar</button>
+        <button class="btn btn-primary" id="saveFormButton" type="submit" form="equipmentForm">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Salvar equipamento
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: DETALHES DO EQUIPAMENTO ===================== -->
+  <div class="overlay" id="detailsModalOverlay">
+    <div class="modal modal--details" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
+      <div class="modal__header">
+        <div class="modal__title-group">
+          <span class="modal__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+          </span>
+          <div>
+            <h2 class="modal__title" id="detailsModalTitle">Detalhes do equipamento</h2>
+            <p class="modal__subtitle" id="detailsModalSubtitle">—</p>
+          </div>
+        </div>
+        <button class="modal__close" id="closeDetailsModalButton" aria-label="Fechar detalhes">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body">
+
+        <nav class="tabs" id="detailsTabs" aria-label="Seções de detalhes do equipamento">
+          <button class="tab-button is-active" data-tab="info">Informações gerais</button>
+          <button class="tab-button" data-tab="historico">Histórico de manutenções</button>
+          <button class="tab-button" data-tab="arquivos">Arquivos anexados</button>
+          <button class="tab-button" data-tab="movimentacoes">Movimentações</button>
+          <button class="tab-button" data-tab="custos">Custos acumulados</button>
+        </nav>
+
+        <!-- Aba: Informações gerais -->
+        <section class="tab-panel is-active" data-tab-panel="info" id="tabPanelInfo">
+          <div class="info-grid" id="infoGrid"></div>
+        </section>
+
+        <!-- Aba: Histórico de manutenções -->
+        <section class="tab-panel" data-tab-panel="historico" id="tabPanelHistorico">
+          <ul class="timeline" id="historicoTimeline"></ul>
+          <div class="tab-empty" id="historicoEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Nenhuma manutenção registrada
+          </div>
+        </section>
+      </div>
+
+      <div class="modal__footer">
+        <button class="btn btn-ghost" id="editFromDetailsButton" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+        <button class="btn btn-primary" id="performMaintenanceButton" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Realizar manutenção
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de feedback -->
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span id="toastMessage">Ação realizada</span>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/equipments.js') }}"></script>
+</body>
+</html>
