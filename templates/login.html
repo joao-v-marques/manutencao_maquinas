@@ -44,7 +44,6 @@
             </svg>
             <input type="text" id="username" name="username" placeholder="Digite seu usuário" autocomplete="username" required>
           </div>
-          <span class="login-field__error" id="usernameError">Informe seu usuário.</span>
         </div>
 
         <div class="login-field login-field--password">
@@ -66,7 +65,6 @@
               </svg>
             </button>
           </div>
-          <span class="login-field__error" id="passwordError">Informe sua senha.</span>
         </div>
 
         <button type="submit" class="btn-login" id="loginButton">
@@ -78,6 +76,17 @@
           </svg>
           <span class="btn-login__label">Fazer login</span>
         </button>
+
+        <p id="messageLogin"></p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="error">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
 
       </form>
 

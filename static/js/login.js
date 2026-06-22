@@ -1,19 +1,7 @@
-/**
- * login.js
- * Lógica da página de Login.
- *
- * NÃO faz fetch para o backend (conforme orientação do projeto).
- * O envio do formulário está isolado em autenticar(), pronto para
- * receber uma chamada real (ex: POST /api/auth/login) no futuro.
- */
-
 (function () {
   "use strict";
 
-  /* =========================================================
-     1. TOGGLE DE VISIBILIDADE DA SENHA
-     ========================================================= */
-
+  // TOGGLE DE VISIBILIDADE DA SENHA
   function setupPasswordToggle() {
     const button = document.getElementById("togglePasswordButton");
     const input = document.getElementById("password");
@@ -32,113 +20,65 @@
     });
   }
 
-  /* =========================================================
-     2. VALIDAÇÃO DO FORMULÁRIO
-     ========================================================= */
+    // ENVIO DO FORMULÁRIO E AUTENTICAÇÃO NO SISTEMA
+    function setupSubmit() {
+      const loginForm = document.getElementById("loginForm");
+      const messageLogin = document.getElementById("messageLogin");
 
-  function limparErros() {
-    document.getElementById("usernameError").classList.remove("is-visible");
-    document.getElementById("passwordError").classList.remove("is-visible");
-    document.getElementById("username").classList.remove("has-error");
-    document.getElementById("password").classList.remove("has-error");
-    ocultarAlerta();
-  }
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setLoading(true);
 
-  function validarFormulario() {
-    let valido = true;
+        messageLogin.textContent = "";
+        messageLogin.className = "";
 
-    const username = document.getElementById("username");
-    const password = document.getElementById("password");
+        const formData = new FormData(loginForm);
+        let data = Object.fromEntries(formData.entries());
 
-    if (!username.value.trim()) {
-      document.getElementById("usernameError").classList.add("is-visible");
-      username.classList.add("has-error");
-      valido = false;
-    }
+        // validação para remover todos os espaços em branco dos campos antes de enviar para o backend
+        for (let key in data) {
+          if (typeof data[key] === "string") {
+            data[key] = data[key].trim();
+          }
+        }
 
-    if (!password.value.trim()) {
-      document.getElementById("passwordError").classList.add("is-visible");
-      password.classList.add("has-error");
-      valido = false;
-    }
+        try {
+          const response = await fetch("/portal-manutencao/login", {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
 
-    return valido;
-  }
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Erro ao fazer login");
+          }
 
-  function mostrarAlerta(mensagem) {
-    const alerta = document.getElementById("loginAlert");
-    document.getElementById("loginAlertMessage").textContent = mensagem;
-    alerta.classList.add("is-visible");
-  }
-
-  function ocultarAlerta() {
-    document.getElementById("loginAlert").classList.remove("is-visible");
-  }
-
-  /* =========================================================
-     3. SUBMIT / AUTENTICAÇÃO
-     ========================================================= */
-
-  function setLoading(estaCarregando) {
-    const button = document.getElementById("loginButton");
-    button.classList.toggle("is-loading", estaCarregando);
-    button.disabled = estaCarregando;
-  }
-
-  // Ponto de integração: POST /api/auth/login { username, password }
-  function autenticar(username, password) {
-    console.log("[login] Autenticar usuário (integrar com backend):", { username });
-
-    // Simulação temporária de chamada ao backend.
-    // Substituir por uma chamada fetch real quando o backend estiver pronto, ex:
-    //
-    // return fetch("/api/auth/login", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ username, password }),
-    // }).then((res) => {
-    //   if (!res.ok) throw new Error("Usuário ou senha inválidos.");
-    //   return res.json();
-    // });
-
-    return new Promise((resolve) => setTimeout(resolve, 800));
-  }
-
-  function setupSubmit() {
-    const form = document.getElementById("loginForm");
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      limparErros();
-
-      if (!validarFormulario()) return;
-
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value;
-
-      setLoading(true);
-
-      autenticar(username, password)
-        .then(function () {
-          // Integração futura: redirecionar para o dashboard após login bem-sucedido.
-          // window.location.href = "/dashboard";
-          console.log("[login] Login simulado com sucesso.");
-        })
-        .catch(function () {
-          mostrarAlerta("Usuário ou senha inválidos.");
-        })
-        .finally(function () {
+          const tokenData = await response.json();
+          localStorage.setItem('token', tokenData.token || "");
+          window.location.href = "/portal-manutencao/dashboard";
+        } catch (error) {
+          messageLogin.textContent = error.message || error;
+          messageLogin.className = "error";
+        } finally {
           setLoading(false);
-        });
+        }
+      })
+    }
+
+    // SUBMIT / AUTENTICAÇÃO
+    function setLoading(estaCarregando) {
+      const button = document.getElementById("loginButton");
+      button.classList.toggle("is-loading", estaCarregando);
+      button.disabled = estaCarregando;
+    }
+
+    // INICIALIZAÇÃO
+    document.addEventListener("DOMContentLoaded", function () {
+      setupPasswordToggle();
+      setupSubmit();
     });
-  }
-
-  /* =========================================================
-     4. INICIALIZAÇÃO
-     ========================================================= */
-
-  document.addEventListener("DOMContentLoaded", function () {
-    setupPasswordToggle();
-    setupSubmit();
-  });
 })();

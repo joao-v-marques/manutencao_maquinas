@@ -116,10 +116,6 @@
   border-color: var(--color-primary);
 }
 
-.login-field input.has-error {
-  border-color: var(--color-danger);
-}
-
 .login-field--password input {
   padding-right: 40px;
 }
@@ -148,16 +144,6 @@
   width: 17px;
   height: 17px;
   stroke: currentColor;
-}
-
-.login-field__error {
-  font-size: 12px;
-  color: var(--color-danger);
-  display: none;
-}
-
-.login-field__error.is-visible {
-  display: block;
 }
 
 .login-alert {
@@ -233,6 +219,23 @@
 .btn-login.is-loading .btn-login__label,
 .btn-login.is-loading svg.btn-login__icon {
   display: none;
+}
+
+.success {
+    color: #7bf1aa;
+    background: rgba(94,232,155,0.08);
+    border: 1px solid rgba(94,232,155,0.14);
+    padding: 12px;
+    border-radius: 14px;
+}
+
+.error {
+    color: #ffb4b4;
+    background: rgba(255,107,107,0.08);
+    border: 1px solid rgba(255,107,107,0.14);
+    padding: 12px;
+    border-radius: 14px;
+    align-self: center;
 }
 
 @keyframes spin {
