@@ -22,7 +22,9 @@
     </div>
 
     <!-- Links de navegação serão adicionados aqui -->
-    <nav class="navbar__links" aria-label="Navegação principal"></nav>
+    <nav class="navbar__links" aria-label="Navegação principal">
+      <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="nav-link">Dashboard</a>
+    </nav>
 
     <div class="navbar__actions">
       <button class="navbar__toggle" aria-label="Abrir menu de navegação" aria-expanded="false">

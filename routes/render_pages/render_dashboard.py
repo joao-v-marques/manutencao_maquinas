@@ -5,5 +5,5 @@ bp_render_dashboard = Blueprint("bp_render_dashboard", __name__)
 
 @bp_render_dashboard.route("/dashboard")
 @token_required
-def render_login():
+def render_dashboard():
     return render_template("dashboard.html")
