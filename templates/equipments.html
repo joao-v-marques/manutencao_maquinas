@@ -169,16 +169,16 @@
 						</h3>
 						<div class="form-grid">
 							<div class="form-field form-field--required">
-								<label for="fieldTag">Tag</label>
-								<input type="text" id="fieldTag" name="tag" placeholder="Ex: EQ-0231" required>
+								<label for="name_id">Nome</label>
+								<input type="text" id="name_id" name="name" placeholder="Ex: PC-JOAO" required>
 							</div>
 							<div class="form-field form-field--required">
-								<label for="fieldPatrimonio">Patrimônio</label>
-								<input type="text" id="fieldPatrimonio" name="patrimonio" placeholder="Ex: 100345" required>
+								<label for="ip_id">IP</label>
+								<input type="text" id="ip_id" name="ip" placeholder="Ex: 192.168.1.*" required>
 							</div>
 							<div class="form-field form-field--full">
-								<label for="fieldSerial">Serial Number</label>
-								<input type="text" id="fieldSerial" name="serial" placeholder="Ex: SN-88213A">
+								<label for="serial_number_id">Numero de Série</label>
+								<input type="text" id="serial_number_id" name="serial_number" placeholder="Ex: C5C369A3-FDB0-4CFF-B24C-201B7D92544F">
 							</div>
 						</div>
 					</div>
@@ -193,20 +193,20 @@
 						</h3>
 						<div class="form-grid">
 							<div class="form-field form-field--required">
-								<label for="fieldTipo">Tipo</label>
-								<select id="fieldTipo" name="tipo" required>
+								<label for="type_id">Tipo</label>
+								<select id="type_id" name="type" required>
 									<option value="">Selecione…</option>
 								</select>
 							</div>
 							<div class="form-field">
-								<label for="fieldMarca">Marca</label>
-								<select id="fieldMarca" name="marca">
+								<label for="brand_id">Marca / Prestador responsável pela MP</label>
+								<select id="brand_id" name="brand">
 									<option value="">Selecione…</option>
 								</select>
 							</div>
 							<div class="form-field form-field--full">
-								<label for="fieldModelo">Modelo</label>
-								<input type="text" id="fieldModelo" name="modelo" placeholder="Ex: CNC-3000X">
+								<label for="model_id">Modelo</label>
+								<input type="text" id="model_id" name="model" placeholder="Ex: CNC-3000X">
 							</div>
 						</div>
 					</div>
@@ -222,20 +222,20 @@
 						</h3>
 						<div class="form-grid">
 							<div class="form-field">
-								<label for="fieldUnidade">Unidade</label>
-								<select id="fieldUnidade" name="unidade">
+								<label for="location_id">Unidade</label>
+								<select id="location_id" name="location">
 									<option value="">Selecione…</option>
 								</select>
 							</div>
 							<div class="form-field form-field--required">
-								<label for="fieldSetor">Setor</label>
-								<select id="fieldSetor" name="setor" required>
+								<label for="sector_id">Setor</label>
+								<select id="sector_id" name="sector" required>
 									<option value="">Selecione…</option>
 								</select>
 							</div>
 							<div class="form-field form-field--full">
-								<label for="fieldResponsavel">Responsável</label>
-								<select id="fieldResponsavel" name="responsavel">
+								<label for="maintenance_group_id">Grupo de Manutenção (Quem será responsável por fazer as manutenções)</label>
+								<select id="maintenance_group_id" name="maintenance_group" required>
 									<option value="">Selecione…</option>
 								</select>
 							</div>
@@ -255,27 +255,19 @@
 						</h3>
 						<div class="form-grid">
 							<div class="form-field form-field--required">
-								<label for="fieldDataAquisicao">Data de aquisição</label>
-								<input type="date" id="fieldDataAquisicao" name="dataAquisicao" required>
+								<label for="acquisition_date_id">Data de aquisição</label>
+								<input type="date" id="acquisition_date_id" name="acquisition_date" required>
 							</div>
 							<div class="form-field form-field--required">
-								<label for="fieldPeriodicidade">Periodicidade da manutenção</label>
-								<select id="fieldPeriodicidade" name="periodicidade" required>
+								<label for="maintenance_interval_months_id">Periodicidade da manutenção</label>
+								<select id="maintenance_interval_months_id" name="maintenance_interval_months" required>
 									<option value="">Selecione…</option>
-									<option value="30">A cada 30 dias</option>
-									<option value="60">A cada 60 dias</option>
-									<option value="90">A cada 90 dias</option>
-									<option value="180">A cada 180 dias</option>
-									<option value="365">A cada 365 dias</option>
 								</select>
 							</div>
 							<div class="form-field form-field--full form-field--required">
-								<label for="fieldStatus">Status</label>
-								<select id="fieldStatus" name="status" required>
-									<option value="operacao">Em operação</option>
-									<option value="manutencao">Em manutenção</option>
-									<option value="parado">Parado</option>
-									<option value="inativo">Inativo</option>
+								<label for="status_id">Status</label>
+								<select id="status_id" name="status" required>
+									<option value="">Selecione...</option>
 								</select>
 							</div>
 						</div>
@@ -297,76 +289,8 @@
 		</div>
 	</div>
 
-	<!-- ===================== MODAL: DETALHES DO EQUIPAMENTO ===================== -->
-	<div class="overlay" id="detailsModalOverlay">
-		<div class="modal modal--details" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
-			<div class="modal__header">
-				<div class="modal__title-group">
-					<span class="modal__icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<rect x="2" y="7" width="20" height="14" rx="2"/>
-							<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-						</svg>
-					</span>
-					<div>
-						<h2 class="modal__title" id="detailsModalTitle">Detalhes do equipamento</h2>
-						<p class="modal__subtitle" id="detailsModalSubtitle">—</p>
-					</div>
-				</div>
-				<button class="modal__close" id="closeDetailsModalButton" aria-label="Fechar detalhes">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="18" y1="6" x2="6" y2="18"/>
-						<line x1="6" y1="6" x2="18" y2="18"/>
-					</svg>
-				</button>
-			</div>
-
-			<div class="modal__body">
-				<nav class="tabs" id="detailsTabs" aria-label="Seções de detalhes do equipamento">
-					<button class="tab-button is-active" data-tab="info">Informações gerais</button>
-					<button class="tab-button" data-tab="historico">Histórico de manutenções</button>
-					<button class="tab-button" data-tab="arquivos">Arquivos anexados</button>
-					<button class="tab-button" data-tab="movimentacoes">Movimentações</button>
-					<button class="tab-button" data-tab="custos">Custos acumulados</button>
-				</nav>
-
-				<!-- Aba: Informações gerais -->
-				<section class="tab-panel is-active" data-tab-panel="info" id="tabPanelInfo">
-					<div class="info-grid" id="infoGrid"></div>
-				</section>
-
-				<!-- Aba: Histórico de manutenções -->
-				<section class="tab-panel" data-tab-panel="historico" id="tabPanelHistorico">
-					<ul class="timeline" id="historicoTimeline"></ul>
-					<div class="tab-empty" id="historicoEmpty">
-						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-							stroke-linejoin="round">
-							<circle cx="12" cy="12" r="10"/>
-							<polyline points="12 6 12 12 16 14"/>
-						</svg>
-						Nenhuma manutenção registrada
-					</div>
-				</section>
-			</div>
-
-			<div class="modal__footer">
-				<button class="btn btn-ghost" id="editFromDetailsButton" type="button">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-						<path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-					</svg>
-					Editar
-				</button>
-				<button class="btn btn-primary" id="performMaintenanceButton" type="button">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-						stroke-linejoin="round">
-						<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-					</svg>
-					Realizar manutenção
-				</button>
-			</div>
-		</div>
-	</div>
+	<!-- ===================== MODAL: EXCLUIR UM EQUIPAMENTO ===================== -->
+	
 
 	<!-- Toast de feedback -->
 	<div class="toast" id="toast">
