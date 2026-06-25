@@ -1,0 +1,89 @@
+from database.connect_db import get_db_connection
+
+class Equipments:
+    def __init__(self, name, type, brand, model, serial_number, acquisition_date, maintenance_interval_months, location, sector, status, maintenance_group, id=None, is_active=None, created_at=None, ip=None):
+        self.name = name
+        self.type = type
+        self.brand = brand
+        self.model = model
+        self.serial_number = serial_number
+        self.acquisition_date = acquisition_date
+        self.ip = ip
+        self.maintenance_interval_months = maintenance_interval_months
+        self.location = location
+        self.sector = sector
+        self.status = status
+        self.maintenance_group = maintenance_group
+        self.id = id
+        self.is_active = is_active
+        self.created_at = created_at
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "type": self.type,
+            "brand": self.brand,
+            "model": self.model,
+            "serial_number": self.serial_number,
+            "acquisition_date": self.acquisition_date,
+            "ip": self.ip,
+            "maintenance_interval_months": self.maintenance_interval_months,
+            "location": self.location,
+            "sector": self.sector,
+            "status": self.status,
+            "maintenance_group": self.maintenance_group,
+            "id": self.id,
+            "is_active": self.is_active,
+            "created_at": self.created_at
+        }
+
+class EquipmentsModel:
+    # GET de todos os equipamentos cadastrados
+    @staticmethod
+    def get_all():
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT 
+                    e.id,
+                    e.name,
+                    e.type,
+                    e.brand,
+                    e.model,
+                    e.serial_number,
+                    e.acquisition_date,
+                    e.ip,
+                    e.maintenance_interval_months,
+                    l.description as location,
+                    s.description as sector,
+                    es.description as status,
+                    mg.description as maintenance_group,
+                    e.is_active,
+                    e.created_at
+                FROM equipments e
+                INNER JOIN sectors s ON s.id = e.sector_id
+                INNER JOIN equipment_status es ON es.id = e.status_id
+                INNER JOIN locations l ON l.id = location_id
+                INNER JOIN maintenance_group mg ON mg.id = e.maintenance_group_id 
+            """
+
+            cursor.execute(sql_query)
+            equipmentData = cursor.fetchall()
+
+            # transforma cada dict do banco em objeto do model Users
+            equipments = [
+                Equipments(**equipment)
+                for equipment in equipmentData
+            ]
+            
+            return equipments
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
