@@ -21,3 +21,15 @@ class AuthService:
         token = generated_token(user)
         
         return token
+    
+    @staticmethod
+    def get_me(user_id):
+        try:
+            user = UsersModel.get_by_id(user_id)
+
+            if not user:
+                raise ValueError("Não foi encontrado usuário com esse ID")
+            
+            return user.to_dict()
+        except Exception as e:
+            raise Exception(str(e))

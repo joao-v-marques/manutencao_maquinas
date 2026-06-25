@@ -21,12 +21,12 @@
       <span>Manutenção de Máquinas</span>
     </div>
 
-    <!-- Links de navegação serão adicionados aqui -->
-    <nav class="navbar__links" aria-label="Navegação principal">
-      <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="nav-link">Dashboard</a>
-    </nav>
-
     <div class="navbar__actions">
+      <!-- Links de navegação serão adicionados aqui -->
+      <nav class="navbar__links" aria-label="Navegação principal">
+        <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="nav-link">Dashboard</a>
+      </nav>
+
       <button class="navbar__toggle" aria-label="Abrir menu de navegação" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="6" x2="21" y2="6"/>
@@ -79,9 +79,8 @@
       </div>
     </div>
 
-    <!-- ===================== TOOLBAR: busca, filtros e ações ===================== -->
+    <!-- TOOLBAR: busca, filtros e ações -->
     <!-- COLOCAR FILTROS NESSA PARTE -->
-
     <div class="toolbar">
       <div class="toolbar__actions">
         <button class="btn btn-secondary" id="exportButton" aria-label="Exportar lista para Excel">
@@ -362,6 +361,7 @@
     <span id="toastMessage">Ação realizada</span>
   </div>
 
+  <script src="{{ url_for('static', filename='js/apiHelper.js') }}"></script>
   <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
   <script src="{{ url_for('static', filename='js/equipments.js') }}"></script>
 </body>

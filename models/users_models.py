@@ -2,13 +2,14 @@ from database.connect_db import get_db_connection
 
 # classe de inicialização dos users
 class Users:
-    def __init__(self, username, name, password_hash, email, role, id=None, is_active=True):
+    def __init__(self, username, name, password_hash, email, role, sector, id=None, is_active=True):
         self.id = id
         self.username = username
         self.name = name
         self.password_hash = password_hash
         self.email = email
         self.role = role
+        self.sector = sector
         self.is_active = is_active
 
     def to_dict(self):
@@ -19,6 +20,7 @@ class Users:
             "password_hash": self.password_hash,
             "email": self.email,
             "role": self.role,
+            "sector": self.sector,
             "is_active": self.is_active
         }
 
@@ -33,9 +35,10 @@ class UsersModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, u.is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
+                INNER JOIN sectors s ON s.id = u.sector_id
             """
             cursor.execute(sql_query)
 
@@ -65,9 +68,10 @@ class UsersModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, u.is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector, u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
+                INNER JOIN sectors s ON s.id = u.sector_id
                 WHERE u.username = %s
             """
             values = (username,)
@@ -89,3 +93,33 @@ class UsersModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    @staticmethod
+    def get_by_id(user_id):
+        cursor = None
+        conn = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT u.username, u.name, u.password_hash, u.email, r.description as role, s.description as role, u.is_active
+                FROM users u
+                INNER JOIN roles r ON r.id = u.role_id
+                INNER JOIN sectors s ON s.id = u.sector_id
+                WHERE u.id = %s
+            """
+            values = (user_id,)
+
+            cursor.execute(sql_query, values)
+            userData = cursor.fetchone()
+
+            user = Users(**userData)
+
+            return user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if conn:
+                conn.close()
+            if cursor:
+                cursor.close()

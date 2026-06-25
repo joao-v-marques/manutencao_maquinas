@@ -72,20 +72,15 @@
     });
   }
 
-  /**
-   * Encerra a sessão do usuário.
-   * Integração futura: chamar endpoint de logoff do backend
-   * (ex: POST /api/auth/logout) e então redirecionar para a tela de login.
-   */
-  function handleLogout() {
-    console.log("[navbar] Logoff solicitado — integrar com o backend.");
-    // window.location.href = "/login";
-  }
-
+  // encerra a sessão do usuário
   function setupLogout() {
     const logoutButton = document.getElementById("logoutButton");
-    if (!logoutButton) return;
-    logoutButton.addEventListener("click", handleLogout);
+    
+    if (!logoutButton) {
+      return;
+    }
+
+    logoutButton.addEventListener("click", handlerLogout);
   }
 
   function setupMobileToggle() {
