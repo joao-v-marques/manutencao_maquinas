@@ -29,16 +29,22 @@
     return (primeira + ultima).toUpperCase();
   }
 
-  function renderUsuario() {
-    const usuario = getUsuarioLogado();
+  async function renderUsuario() {
+    const user = await getLoggedUser();
+
+    let userRole = "Carregando...";
+    
+    if (user.role == "administrator") {
+      userRole = "Administrador";
+    } else if (user.role == "employee") {
+      userRole = "Funcionário";
+    }
 
     const nameLabel = document.getElementById("userNameLabel");
     const roleLabel = document.getElementById("userRoleLabel");
-    const avatar = document.getElementById("userAvatarInitials");
 
-    if (nameLabel) nameLabel.textContent = usuario.nome;
-    if (roleLabel) roleLabel.textContent = usuario.cargo;
-    if (avatar) avatar.textContent = getIniciais(usuario.nome);
+    if (nameLabel) nameLabel.textContent = user.name;
+    if (roleLabel) roleLabel.textContent = userRole;
   }
 
   function setupUserMenu() {

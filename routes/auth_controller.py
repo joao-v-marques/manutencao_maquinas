@@ -37,7 +37,7 @@ def user_login():
     
 @bp_auth.route("/me", methods=['GET'])
 @token_required
-def get_me(user_id):
+def get_me():
     try:
         user_id = request.user["id"]
 
