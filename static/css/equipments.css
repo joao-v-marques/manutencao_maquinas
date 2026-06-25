@@ -287,6 +287,11 @@ table.data-table {
   color: var(--color-text-primary);
 }
 
+.icon-btn--edit:hover {
+  color: #0048ff;
+  background-color: rgba(0, 55, 255, 0.12);
+}
+
 .icon-btn--danger:hover {
   color: var(--color-danger);
   background-color: rgba(226, 87, 76, 0.12);
@@ -316,37 +321,6 @@ table.data-table {
 .status-badge--manutencao { background-color: rgba(244, 121, 32, 0.16); color: var(--color-warning); }
 .status-badge--parado { background-color: rgba(226, 87, 76, 0.16); color: var(--color-danger); }
 .status-badge--inativo { background-color: rgba(116, 131, 122, 0.2); color: var(--color-text-muted); }
-
-/* Estado vazio da tabela */
-.table-empty {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: var(--space-6) var(--space-3);
-  color: var(--color-text-muted);
-  text-align: center;
-}
-
-.table-empty.is-visible {
-  display: flex;
-}
-
-.table-empty svg {
-  width: 32px;
-  height: 32px;
-  stroke: var(--color-text-muted);
-}
-
-.table-empty strong {
-  color: var(--color-text-secondary);
-  font-size: 14px;
-}
-
-.table-empty span {
-  font-size: 13px;
-}
 
 /* Rodapé com paginação simples */
 .table-footer {
@@ -807,6 +781,11 @@ table.data-table {
   text-align: right;
   font-weight: 600;
   color: var(--color-text-primary);
+}
+
+.table-options {
+  display: flex;
+  justify-content: center;
 }
 
 /* Estado vazio genérico para abas */

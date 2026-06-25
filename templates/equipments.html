@@ -107,34 +107,25 @@
 				<table class="data-table">
 					<thead>
 						<tr>
-							<th>Tag</th>
-							<th>Equipamento</th>
+							<th>Nome</th>
 							<th>Tipo</th>
-							<th>Setor</th>
-							<th>Responsável</th>
 							<th>Marca</th>
+							<th>Modelo</th>
+							<th>Data de Aquisição</th>
+							<th>Setor</th>
 							<th>Status</th>
-							<th></th>
+							<th style="text-align: center;">Opções</th>
 						</tr>
 					</thead>
-					<tbody id="equipmentTableBody">
+					<tbody id="equipmentTbody">
 						<!-- Linhas renderizadas via JS -->
 					</tbody>
 				</table>
 			</div>
 
-			<div class="table-empty" id="tableEmptyState">
-				<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<circle cx="11" cy="11" r="8" />
-					<line x1="21" y1="21" x2="16.65" y2="16.65" />
-				</svg>
-				<strong>Nenhum equipamento encontrado</strong>
-				<span>Tente ajustar a busca ou os filtros aplicados.</span>
-			</div>
-
 			<div class="table-footer">
 				<span id="resultsCountLabel">0 equipamentos</span>
-				<span id="paginationLabel"></span>
+				<!-- CRIAR UMA LÓGICA DE PÁGINAÇÃO NO FUTURO -->
 			</div>
 		</div>
 	</main>
