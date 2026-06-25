@@ -1,3 +1,5 @@
+import { openModal } from "./modalsEquipments/createEquipment.js";
+
 async function populateEquipmentsTable() {
     try {
         const response = await fetchWithAuth("/portal-manutencao/equipments");
@@ -60,6 +62,10 @@ async function populateEquipmentsTable() {
         console.log(error)
     }
 }
+
+const btnCreateEquipment = document.getElementById("openCreateModalButton")
+
+btnCreateEquipment.addEventListener("click", openModal)
 
 // event listener para carregar a página
 document.addEventListener("DOMContentLoaded", function () {
