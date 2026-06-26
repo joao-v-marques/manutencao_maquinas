@@ -1,4 +1,4 @@
-import { openModal } from "./modalsEquipments/createEquipment.js";
+import { openModal, closeModalCreateEquipment } from "./modalsEquipments/createEquipment.js";
 
 async function populateEquipmentsTable() {
     try {
@@ -70,4 +70,6 @@ btnCreateEquipment.addEventListener("click", openModal)
 // event listener para carregar a página
 document.addEventListener("DOMContentLoaded", function () {
     populateEquipmentsTable();
+    closeModalCreateEquipment();
 });
+
