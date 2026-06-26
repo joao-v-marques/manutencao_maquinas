@@ -124,7 +124,7 @@
 			</div>
 
 			<div class="table-footer">
-				<span id="resultsCountLabel">0 equipamentos</span>
+				<span id="resultsCountLabel">0 equipamentos cadastrados</span>
 				<!-- CRIAR UMA LÓGICA DE PÁGINAÇÃO NO FUTURO -->
 			</div>
 		</div>
@@ -172,9 +172,9 @@
 								<label for="name_id">Nome</label>
 								<input type="text" id="name_id" name="name" placeholder="Ex: PC-JOAO" required>
 							</div>
-							<div class="form-field form-field--required">
+							<div class="form-field">
 								<label for="ip_id">IP</label>
-								<input type="text" id="ip_id" name="ip" placeholder="Ex: 192.168.1.*" required>
+								<input type="text" id="ip_id" name="ip" placeholder="Ex: 192.168.1.*">
 							</div>
 							<div class="form-field form-field--full">
 								<label for="serial_number_id">Numero de Série</label>
@@ -195,14 +195,17 @@
 							<div class="form-field form-field--required">
 								<label for="type_id">Tipo</label>
 								<select id="type_id" name="type" required>
-									<option value="">Selecione…</option>
+									<option value="PC">PC</option>
+									<option value="Notebook">Notebook</option>
+									<option value="Ar Condicionado">Ar Condicionado</option>
+									<option value="Limpeza Geral">Limpeza Geral</option>
+									<option value="Automotivo">Automotivo</option>
+									<option value="Outro">Outro</option>
 								</select>
 							</div>
 							<div class="form-field">
 								<label for="brand_id">Marca / Prestador responsável pela MP</label>
-								<select id="brand_id" name="brand">
-									<option value="">Selecione…</option>
-								</select>
+								<input type="text" id="brand_id" name="brand" placeholder="Ex: DELL, HP, etc.">
 							</div>
 							<div class="form-field form-field--full">
 								<label for="model_id">Modelo</label>
@@ -221,22 +224,22 @@
 							Localização
 						</h3>
 						<div class="form-grid">
-							<div class="form-field">
+							<div class="form-field form-field--required">
 								<label for="location_id">Unidade</label>
-								<select id="location_id" name="location">
-									<option value="">Selecione…</option>
+								<select id="location_id" name="location" required>
+									<!-- opções preenchidas via JS -->
 								</select>
 							</div>
 							<div class="form-field form-field--required">
 								<label for="sector_id">Setor</label>
 								<select id="sector_id" name="sector" required>
-									<option value="">Selecione…</option>
+									<!-- opções preenchidas via JS -->
 								</select>
 							</div>
-							<div class="form-field form-field--full">
+							<div class="form-field form-field--required form-field--full">
 								<label for="maintenance_group_id">Grupo de Manutenção (Quem será responsável por fazer as manutenções)</label>
 								<select id="maintenance_group_id" name="maintenance_group" required>
-									<option value="">Selecione…</option>
+									<!-- opções preenchidas via JS -->
 								</select>
 							</div>
 						</div>
@@ -254,20 +257,31 @@
 							Controle
 						</h3>
 						<div class="form-grid">
-							<div class="form-field form-field--required">
+							<div class="form-field">
 								<label for="acquisition_date_id">Data de aquisição</label>
-								<input type="date" id="acquisition_date_id" name="acquisition_date" required>
+								<input type="date" id="acquisition_date_id" name="acquisition_date">
 							</div>
 							<div class="form-field form-field--required">
-								<label for="maintenance_interval_months_id">Periodicidade da manutenção</label>
+								<label for="maintenance_interval_months_id">Periodicidade da manutenção (Meses)</label>
 								<select id="maintenance_interval_months_id" name="maintenance_interval_months" required>
-									<option value="">Selecione…</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+									<option value="7">7</option>
+									<option value="8">8</option>
+									<option value="9">9</option>
+									<option value="10">10</option>
+									<option value="11">11</option>
+									<option value="12">12</option>
 								</select>
 							</div>
 							<div class="form-field form-field--full form-field--required">
 								<label for="status_id">Status</label>
 								<select id="status_id" name="status" required>
-									<option value="">Selecione...</option>
+									<!-- opções preenchidas via JS -->
 								</select>
 							</div>
 						</div>
@@ -289,8 +303,8 @@
 		</div>
 	</div>
 
-	<!-- ===================== MODAL: EXCLUIR UM EQUIPAMENTO ===================== -->
-	
+	<!-- === MODAL: EXCLUIR UM EQUIPAMENTO === -->
+	<!-- colocar aqui o modal -->
 
 	<!-- Toast de feedback -->
 	<div class="toast" id="toast">
