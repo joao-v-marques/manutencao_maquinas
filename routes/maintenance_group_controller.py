@@ -3,7 +3,7 @@ from services.maintenance_group_service import MaintenanceService
 
 bp_maintenance_group = Blueprint("bp_maintenance_group", __name__)
 
-@bp_maintenance_group.route("/maintenance_groups", methods=['GET'])
+@bp_maintenance_group.route("/maintenance-groups", methods=['GET'])
 def get_all():
     try:
         maintenance_groups = MaintenanceService.get_all()
