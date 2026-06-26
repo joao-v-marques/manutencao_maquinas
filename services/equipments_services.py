@@ -33,3 +33,18 @@ class EquipmentsService:
             return created_equipment
         except Exception as e:
             raise Exception(str(e))
+        
+    @staticmethod
+    def delete_equipment(equipment_id):
+        try:
+            equipment = EquipmentsModel.get_by_id(equipment_id)
+
+            if not equipment:
+                raise ValueError("Não foi encontrado equipamento com esse ID")
+            
+            EquipmentsModel.delete_equipment(equipment_id)
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
+

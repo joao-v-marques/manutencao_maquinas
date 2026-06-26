@@ -19,7 +19,6 @@ def get_all():
             "message": str(e)
         }), 500
 
-# FAZER O ROUTE DE POST DOS EQUIPMENTS
 @bp_equipments.route("/equipments", methods=['POST'])
 @token_required
 def create_equipment():
@@ -29,6 +28,20 @@ def create_equipment():
         created_equipment = EquipmentsService.create_equipment(data)
 
         return created_equipment
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+    
+@bp_equipments.route("/equipments/<int:equipment_id>", methods=['DELETE'])
+@token_required
+def delete_equipment(equipment_id):
+    try:
+        EquipmentsService.delete_equipment(equipment_id)
+
+        return jsonify({
+            "message": "Equipamento deletado com sucesso!"
+        }), 200
     except Exception as e:
         return jsonify({
             "message": str(e)
