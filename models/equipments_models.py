@@ -87,3 +87,35 @@ class EquipmentsModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # POST de todos os equipamentos cadastrados
+    @staticmethod
+    def create_equipment(equipment):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                INSERT INTO equipments (
+                    name, type, brand, model, serial_number, acquisition_date, ip, maintenance_interval_months, location_id, sector_id, status_id, maintenance_group_id
+                )
+                VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                )
+            """
+            values = (equipment.name, equipment.type, equipment.brand, equipment.model, equipment.serial_number, equipment.acquisition_date, equipment.ip, equipment.maintenance_interval_months, equipment.location, equipment.sector, equipment.status, equipment.maintenance_group)
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+
+            created_equipment = equipment.to_dict()
+
+            return created_equipment
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
