@@ -109,7 +109,7 @@ export function closeModalCreateEquipment() {
 }
 
 // função para lançar novo equipamento (submit do form)
-export async function createEquipment() {
+export async function createEquipment(onEquipmentCreated) {
     const formCreateEquipment = document.getElementById("equipmentForm");
 
     formCreateEquipment.addEventListener("submit", async (e) => {
@@ -129,35 +129,38 @@ export async function createEquipment() {
 
             // FAZER VALIDAÇÃO DE REQUIRED FIELDS
 
-            console.log(JSON.stringify(data))
+            const response = await fetchWithAuth("/portal-manutencao/equipments", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
 
-            // const response = await fetchWithAuth("/portal-manutencao/equipments", {
-            //     method: "POST",
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify(data)
-            // });
+            if (!response.ok) {
+                let errorMessage = "Houve um erro ao tentar alterar a senha do usuário";
 
-            // if (!response.ok) {
-            //     let errorMessage = "Houve um erro ao tentar alterar a senha do usuário";
+                try {
+                    const errorJSON = await response.json();
 
-            //     try {
-            //         const errorJSON = await response.json();
+                    if (errorJSON?.message) {
+                        errorMessage = await response.text();
+                    }
 
-            //         if (errorJSON?.message) {
-            //             errorMessage = await response.text();
-            //         }
+                    throw new Error(errorMessage);
+                } catch (error) {
+                    errorMessage = await response.text();
+                }
 
-            //         throw new Error(errorMessage);
-            //     } catch (error) {
-            //         errorMessage = await response.text();
-            //     }
-
-            //     throw new Error(errorMessage);
-            // }
+                throw new Error(errorMessage);
+            }
 
             formCreateEquipment.reset();
+            closeModal();
+
+            if (typeof onEquipmentCreated === "function") {
+                onEquipmentCreated();
+            }
         } catch (error) {
             console.log(error);
         }
