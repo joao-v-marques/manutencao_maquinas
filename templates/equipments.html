@@ -130,7 +130,7 @@
 		</div>
 	</main>
 
-	<!-- ===================== MODAL: CADASTRO / EDIÇÃO ===================== -->
+	<!-- ===================== MODAL: CADASTRO ===================== -->
 	<div class="overlay" id="formModalOverlay">
 		<div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
 			<div class="modal__header">
@@ -303,8 +303,65 @@
 		</div>
 	</div>
 
-	<!-- === MODAL: EXCLUIR UM EQUIPAMENTO === -->
-	<!-- colocar aqui o modal -->
+	<!-- ==== MODAL: EXCLUIR UM EQUIPAMENTO ==== -->
+	<div class="overlay" id="deleteEquipmentModalOverlay">
+		<div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="deleteEquipmentModalTitle">
+			<div class="modal__header">
+				<div class="modal__title-group">
+					<span class="modal__icon">
+						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M3 6h18"/>
+							<path d="M8 6V4h8v2"/>
+							<path d="M19 6l-1 14H6L5 6"/>
+							<path d="M10 11v6"/>
+							<path d="M14 11v6"/>
+						</svg>
+					</span>
+					<div>
+						<h2 class="modal__title" id="deleteEquipmentModalTitle">Excluir equipamento</h2>
+						<p class="modal__subtitle" id="deleteEquipmentModalSubtitle">
+							Confirme a exclusão deste equipamento
+						</p>
+					</div>
+				</div>
+
+				<button class="modal__close" id="closeDeleteEquipmentModalButton" aria-label="Fechar modal de exclusão">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="18" y1="6" x2="6" y2="18" />
+						<line x1="6" y1="6" x2="18" y2="18" />
+					</svg>
+				</button>
+			</div>
+
+			<div class="modal__body">
+				<form id="deleteEquipmentForm">
+					<input type="hidden" id="deleteEquipmentId" name="equipment_id">
+
+					<p>
+						Tem certeza que deseja excluir o equipamento
+						<strong id="deleteEquipmentName">selecionado</strong>?
+					</p>
+				</form>
+			</div>
+
+			<div class="modal__footer">
+				<button class="btn btn-ghost" id="cancelDeleteEquipmentButton" type="button">
+					Cancelar
+				</button>
+
+				<button class="btn btn-primary" id="confirmDeleteEquipmentButton" type="submit" form="deleteEquipmentForm">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M3 6h18"/>
+						<path d="M8 6V4h8v2"/>
+						<path d="M19 6l-1 14H6L5 6"/>
+						<path d="M10 11v6"/>
+						<path d="M14 11v6"/>
+					</svg>
+					Excluir equipamento
+				</button>
+			</div>
+		</div>
+	</div>
 
 	<!-- Toast de feedback -->
 	<div class="toast" id="toast">
