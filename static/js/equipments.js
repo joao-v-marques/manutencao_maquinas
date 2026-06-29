@@ -1,5 +1,6 @@
 import { openModal, closeModalCreateEquipment, createEquipment } from "./modalsEquipments/createEquipment.js";
 import { openDeleteEquipmentModal, closeModalDeleteEquipment, deleteEquipment } from "./modalsEquipments/deleteEquipment.js";
+import { closeModalEditEquipment, loadFieldsEdit, openEditEquipmentModal } from "./modalsEquipments/editEquipment.js";
 
 async function populateEquipmentsTable() {
     try {
@@ -37,10 +38,10 @@ async function populateEquipmentsTable() {
                 <td>${equipment.sector}</td>
                 <td>${equipment.status}</td>
                 <td class="table-options">
-                    <button class="icon-btn icon-btn--edit" aria-label="Editar ${equipment.name}">
+                    <button class="icon-btn icon-btn--edit edit-equipment-button" data-id="${equipment.id}" aria-label="Editar ${equipment.name}" id="btnOpenEquipment" title="Editar Equipamento">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
-                    <button class="icon-btn icon-btn--danger delete-equipment-button" data-id="${equipment.id}" data-name="${equipment.name}" aria-label="Deletar ${equipment.name}">
+                    <button class="icon-btn icon-btn--danger delete-equipment-button" data-id="${equipment.id}" data-name="${equipment.name}" aria-label="Deletar ${equipment.name}" title="Deletar Equipamento">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"/>
                             <path d="M8 6V4h8v2"/>
@@ -68,6 +69,12 @@ async function populateEquipmentsTable() {
                 });
             });
         });
+
+        tbodyEquipments.querySelectorAll(".edit-equipment-button").forEach((button, index) => {
+            button.addEventListener("click", () => {
+                openEditEquipmentModal(equipments[index]);
+            })
+        })
     } catch (error) {
         console.log(error)
     }
@@ -79,9 +86,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     closeModalCreateEquipment();
     createEquipment(populateEquipmentsTable);
-
+    
     closeModalDeleteEquipment();
     deleteEquipment(populateEquipmentsTable);
+    
+    loadFieldsEdit();
+    closeModalEditEquipment();
+
 });
 
 const btnCreateEquipment = document.getElementById("openCreateModalButton");
