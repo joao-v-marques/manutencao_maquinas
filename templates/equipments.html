@@ -319,14 +319,14 @@
 						</svg>
 					</span>
 					<div>
-						<h2 class="modal__title" id="deleteEquipmentModalTitle">Excluir equipamento</h2>
+						<h2 class="modal__title" id="deleteEquipmentModalTitle">Excluir Equipamento</h2>
 						<p class="modal__subtitle" id="deleteEquipmentModalSubtitle">
-							Confirme a exclusão deste equipamento
+							Confirme a exclusão do equipamento
 						</p>
 					</div>
 				</div>
 
-				<button class="modal__close" id="closeDeleteEquipmentModalButton" aria-label="Fechar modal de exclusão">
+				<button class="modal__close" id="closeDeleteEquipmentModalButton" type="button" aria-label="Fechar formulario de edicao">
 					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<line x1="18" y1="6" x2="6" y2="18" />
 						<line x1="6" y1="6" x2="18" y2="18" />
@@ -359,6 +359,187 @@
 						<path d="M14 11v6"/>
 					</svg>
 					Excluir equipamento
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- ==== MODAL: EDITAR UM EQUIPAMENTO ==== -->
+	<div class="overlay" id="editEquipmentModalOverlay">
+		<div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="editEquipmentModalTitle">
+			<div class="modal__header">
+				<div class="modal__title-group">
+					<span class="modal__icon modal__icon--edit">
+						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+							<path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+						</svg>
+					</span>
+					<div>
+						<h2 class="modal__title" id="editEquipmentModalTitle">Editar equipamento</h2>
+						<p class="modal__subtitle" id="editEquipmentModalSubtitle">
+							Realize as alterações no equipamento e confirme.
+						</p>
+					</div>
+				</div>
+
+				<button class="modal__close" id="closeEditEquipmentModalButton" aria-label="Fechar modal de edição">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="18" y1="6" x2="6" y2="18" />
+						<line x1="6" y1="6" x2="18" y2="18" />
+					</svg>
+				</button>
+			</div>
+
+			<div class="modal__body">
+				<form id="editEquipmentForm">
+					<input type="hidden" id="editEquipmentId">
+
+					<!-- Identificação -->
+					<div class="form-section">
+						<h3 class="form-section__title">
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M9 12l2 2 4-4" />
+								<circle cx="12" cy="12" r="10" />
+							</svg>
+							Identificação
+						</h3>
+						<div class="form-grid">
+							<div class="form-field form-field--required">
+								<label for="edit_name_id">Nome</label>
+								<input type="text" id="edit_name_id" name="edit_name" placeholder="Ex: PC-JOAO" required>
+							</div>
+							<div class="form-field">
+								<label for="edit_ip_id">IP</label>
+								<input type="text" id="edit_ip_id" name="ip" placeholder="Ex: 192.168.1.*">
+							</div>
+							<div class="form-field form-field--full">
+								<label for="edit_serial_number_id">Numero de Série</label>
+								<input type="text" id="edit_serial_number_id" name="edit_serial_number" placeholder="Ex: C5C369A3-FDB0-4CFF-B24C-201B7D92544F">
+							</div>
+						</div>
+					</div>
+
+					<!-- Características -->
+					<div class="form-section">
+						<h3 class="form-section__title">
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+							</svg>
+							Características
+						</h3>
+						<div class="form-grid">
+							<div class="form-field form-field--required">
+								<label for="edit_type_id">Tipo</label>
+								<select id="edit_type_id" name="type" required>
+									<option value="PC">PC</option>
+									<option value="Notebook">Notebook</option>
+									<option value="Ar Condicionado">Ar Condicionado</option>
+									<option value="Limpeza Geral">Limpeza Geral</option>
+									<option value="Automotivo">Automotivo</option>
+									<option value="Outro">Outro</option>
+								</select>
+							</div>
+							<div class="form-field">
+								<label for="edit_brand_id">Marca / Prestador responsável pela MP</label>
+								<input type="text" id="edit_brand_id" name="brand" placeholder="Ex: DELL, HP, etc.">
+							</div>
+							<div class="form-field form-field--full">
+								<label for="edit_model_id">Modelo</label>
+								<input type="text" id="edit_model_id" name="model" placeholder="Ex: CNC-3000X">
+							</div>
+						</div>
+					</div>
+
+					<!-- Localização -->
+					<div class="form-section">
+						<h3 class="form-section__title">
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z" />
+								<circle cx="12" cy="10" r="3" />
+							</svg>
+							Localização
+						</h3>
+						<div class="form-grid">
+							<div class="form-field form-field--required">
+								<label for="edit_location_id">Unidade</label>
+								<select id="edit_location_id" name="location" required>
+									<!-- opções preenchidas via JS -->
+								</select>
+							</div>
+							<div class="form-field form-field--required">
+								<label for="edit_sector_id">Setor</label>
+								<select id="edit_sector_id" name="sector" required>
+									<!-- opções preenchidas via JS -->
+								</select>
+							</div>
+							<div class="form-field form-field--required form-field--full">
+								<label for="edit_maintenance_group_id">Grupo de Manutenção (Quem será responsável por fazer as manutenções)</label>
+								<select id="edit_maintenance_group_id" name="maintenance_group" required>
+									<!-- opções preenchidas via JS -->
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- Controle -->
+					<div class="form-section">
+						<h3 class="form-section__title">
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="3" y="4" width="18" height="18" rx="2"/>
+								<line x1="16" y1="2" x2="16" y2="6"/>
+								<line x1="8" y1="2" x2="8" y2="6"/>
+								<line x1="3" y1="10" x2="21" y2="10"/>
+							</svg>
+							Controle
+						</h3>
+						<div class="form-grid">
+							<div class="form-field">
+								<label for="edit_acquisition_date_id">Data de aquisição</label>
+								<input type="date" id="edit_acquisition_date_id" name="acquisition_date">
+							</div>
+							<div class="form-field form-field--required">
+								<label for="edit_maintenance_interval_months_id">Periodicidade da manutenção (Meses)</label>
+								<select id="edit_maintenance_interval_months_id" name="maintenance_interval_months" required>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+									<option value="7">7</option>
+									<option value="8">8</option>
+									<option value="9">9</option>
+									<option value="10">10</option>
+									<option value="11">11</option>
+									<option value="12">12</option>
+								</select>
+							</div>
+							<div class="form-field form-field--full form-field--required">
+								<label for="edit_status_id">Status</label>
+								<select id="edit_status_id" name="status" required>
+									<!-- opções preenchidas via JS -->
+								</select>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal__footer">
+				<button class="btn btn-ghost" id="cancelEditEquipmentButton" type="button">
+					Cancelar
+				</button>
+
+				<button class="btn btn-primary" id="saveEditEquipmentButton" type="submit" form="editEquipmentForm">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M3 6h18"/>
+						<path d="M8 6V4h8v2"/>
+						<path d="M19 6l-1 14H6L5 6"/>
+						<path d="M10 11v6"/>
+						<path d="M14 11v6"/>
+					</svg>
+					Confirmar Edição
 				</button>
 			</div>
 		</div>
