@@ -1,6 +1,7 @@
 from routes.render_pages.render_login import bp_render_login
 from routes.render_pages.render_dashboard import bp_render_dashboard
 from routes.render_pages.render_equipments import bp_render_equipments
+from routes.render_pages.render_maintenance import bp_render_maintenance
 
 from routes.users_controllers import bp_users
 from routes.auth_controller import bp_auth
@@ -20,6 +21,7 @@ def config_bps(app):
     app.register_blueprint(bp_render_login, url_prefix=prefix)
     app.register_blueprint(bp_render_dashboard, url_prefix=prefix)
     app.register_blueprint(bp_render_equipments, url_prefix=prefix)
+    app.register_blueprint(bp_render_maintenance, url_prefix=prefix)
 
     # registro de endpoints
     app.register_blueprint(bp_users, url_prefix=prefix)

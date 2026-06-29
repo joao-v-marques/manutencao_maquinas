@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manutenções · Manutenção de Máquinas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/equipments.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/maintenances.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar__brand">
+            <span class="navbar__brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+            </span>
+            <span>Manutenção de Máquinas</span>
+        </div>
+
+        <div class="navbar__actions">
+            <nav class="navbar__links" aria-label="Navegação principal">
+                <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('bp_render_equipments.render_equipments') }}" class="nav-link">Equipamentos</a>
+                <a href="{{ url_for('bp_render_maintenance.render_maintenance') }}" class="nav-link active">Manutenções</a>
+            </nav>
+
+            <button class="navbar__toggle" aria-label="Abrir menu de navegação" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+
+            <div class="navbar__menu">
+                <button class="navbar__user" id="userMenuButton" aria-haspopup="true" aria-expanded="false" aria-controls="userMenuDropdown">
+                    <span class="navbar__user-info">
+                        <span class="navbar__user-name" id="userNameLabel">Carregando...</span>
+                        <span class="navbar__user-role" id="userRoleLabel">&nbsp;</span>
+                    </span>
+                    <svg class="navbar__chevron" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+
+                <div class="navbar__dropdown" id="userMenuDropdown" role="menu">
+                    <button class="navbar__dropdown-item" role="menuitem">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        Configurações
+                    </button>
+                    <div class="navbar__dropdown-divider"></div>
+                    <button class="navbar__dropdown-item navbar__dropdown-item--danger" role="menuitem" id="logoutButton">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="page__header">
+            <div>
+                <h1 class="page__title">Manutenções</h1>
+                <p class="page__subtitle">Gerencie as manutenções preventivas dos equipamentos.</p>
+            </div>
+        </div>
+
+        <section class="summary-grid" aria-label="Resumo das manutenções">
+            <article class="summary-card summary-card--danger">
+                <span class="summary-card__title">Vencidas</span>
+                <strong class="summary-card__value" id="lateCount">0</strong>
+            </article>
+            <article class="summary-card summary-card--warning">
+                <span class="summary-card__title">Hoje</span>
+                <strong class="summary-card__value" id="todayCount">0</strong>
+            </article>
+            <article class="summary-card summary-card--primary">
+                <span class="summary-card__title">Próximas</span>
+                <strong class="summary-card__value" id="nextCount">0</strong>
+            </article>
+            <article class="summary-card summary-card--success">
+                <span class="summary-card__title">Em dia</span>
+                <strong class="summary-card__value" id="okCount">0</strong>
+            </article>
+        </section>
+
+        <div class="toolbar">
+            <div class="search-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="search" id="searchInput" placeholder="Pesquisar equipamento...">
+            </div>
+
+            <div class="filters">
+                <select id="statusFilter" class="filter-select" aria-label="Filtrar por situação">
+                    <option value="">Todos os status</option>
+                    <option value="vencida">Vencida</option>
+                    <option value="hoje">Hoje</option>
+                    <option value="proxima">Próxima</option>
+                    <option value="emdia">Em dia</option>
+                    <option value="primeira">Primeira MP</option>
+                </select>
+                <select id="groupFilter" class="filter-select" aria-label="Filtrar por grupo">
+                    <option value="">Todos os grupos</option>
+                </select>
+            </div>
+
+            <div class="toolbar__actions">
+                <button class="btn btn-secondary" id="refreshButton" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <polyline points="1 20 1 14 7 14"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                    </svg>
+                    Atualizar
+                </button>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Equipamento</th>
+                            <th>Setor</th>
+                            <th>Grupo</th>
+                            <th>Última MP</th>
+                            <th>Próxima MP</th>
+                            <th>Situação</th>
+                            <th style="text-align: center;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="maintenanceTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <span id="resultsCount">0 equipamentos</span>
+            </div>
+        </div>
+    </main>
+
+    <div class="overlay" id="maintenanceModal">
+        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="maintenanceModalTitle">
+            <div class="modal__header">
+                <div class="modal__title-group">
+                    <span class="modal__icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 12l2 2 4-4"/>
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h2 class="modal__title" id="maintenanceModalTitle">Realizar manutenção</h2>
+                        <p class="modal__subtitle">Registrar manutenção preventiva</p>
+                    </div>
+                </div>
+
+                <button class="modal__close" id="closeModal" type="button" aria-label="Fechar formulário">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal__body">
+                <form id="maintenanceForm">
+                    <input type="hidden" id="equipmentId">
+
+                    <div class="form-section">
+                        <h3 class="form-section__title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 12l2 2 4-4"/>
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            Informações
+                        </h3>
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="equipmentName">Equipamento</label>
+                                <input id="equipmentName" readonly>
+                            </div>
+
+                            <div class="form-field form-field--required">
+                                <label for="maintenanceDate">Data da manutenção</label>
+                                <input type="date" id="maintenanceDate" required>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="nextMaintenanceDate">Próxima manutenção</label>
+                                <input type="date" id="nextMaintenanceDate">
+                            </div>
+
+                            <div class="form-field form-field--full">
+                                <label for="description">Descrição</label>
+                                <textarea id="description" rows="6" placeholder="Descreva o serviço realizado..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal__footer">
+                <button class="btn btn-ghost" id="cancelButton" type="button">Cancelar</button>
+                <button class="btn btn-primary" type="submit" form="maintenanceForm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Salvar manutenção
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span id="toastMessage">Manutenção registrada.</span>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/apiHelper.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/maintenances.js') }}"></script>
+</body>
+</html>
