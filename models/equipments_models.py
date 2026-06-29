@@ -1,7 +1,7 @@
 from database.connect_db import get_db_connection
 
 class Equipments:
-    def __init__(self, name, type, brand, model, serial_number, acquisition_date, maintenance_interval_months, location, sector, status, maintenance_group, id=None, is_active=None, created_at=None, ip=None):
+    def __init__(self, name, type, brand, model, serial_number, acquisition_date, maintenance_interval_months, location, sector, status, maintenance_group, id=None, is_active=None, created_at=None, ip=None, location_id=None, sector_id=None, status_id=None, maintenance_group_id=None):
         self.name = name
         self.type = type
         self.brand = brand
@@ -11,9 +11,13 @@ class Equipments:
         self.ip = ip
         self.maintenance_interval_months = maintenance_interval_months
         self.location = location
+        self.location_id = location_id
         self.sector = sector
+        self.sector_id = sector_id
         self.status = status
+        self.status_id = status_id
         self.maintenance_group = maintenance_group
+        self.maintenance_group_id = maintenance_group_id
         self.id = id
         self.is_active = is_active
         self.created_at = created_at
@@ -29,9 +33,13 @@ class Equipments:
             "ip": self.ip,
             "maintenance_interval_months": self.maintenance_interval_months,
             "location": self.location,
+            "location_id": self.location_id,
             "sector": self.sector,
+            "sector_id": self.sector_id,
             "status": self.status,
+            "status_id": self.status_id,
             "maintenance_group": self.maintenance_group,
+            "maintenance_group_id": self.maintenance_group_id,
             "id": self.id,
             "is_active": self.is_active,
             "created_at": self.created_at
@@ -58,9 +66,13 @@ class EquipmentsModel:
                     e.ip,
                     e.maintenance_interval_months,
                     l.description as location,
+                    e.location_id,
                     s.description as sector,
+                    e.sector_id,
                     es.description as status,
+                    e.status_id,
                     mg.description as maintenance_group,
+                    e.maintenance_group_id,
                     e.is_active,
                     e.created_at
                 FROM equipments e
