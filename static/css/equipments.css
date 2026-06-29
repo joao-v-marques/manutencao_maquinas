@@ -837,6 +837,17 @@ table.data-table {
   stroke: var(--color-text-muted);
 }
 
+.modalMessageDelete {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modalMessageDelete strong {
+  color: red;
+}
+
 /* ===================== Toast simples ===================== */
 
 .toast {
