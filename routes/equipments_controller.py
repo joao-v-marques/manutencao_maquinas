@@ -46,3 +46,17 @@ def delete_equipment(equipment_id):
         return jsonify({
             "message": str(e)
         }), 500
+    
+@bp_equipments.route("/equipments/<int:id>" , methods=['PUT'])
+@token_required
+def update_equipment(id):
+    try:
+        data = request.get_json()
+        
+        updated_equipment = EquipmentsService.update_equipment(id, data)
+
+        return updated_equipment
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500

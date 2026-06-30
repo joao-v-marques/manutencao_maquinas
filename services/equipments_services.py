@@ -48,3 +48,25 @@ class EquipmentsService:
         except Exception as e:
             raise Exception(str(e))
 
+    @staticmethod
+    def update_equipment(equipment_id, data):
+        # COLOCAR VALIDAÇÕES DIVERSAS NOS CAMPOS
+
+        equipment = Equipments(
+            id=equipment_id,
+            name=data['name'],
+            type=data['type'],
+            brand=data['brand'],
+            model=data['model'],
+            serial_number=data['serial_number'],
+            acquisition_date=data['acquisition_date'],
+            ip=data['ip'],
+            maintenance_interval_months=data['maintenance_interval_months'],
+            location=data['location'],
+            sector=data['sector'],
+            maintenance_group=data['maintenance_group']
+        )
+
+        updated_equipment = EquipmentsModel.update_equipment(equipment)
+
+        return updated_equipment

@@ -1,7 +1,7 @@
 from database.connect_db import get_db_connection
 
 class Equipments:
-    def __init__(self, name, type, brand, model, serial_number, acquisition_date, maintenance_interval_months, location, sector, status, maintenance_group, id=None, is_active=None, created_at=None, ip=None, location_id=None, sector_id=None, status_id=None, maintenance_group_id=None):
+    def __init__(self, name, type, brand, model, serial_number, acquisition_date, maintenance_interval_months, location, sector, maintenance_group, status=None, id=None, is_active=None, created_at=None, ip=None, location_id=None, sector_id=None, status_id=None, maintenance_group_id=None):
         self.name = name
         self.type = type
         self.brand = brand
@@ -208,3 +208,49 @@ class EquipmentsModel:
                 conn.close()
             if cursor:
                 cursor.close()
+
+    # PUT de um equipamento
+    @staticmethod
+    def update_equipment(equipment):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                UPDATE equipments 
+                SET name = %s, type = %s, brand = %s, model = %s, serial_number = %s, acquisition_date = %s, ip = %s, maintenance_interval_months = %s, location_id = %s, sector_id = %s, maintenance_group_id = %s
+                WHERE id = %s
+            """
+            values = (
+                equipment.name,
+                equipment.type,
+                equipment.brand,
+                equipment.model,
+                equipment.serial_number,
+                equipment.acquisition_date,
+                equipment.ip,
+                equipment.maintenance_interval_months,
+                equipment.location,
+                equipment.sector,
+                equipment.maintenance_group,
+                equipment.id
+            )
+
+            cursor.execute(sql_query, values)
+
+            if cursor.rowcount == 0:
+                raise Exception("Equipamento não encontrado.")
+
+            conn.commit()
+
+            updated_equipment = equipment.to_dict()
+
+            return updated_equipment
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
