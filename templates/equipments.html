@@ -407,7 +407,7 @@
 						<div class="form-grid">
 							<div class="form-field form-field--required">
 								<label for="edit_name_id">Nome</label>
-								<input type="text" id="edit_name_id" name="edit_name" placeholder="Ex: PC-JOAO" required>
+								<input type="text" id="edit_name_id" name="name" placeholder="Ex: PC-JOAO" required>
 							</div>
 							<div class="form-field">
 								<label for="edit_ip_id">IP</label>
@@ -415,7 +415,7 @@
 							</div>
 							<div class="form-field form-field--full">
 								<label for="edit_serial_number_id">Numero de Série</label>
-								<input type="text" id="edit_serial_number_id" name="edit_serial_number" placeholder="Ex: C5C369A3-FDB0-4CFF-B24C-201B7D92544F">
+								<input type="text" id="edit_serial_number_id" name="serial_number" placeholder="Ex: C5C369A3-FDB0-4CFF-B24C-201B7D92544F">
 							</div>
 						</div>
 					</div>
@@ -515,12 +515,6 @@
 									<option value="12">12</option>
 								</select>
 							</div>
-							<div class="form-field form-field--full form-field--required">
-								<label for="edit_status_id">Status</label>
-								<select id="edit_status_id" name="status" required>
-									<!-- opções preenchidas via JS -->
-								</select>
-							</div>
 						</div>
 					</div>
 				</form>
@@ -533,11 +527,7 @@
 
 				<button class="btn btn-primary" id="saveEditEquipmentButton" type="submit" form="editEquipmentForm">
 					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M3 6h18"/>
-						<path d="M8 6V4h8v2"/>
-						<path d="M19 6l-1 14H6L5 6"/>
-						<path d="M10 11v6"/>
-						<path d="M14 11v6"/>
+						<path d="M20 6L9 17l-5-5"/>
 					</svg>
 					Confirmar Edição
 				</button>
