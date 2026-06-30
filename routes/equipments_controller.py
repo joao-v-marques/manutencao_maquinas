@@ -5,7 +5,7 @@ from middlewares.jwt_middleware import token_required
 bp_equipments = Blueprint("bp_equipments", __name__)
 
 @bp_equipments.route("/equipments", methods=['GET'])
-# @token_required
+@token_required
 def get_all():
     try:
         equipments = EquipmentsService.get_all()
