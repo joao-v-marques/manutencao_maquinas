@@ -297,6 +297,11 @@ table.data-table {
   background-color: rgba(226, 87, 76, 0.12);
 }
 
+.icon-btn--create:hover {
+  color: #00b72e;
+  background-color: rgba(46, 180, 82, 0.12);
+}
+
 /* Badge de status */
 .status-badge {
   display: inline-flex;

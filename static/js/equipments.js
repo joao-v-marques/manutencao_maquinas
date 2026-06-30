@@ -1,6 +1,7 @@
 import { openModal, closeModalCreateEquipment, createEquipment } from "./modalsEquipments/createEquipment.js";
 import { openDeleteEquipmentModal, closeModalDeleteEquipment, deleteEquipment } from "./modalsEquipments/deleteEquipment.js";
 import { closeModalEditEquipment, loadFieldsEdit, openEditEquipmentModal, sendFormEditEquipment } from "./modalsEquipments/editEquipment.js";
+import { closeModalMaintenanceEquipment, openMaintenanceModal } from "./modalsEquipments/maintenanceEquipment.js";
 
 async function populateEquipmentsTable() {
     try {
@@ -50,6 +51,12 @@ async function populateEquipmentsTable() {
                             <path d="M14 11v6"/>
                         </svg>
                     </button>
+                    <button class="icon-btn icon-btn--create maintenance-action-button" data-id="${equipment.id}" data-name="${equipment.name}" aria-label="Lançar Manutenção ${equipment.name}" title="Lançar Manutenção">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 12l2 2 4-4"/>
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                    </button>
                 </td>
             `;
 
@@ -75,6 +82,12 @@ async function populateEquipmentsTable() {
                 openEditEquipmentModal(equipments[index]);
             })
         })
+
+        tbodyEquipments.querySelectorAll(".maintenance-action-button").forEach(button => {
+            button.addEventListener("click", () => {
+                openMaintenanceModal()
+            })
+        })
     } catch (error) {
         console.log(error)
     }
@@ -93,6 +106,8 @@ document.addEventListener("DOMContentLoaded", function () {
     loadFieldsEdit();
     closeModalEditEquipment();
     sendFormEditEquipment(populateEquipmentsTable);
+
+    closeModalMaintenanceEquipment();
 });
 
 const btnCreateEquipment = document.getElementById("openCreateModalButton");
