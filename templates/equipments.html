@@ -562,7 +562,8 @@
 
             <div class="modal__body">
                 <form id="maintenanceForm">
-                    <input type="hidden" id="equipmentId">
+                    <input type="hidden" id="maintenanceEquipmentId" name="equipment_id">
+					<input type="hidden" id="formMaintenanceUserId" name="user_id">
 
                     <div class="form-section">
                         <h3 class="form-section__title">
@@ -581,17 +582,17 @@
 
                             <div class="form-field form-field--required">
                                 <label for="maintenanceDate">Data da manutenção</label>
-                                <input type="date" id="maintenanceDate" required>
+                                <input type="date" id="maintenanceDate" name="maintenance_date" required>
                             </div>
 
                             <div class="form-field">
                                 <label for="nextMaintenanceDate">Próxima manutenção</label>
-                                <input type="date" id="nextMaintenanceDate" readonly>
+                                <input type="date" id="nextMaintenanceDate" name="next_maintenance_date" readonly>
                             </div>
 
                             <div class="form-field form-field--full">
                                 <label for="description">Descrição</label>
-                                <textarea id="description" rows="6" placeholder="Descreva o serviço realizado..."></textarea>
+                                <textarea id="description" rows="6" placeholder="Descreva o serviço realizado..." name="description"></textarea>
                             </div>
                         </div>
                     </div>
