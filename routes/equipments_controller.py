@@ -19,6 +19,18 @@ def get_all():
             "message": str(e)
         }), 500
 
+@bp_equipments.route("/equipments/maintenance-status", methods=['GET'])
+@token_required
+def get_maintenance_status():
+    try:
+        equipmentsStatus = EquipmentsService.get_maintenance_status()
+
+        return jsonify(equipmentsStatus)
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 @bp_equipments.route("/equipments", methods=['POST'])
 @token_required
 def create_equipment():

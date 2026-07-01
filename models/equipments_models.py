@@ -90,8 +90,42 @@ class EquipmentsModel:
                 Equipments(**equipment)
                 for equipment in equipmentData
             ]
-            
+
             return equipments
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # GET do status de manutenção de cada equipamento (última manutenção realizada, se houver, e a próxima agendada)
+    @staticmethod
+    def get_maintenance_status():
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT DISTINCT ON (e.id)
+                    e.id,
+                    e.name,
+                    e.maintenance_interval_months,
+                    s.description AS sector,
+                    m.maintenance_date,
+                    m.next_maintenance_date
+                FROM equipments e
+                INNER JOIN sectors s ON s.id = e.sector_id
+                LEFT JOIN maintenances m ON m.equipment_id = e.id
+                ORDER BY e.id, m.maintenance_date DESC NULLS LAST
+            """
+
+            cursor.execute(sql_query)
+            equipmentsStatusData = cursor.fetchall()
+
+            return equipmentsStatusData
         except Exception as e:
             raise Exception(str(e))
         finally:

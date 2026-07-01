@@ -9,7 +9,16 @@ class EquipmentsService:
             return equipments
         except Exception as e:
             raise Exception(str(e))
-        
+
+    @staticmethod
+    def get_maintenance_status():
+        try:
+            equipmentsStatus = EquipmentsModel.get_maintenance_status()
+
+            return equipmentsStatus
+        except Exception as e:
+            raise Exception(str(e))
+
     @staticmethod
     def create_equipment(data):
         try:
