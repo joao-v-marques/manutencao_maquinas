@@ -138,18 +138,23 @@ export async function createEquipment(onEquipmentCreated) {
             });
 
             if (!response.ok) {
-                let errorMessage = "Houve um erro ao tentar alterar a senha do usuário";
+                let errorMessage = "Houve um erro ao tentar cadastrar o equipamento";
 
                 try {
                     const errorJSON = await response.json();
 
                     if (errorJSON?.message) {
-                        errorMessage = await response.text();
+                        errorMessage = errorJSON.message;
                     }
 
                     throw new Error(errorMessage);
                 } catch (error) {
-                    errorMessage = await response.text();
+                    if (error instanceof SyntaxError) {
+                        // resposta não é JSON, tenta ler como texto
+                        errorMessage = `Erro ${response.status}: Falha ao cadastrar equipamento`;
+                    } else {
+                        errorMessage = error.message;
+                    }
                 }
 
                 throw new Error(errorMessage);

@@ -127,7 +127,7 @@ export function closeModalMaintenanceEquipment() {
     });
 }
 
-export async function submitFormCreateMaintenance() {
+export async function submitFormCreateMaintenance(onSuccess) {
     const formCreateMaintenance = document.getElementById("maintenanceForm");
 
     formCreateMaintenance.addEventListener("submit", async (e) => {
@@ -173,6 +173,10 @@ export async function submitFormCreateMaintenance() {
             refillHiddenMaintenanceFields();
 
             await loadMaintenancesTable(currentEquipmentId);
+
+            if (onSuccess) {
+                await onSuccess();
+            }
         } catch (error) {
             console.log(error)
         }

@@ -4,7 +4,7 @@
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--space-2);
   margin-bottom: var(--space-3);
 }
@@ -63,6 +63,14 @@
 
 .summary-card--success .summary-card__value {
   color: var(--color-info);
+}
+
+.summary-card--muted {
+  border-color: rgba(116, 131, 122, 0.35);
+}
+
+.summary-card--muted .summary-card__value {
+  color: var(--color-text-muted);
 }
 
 .maintenance-status {
@@ -129,6 +137,12 @@
 
 .form-field textarea:focus {
   border-color: var(--color-primary);
+}
+
+@media (max-width: 1100px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 860px) {
