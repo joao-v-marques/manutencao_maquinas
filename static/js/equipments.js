@@ -83,12 +83,9 @@ async function populateEquipmentsTable() {
             })
         })
 
-        tbodyEquipments.querySelectorAll(".maintenance-action-button").forEach(button => {
+        tbodyEquipments.querySelectorAll(".maintenance-action-button").forEach((button, index) => {
             button.addEventListener("click", () => {
-                openMaintenanceModal({
-                    id: button.dataset.id,
-                    name: button.dataset.name
-                })
+                openMaintenanceModal(equipments[index])
             })
         })
     } catch (error) {
