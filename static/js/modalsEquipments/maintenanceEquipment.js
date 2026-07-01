@@ -1,6 +1,10 @@
 const modalMaintenance = document.getElementById("maintenanceModal");
 
-export function openMaintenanceModal() {
+export function openMaintenanceModal(maintenance) {
+    // preencher o campo da descrição da maquina automaticamente
+    document.getElementById("equipmentId").value = maintenance.id;
+    document.getElementById("equipmentName").value = maintenance.name;
+
     modalMaintenance.classList.add("is-open");
 }
 
