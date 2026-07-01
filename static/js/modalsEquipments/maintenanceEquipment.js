@@ -2,8 +2,11 @@ const modalMaintenance = document.getElementById("maintenanceModal");
 const maintenanceDateInput = document.getElementById("maintenanceDate");
 const nextMaintenanceDateInput = document.getElementById("nextMaintenanceDate");
 
-// guarda o intervalo de manutenção (em meses) do equipamento que está com o modal aberto
+// guarda as informações do equipamento e do usuário logado enquanto o modal está aberto
 let currentMaintenanceIntervalMonths = null;
+let currentEquipmentId = null;
+let currentEquipmentName = null;
+let currentUserId = null;
 
 // função para controlar a formatação de datas
 function formatDateToInput(dateString) {
@@ -44,21 +47,10 @@ maintenanceDateInput.addEventListener("change", () => {
     nextMaintenanceDateInput.value = calculateNextMaintenanceDate(maintenanceDateInput.value, currentMaintenanceIntervalMonths);
 });
 
-// função para abir o modal de manutenção com as informações necessárias já preenchidas
-export async function openMaintenanceModal(equipment) {
-    // preencher o campo da descrição da maquina automaticamente
-    document.getElementById("equipmentId").value = equipment.id;
-    document.getElementById("equipmentName").value = equipment.name;
-
-    currentMaintenanceIntervalMonths = equipment.maintenance_interval_months;
-
-    // reseta as datas para não manter o valor calculado do equipamento aberto anteriormente
-    maintenanceDateInput.value = "";
-    nextMaintenanceDateInput.value = "";
-
-    // Carregar todas as manutenções cadastradas do equipamento
+// função para carregar todas as manutenções cadastradas do equipamento na tabela do modal
+export async function loadMaintenancesTable(equipmentId) {
     try {
-        const response = await fetchWithAuth(`/portal-manutencao/maintenances/${equipment.id}`);
+        const response = await fetchWithAuth(`/portal-manutencao/maintenances/${equipmentId}`);
 
         if (!response.ok) {
             throw new Error("Deu erro!");
@@ -88,8 +80,34 @@ export async function openMaintenanceModal(equipment) {
     } catch (error) {
         console.log(error)
     }
+}
+
+// função para abir o modal de manutenção com as informações necessárias já preenchidas
+export async function openMaintenanceModal(equipment) {
+    const loggedUser = await getLoggedUser();
+
+    currentMaintenanceIntervalMonths = equipment.maintenance_interval_months;
+    currentEquipmentId = equipment.id;
+    currentEquipmentName = equipment.name;
+    currentUserId = loggedUser.id;
+
+    // preencher o campo da descrição da maquina automaticamente
+    refillHiddenMaintenanceFields();
+
+    // reseta as datas para não manter o valor calculado do equipamento aberto anteriormente
+    maintenanceDateInput.value = "";
+    nextMaintenanceDateInput.value = "";
+
+    await loadMaintenancesTable(equipment.id);
 
     modalMaintenance.classList.add("is-open");
+}
+
+// reatribui os campos ocultos/readonly do formulário após o reset, permitindo cadastrar várias manutenções sem reabrir o modal
+function refillHiddenMaintenanceFields() {
+    document.getElementById("maintenanceEquipmentId").value = currentEquipmentId;
+    document.getElementById("formMaintenanceUserId").value = currentUserId;
+    document.getElementById("equipmentName").value = currentEquipmentName;
 }
 
 // 2 funções para fechar o modal no X, cancelar e clicando fora
@@ -109,4 +127,54 @@ export function closeModalMaintenanceEquipment() {
     });
 }
 
+export async function submitFormCreateMaintenance() {
+    const formCreateMaintenance = document.getElementById("maintenanceForm");
 
+    formCreateMaintenance.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+            const formData = new FormData(formCreateMaintenance);
+            const data = Object.fromEntries(formData.entries());
+
+            // validação remover espaços no inicio e final da string
+            for (let [key, value] of formData.entries()) {
+                if (typeof value === "string") {
+                    formData.set(key, value.trim());
+                }
+            }
+
+            const response = await fetchWithAuth("/portal-manutencao/maintenances", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                let errorMessage = "Houve um erro ao editar o usuário";
+
+                try {
+                    const errorJSON = await response.json();
+
+                    if (errorJSON?.message) {
+                        errorMessage = errorJSON.message;
+                    }
+                } catch (parseError) {
+                    errorMessage = await response.text();
+                }
+
+                throw new Error(errorMessage);
+            }
+
+            console.log("Cadastro da manutenção realizado com sucesso!");
+            formCreateMaintenance.reset();
+            refillHiddenMaintenanceFields();
+
+            await loadMaintenancesTable(currentEquipmentId);
+        } catch (error) {
+            console.log(error)
+        }
+    })
+}

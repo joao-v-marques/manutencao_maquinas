@@ -102,7 +102,7 @@ class UsersModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector, u.is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector, u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id

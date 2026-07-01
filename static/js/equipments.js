@@ -1,7 +1,7 @@
 import { openModal, closeModalCreateEquipment, createEquipment } from "./modalsEquipments/createEquipment.js";
 import { openDeleteEquipmentModal, closeModalDeleteEquipment, deleteEquipment } from "./modalsEquipments/deleteEquipment.js";
 import { closeModalEditEquipment, loadFieldsEdit, openEditEquipmentModal, sendFormEditEquipment } from "./modalsEquipments/editEquipment.js";
-import { closeModalMaintenanceEquipment, openMaintenanceModal } from "./modalsEquipments/maintenanceEquipment.js";
+import { closeModalMaintenanceEquipment, openMaintenanceModal, submitFormCreateMaintenance } from "./modalsEquipments/maintenanceEquipment.js";
 
 async function populateEquipmentsTable() {
     try {
@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     sendFormEditEquipment(populateEquipmentsTable);
 
     closeModalMaintenanceEquipment();
+    submitFormCreateMaintenance();
 });
 
 const btnCreateEquipment = document.getElementById("openCreateModalButton");
