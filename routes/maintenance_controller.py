@@ -16,3 +16,17 @@ def get_all():
         return jsonify({
             "message": str(e)
         }), 500
+    
+@bp_maintenances.route("/maintenances/<int:id>", methods=['GET'])
+def get_by_id(id):
+    try:
+        maintenances = MaintenanceService.get_by_id(id)
+
+        return jsonify([
+            maintenance.to_dict()
+            for maintenance in maintenances
+        ])
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500

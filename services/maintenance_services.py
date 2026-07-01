@@ -9,3 +9,12 @@ class MaintenanceService:
             return maintenances
         except Exception as e:
             raise Exception(str(e))
+
+    @staticmethod
+    def get_by_id(equipment_id):
+        try:
+            maintenances = MaintenanceModel.get_by_id(equipment_id)
+
+            return maintenances
+        except Exception as e:
+            raise Exception(str(e))

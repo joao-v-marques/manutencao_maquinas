@@ -51,4 +51,39 @@ class MaintenanceModel:
                 cursor.close()
             if conn:
                 conn.close()
-            
+    
+    # GET de todas as manutenções de um equipamento puxando pelo id
+    @staticmethod
+    def get_by_id(equipment_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT m.id, m.maintenance_date, m.next_maintenance_date, m.description, u.username AS user, e.name AS equipment 
+                FROM maintenances m
+                INNER JOIN users u ON u.id = m.user_id
+                INNER JOIN equipments e ON e.id = m.equipment_id
+                WHERE m.equipment_id = %s
+                ORDER BY m.maintenance_date DESC
+            """
+            values = (equipment_id,)
+
+            cursor.execute(sql_query, values)
+
+            maintenancesData = cursor.fetchall()
+
+            maintenances = [
+                Maintenance(**maintenance)
+                for maintenance in maintenancesData
+            ]
+
+            return maintenances
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
