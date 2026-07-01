@@ -87,3 +87,37 @@ class MaintenanceModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # POST para criar uma nova manutenção
+    @staticmethod
+    def create_maintenance(maintenance):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                INSERT INTO maintenances (maintenance_date, next_maintenance_date, description, user_id, equipment_id)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            values = (
+                maintenance.maintenance_date,
+                maintenance.next_maintenance_date,
+                maintenance.description,
+                maintenance.user,
+                maintenance.equipment
+            )
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+
+            created_maintenance = maintenance.to_dict()
+
+            return created_maintenance
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

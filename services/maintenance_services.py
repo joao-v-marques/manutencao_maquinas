@@ -1,4 +1,4 @@
-from models.maintenance_models import MaintenanceModel
+from models.maintenance_models import MaintenanceModel, Maintenance
 
 class MaintenanceService:
     @staticmethod
@@ -16,5 +16,22 @@ class MaintenanceService:
             maintenances = MaintenanceModel.get_by_id(equipment_id)
 
             return maintenances
+        except Exception as e:
+            raise Exception(str(e))
+        
+    @staticmethod
+    def create_maintenance(data):
+        try:
+            maintenance = Maintenance(
+                maintenance_date=data['maintenance_date'],
+                next_maintenance_date=data['next_maintenance_date'],
+                description=data['description'],
+                user=data['user_id'],
+                equipment=data['equipment_id']
+            )
+
+            created_maintenance = MaintenanceModel.create_maintenance(maintenance)
+
+            return created_maintenance
         except Exception as e:
             raise Exception(str(e))
