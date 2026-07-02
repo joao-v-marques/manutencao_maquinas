@@ -2,6 +2,7 @@ import { openModal, closeModalCreateEquipment, createEquipment } from "./modalsE
 import { openDeleteEquipmentModal, closeModalDeleteEquipment, deleteEquipment } from "./modalsEquipments/deleteEquipment.js";
 import { closeModalEditEquipment, loadFieldsEdit, openEditEquipmentModal, sendFormEditEquipment } from "./modalsEquipments/editEquipment.js";
 import { closeModalMaintenanceEquipment, openMaintenanceModal, submitFormCreateMaintenance } from "./modalsEquipments/maintenanceEquipment.js";
+import { formatDateToInput } from "./utils/maintenanceStatus.js";
 
 async function populateEquipmentsTable() {
     try {
@@ -35,7 +36,7 @@ async function populateEquipmentsTable() {
                 <td>${equipment.type}</td>
                 <td>${equipment.brand}</td>
                 <td>${equipment.model}</td>
-                <td>${equipment.acquisition_date}</td>
+                <td>${formatDateToInput(equipment.acquisition_date)}</td>
                 <td>${equipment.sector}</td>
                 <td>${equipment.status}</td>
                 <td class="table-options">
