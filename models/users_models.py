@@ -2,7 +2,7 @@ from database.connect_db import get_db_connection
 
 # classe de inicialização dos users
 class Users:
-    def __init__(self, username, name, password_hash, email, role, sector, id=None, is_active=True):
+    def __init__(self, username, name, password_hash, email, role, sector, id=None, maintenance_group=None, is_active=True):
         self.id = id
         self.username = username
         self.name = name
@@ -10,6 +10,7 @@ class Users:
         self.email = email
         self.role = role
         self.sector = sector
+        self.maintenance_group = maintenance_group
         self.is_active = is_active
 
     def to_dict(self):
@@ -21,6 +22,7 @@ class Users:
             "email": self.email,
             "role": self.role,
             "sector": self.sector,
+            "maintenance_group": self.maintenance_group,
             "is_active": self.is_active
         }
 
@@ -35,10 +37,11 @@ class UsersModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector u.is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector, u.is_active, mg.description as maintenance_group
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
+                INNER JOIN maintenance_group mg ON mg.id = u.maintenance_group_id 
             """
             cursor.execute(sql_query)
 
