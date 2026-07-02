@@ -26,7 +26,7 @@
                 <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="nav-link">Dashboard</a>
                 <a href="{{ url_for('bp_render_equipments.render_equipments') }}" class="nav-link">Equipamentos</a>
                 <a href="{{ url_for('bp_render_maintenance.render_maintenance') }}" class="nav-link">Manutenções</a>
-                <a href="{{ url_for('bp_render_users.render_users') }}" class="nav-link is-active">Usuários</a>
+                <a href="{{ url_for('bp_render_users.render_users') }}" class="nav-link">Usuários</a>
             </nav>
 
 			<button class="navbar__toggle" aria-label="Abrir menu de navegação" aria-expanded="false">
@@ -107,11 +107,11 @@
 					<div class="form-grid">
 						<div class="form-field form-field--required">
 							<label for="username_id">Usuário</label>
-							<input type="text" id="username_id" name="username" placeholder="Ex: joao.silva" required>
+							<input type="text" id="username_id" name="username" placeholder="Ex: joaovictor" required>
 						</div>
 						<div class="form-field form-field--required">
 							<label for="password_id">Senha</label>
-							<input type="password" id="password_id" name="password" placeholder="Digite a senha de acesso" required>
+							<input type="password" id="password_id" name="password_hash" placeholder="Digite a senha de acesso" autocomplete="" required>
 						</div>
 					</div>
 				</div>
@@ -128,11 +128,11 @@
 					<div class="form-grid">
 						<div class="form-field form-field--required">
 							<label for="name_id">Nome completo</label>
-							<input type="text" id="name_id" name="name" placeholder="Ex: João Silva" required>
+							<input type="text" id="name_id" name="name" placeholder="Ex: João Victor Marques" required>
 						</div>
 						<div class="form-field form-field--required">
 							<label for="email_id">E-mail</label>
-							<input type="email" id="email_id" name="email" placeholder="Ex: joao.silva@empresa.com" required>
+							<input type="email" id="email_id" name="email" placeholder="Ex: joaovictor@unimedssp.coop" required>
 						</div>
 					</div>
 				</div>
@@ -165,13 +165,13 @@
 								<!-- opções preenchidas via JS -->
 							</select>
 						</div>
-						<div class="form-field form-field--required">
+						<!-- <div class="form-field form-field--required">
 							<label for="is_active_id">Status</label>
 							<select id="is_active_id" name="is_active" required>
 								<option value="true">Ativo</option>
 								<option value="false">Inativo</option>
 							</select>
-						</div>
+						</div> -->
 					</div>
 				</div>
 
@@ -200,7 +200,7 @@
 							<th>E-mail</th>
 							<th>Cargo</th>
 							<th>Setor</th>
-							<th>Grupo de Manutenção</th>
+							<th>Grupo de Man.</th>
 							<th>Status</th>
 							<th style="text-align: center;">Opções</th>
 						</tr>
@@ -264,7 +264,7 @@
 							</div>
 							<div class="form-field">
 								<label for="edit_password_id">Senha</label>
-								<input type="password" id="edit_password_id" name="password" placeholder="Deixe em branco para manter a senha atual">
+								<input type="password" id="edit_password_id" name="password" placeholder="Deixe em branco para manter a senha atual" autocomplete="">
 							</div>
 						</div>
 					</div>
@@ -415,5 +415,6 @@
 
 	<script src="{{ url_for('static', filename='js/apiHelper.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+	<script type="module" src="{{ url_for('static', filename='js/users.js') }}"></script>
 </body>
 </html>
