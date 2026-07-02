@@ -126,3 +126,31 @@ class UsersModel:
                 conn.close()
             if cursor:
                 cursor.close()
+
+    # função para criar um novo usuário
+    @staticmethod
+    def create_user(user):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                INSERT INTO users (username, name, password_hash, email, role_id, sector_id, maintenance_group_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+            values = (user.username, user.name, user.password_hash, user.email, user.role, user.sector, user.maintenance_group)
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+
+            created_user = user.to_dict()
+
+            return created_user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
