@@ -12,8 +12,8 @@
 .summary-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-height: 92px;
+  gap: 8px;
+  min-height: 112px;
   padding: var(--space-3);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -21,16 +21,48 @@
   box-shadow: var(--shadow-card);
 }
 
+.summary-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
 .summary-card__title {
   font-size: 12px;
   font-weight: 600;
   color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary-card__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-card__icon svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
 }
 
 .summary-card__value {
   font-size: 28px;
   line-height: 1;
   color: var(--color-text-primary);
+}
+
+.summary-card__trend {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: auto;
 }
 
 .summary-card--danger {
@@ -41,12 +73,28 @@
   color: var(--color-danger);
 }
 
+.summary-card--danger .summary-card__icon {
+  background-color: rgba(226, 87, 76, 0.16);
+}
+
+.summary-card--danger .summary-card__icon svg {
+  stroke: var(--color-danger);
+}
+
 .summary-card--warning {
   border-color: rgba(244, 121, 32, 0.35);
 }
 
 .summary-card--warning .summary-card__value {
   color: var(--color-warning);
+}
+
+.summary-card--warning .summary-card__icon {
+  background-color: rgba(244, 121, 32, 0.16);
+}
+
+.summary-card--warning .summary-card__icon svg {
+  stroke: var(--color-warning);
 }
 
 .summary-card--primary {
@@ -57,6 +105,14 @@
   color: var(--color-primary);
 }
 
+.summary-card--primary .summary-card__icon {
+  background-color: var(--color-primary-muted);
+}
+
+.summary-card--primary .summary-card__icon svg {
+  stroke: var(--color-primary);
+}
+
 .summary-card--success {
   border-color: rgba(164, 216, 222, 0.35);
 }
@@ -65,12 +121,28 @@
   color: var(--color-info);
 }
 
+.summary-card--success .summary-card__icon {
+  background-color: rgba(164, 216, 222, 0.16);
+}
+
+.summary-card--success .summary-card__icon svg {
+  stroke: var(--color-info);
+}
+
 .summary-card--muted {
   border-color: rgba(116, 131, 122, 0.35);
 }
 
 .summary-card--muted .summary-card__value {
   color: var(--color-text-muted);
+}
+
+.summary-card--muted .summary-card__icon {
+  background-color: rgba(116, 131, 122, 0.18);
+}
+
+.summary-card--muted .summary-card__icon svg {
+  stroke: var(--color-text-muted);
 }
 
 .maintenance-status {
