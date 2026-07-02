@@ -181,6 +181,10 @@ section + section {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: var(--space-2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
 }
 
 .kpi-card {
@@ -211,8 +215,8 @@ section + section {
 }
 
 .kpi-card__icon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -221,8 +225,8 @@ section + section {
 }
 
 .kpi-card__icon svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   stroke-width: 2;
 }
 

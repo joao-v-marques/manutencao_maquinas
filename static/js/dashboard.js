@@ -1,379 +1,364 @@
-/**
- * dashboard.js
- * Lógica da página de Dashboard.
- *
- * NÃO faz fetch para o backend (conforme orientação do projeto).
- * Todos os dados vêm de funções "getX()" que hoje retornam mocks.
- *
- * Para integrar com o backend depois, basta trocar o corpo de cada
- * função "getX()" por uma chamada fetch (ou async/await) que retorne
- * exatamente o mesmo formato de dados já usado pelos mocks abaixo.
- */
+import { parseDateOnly, classifyMaintenanceStatus } from "./utils/maintenanceStatus.js";
 
-(function () {
-  "use strict";
+// no dashboard, "próximo do vencimento" segue a mesma janela anunciada nos cards/alertas (30 dias)
+const DASHBOARD_MAINTENANCE_WINDOW_DAYS = 30;
+const MONTHS_IN_CHART = 6;
 
-  /* =========================================================
-     1. FONTES DE DADOS (mock — substituir por fetch no futuro)
-     ========================================================= */
+// instâncias ativas dos gráficos, para poderem ser destruídas antes de um novo desenho (evita erro de "canvas já em uso")
+const chartInstances = {};
 
-  // Ponto de integração: GET /api/dashboard/kpis
-  function getKpis() {
-    return {
-      totalEquipamentos: 142,
-      emOperacao: 108,
-      emManutencao: 14,
-      vencidos: 6,
-      proximos30Dias: 11,
-      manutencoesNoMes: 27,
-      variacaoManutencoesNoMes: 12, // % em relação ao mês anterior
-    };
-  }
+/* ===================== helpers genéricos ===================== */
 
-  // Ponto de integração: GET /api/dashboard/manutencoes-por-mes
-  function getManutencoesPorMes() {
-    return {
-      labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
-      valores: [18, 22, 15, 30, 24, 27],
-    };
-  }
+function getCssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
 
-  // Ponto de integração: GET /api/dashboard/equipamentos-por-setor
-  function getEquipamentosPorSetor() {
-    return {
-      labels: ["Produção", "Manutenção", "Logística", "Qualidade", "Administrativo"],
-      valores: [54, 21, 32, 18, 17],
-    };
-  }
+async function fetchJson(url) {
+    const response = await fetchWithAuth(url);
 
-  // Ponto de integração: GET /api/dashboard/equipamentos-por-tipo
-  function getEquipamentosPorTipo() {
-    return {
-      labels: ["Máquinas CNC", "Empilhadeiras", "Compressores", "Esteiras", "Geradores"],
-      valores: [38, 24, 19, 33, 28],
-    };
-  }
-
-  // Ponto de integração: GET /api/dashboard/status-equipamentos
-  function getStatusEquipamentos() {
-    return {
-      labels: ["Em operação", "Em manutenção", "Parado", "Inativo"],
-      valores: [108, 14, 12, 8],
-    };
-  }
-
-  // Ponto de integração: GET /api/dashboard/alertas/vencidos
-  function getEquipamentosVencidos() {
-    return [
-      { nome: "Compressor de Ar #04", setor: "Produção", diasVencido: 12 },
-      { nome: "Empilhadeira Elétrica #02", setor: "Logística", diasVencido: 7 },
-      { nome: "Torno CNC #11", setor: "Produção", diasVencido: 5 },
-      { nome: "Gerador Diesel #01", setor: "Administrativo", diasVencido: 3 },
-      { nome: "Esteira Transportadora #06", setor: "Produção", diasVencido: 2 },
-      { nome: "Fresadora #03", setor: "Produção", diasVencido: 1 },
-    ];
-  }
-
-  // Ponto de integração: GET /api/dashboard/alertas/proximos
-  function getEquipamentosProximos() {
-    return [
-      { nome: "Caldeira Industrial #01", setor: "Produção", diasRestantes: 2 },
-      { nome: "Empilhadeira a Gás #05", setor: "Logística", diasRestantes: 6 },
-      { nome: "Compressor de Ar #02", setor: "Produção", diasRestantes: 9 },
-      { nome: "Bomba Hidráulica #08", setor: "Manutenção", diasRestantes: 14 },
-      { nome: "Painel Elétrico #03", setor: "Qualidade", diasRestantes: 21 },
-      { nome: "Torno Mecânico #07", setor: "Produção", diasRestantes: 27 },
-    ];
-  }
-
-  /* =========================================================
-     2. HELPERS
-     ========================================================= */
-
-  function formatarNumero(valor) {
-    return new Intl.NumberFormat("pt-BR").format(valor);
-  }
-
-  function getCssVar(nome) {
-    return getComputedStyle(document.documentElement).getPropertyValue(nome).trim();
-  }
-
-  function getChartColors() {
-    return [
-      getCssVar("--color-chart-1"),
-      getCssVar("--color-chart-2"),
-      getCssVar("--color-chart-3"),
-      getCssVar("--color-chart-4"),
-      getCssVar("--color-chart-5"),
-    ];
-  }
-
-  function getChartBaseOptions() {
-    const textMuted = getCssVar("--color-text-muted");
-    const border = getCssVar("--color-border");
-
-    return {
-      textMuted,
-      border,
-      font: {
-        family: getComputedStyle(document.body).fontFamily,
-        size: 12,
-      },
-    };
-  }
-
-  /* =========================================================
-     3. RENDERIZAÇÃO DOS CARDS (KPIs)
-     ========================================================= */
-
-  function renderKpis() {
-    const dados = getKpis();
-
-    setKpiValue("kpiTotalEquipamentos", dados.totalEquipamentos);
-    setKpiValue("kpiEmOperacao", dados.emOperacao);
-    setKpiValue("kpiEmManutencao", dados.emManutencao);
-    setKpiValue("kpiVencidos", dados.vencidos);
-    setKpiValue("kpiProximos", dados.proximos30Dias);
-    setKpiValue("kpiManutencoesMes", dados.manutencoesNoMes);
-
-    const trendEl = document.getElementById("kpiManutencoesMesTrend");
-    if (trendEl) {
-      const variacao = dados.variacaoManutencoesNoMes;
-      const positivo = variacao >= 0;
-      trendEl.classList.toggle("kpi-card__trend--up", positivo);
-      trendEl.classList.toggle("kpi-card__trend--down", !positivo);
-      trendEl.textContent = `${positivo ? "+" : ""}${variacao}% vs. mês anterior`;
+    if (!response.ok) {
+        throw new Error(await response.text());
     }
-  }
 
-  function setKpiValue(elementId, valor) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.textContent = formatarNumero(valor);
-    el.classList.remove("is-skeleton");
-  }
+    return response.json();
+}
 
-  /* =========================================================
-     4. RENDERIZAÇÃO DOS GRÁFICOS (Chart.js)
-     ========================================================= */
+// busca em paralelo tudo que o dashboard precisa do backend
+async function fetchDashboardData() {
+    const [equipments, equipmentsStatus, maintenances] = await Promise.all([
+        fetchJson("/portal-manutencao/equipments"),
+        fetchJson("/portal-manutencao/equipments/maintenance-status"),
+        fetchJson("/portal-manutencao/maintenances"),
+    ]);
 
-  const chartInstances = {};
+    return { equipments, equipmentsStatus, maintenances };
+}
 
-  function destroyChartIfExists(key) {
-    if (chartInstances[key]) {
-      chartInstances[key].destroy();
-      delete chartInstances[key];
+// agrupa uma lista contando ocorrências por chave, preservando a ordem de primeira aparição
+function groupCountBy(items, keyFn) {
+    const counts = new Map();
+
+    items.forEach(item => {
+        const key = keyFn(item) || "Não informado";
+        counts.set(key, (counts.get(key) || 0) + 1);
+    });
+
+    return counts;
+}
+
+/* ===================== cards (KPIs) ===================== */
+function computeKpis(equipments, equipmentsStatus, maintenances, today) {
+    const vencidos = equipmentsStatus.filter(equipment =>
+        classifyMaintenanceStatus(equipment.next_maintenance_date, today, DASHBOARD_MAINTENANCE_WINDOW_DAYS).key === "vencida"
+    ).length;
+
+    const proximos = equipmentsStatus.filter(equipment => {
+        const status = classifyMaintenanceStatus(equipment.next_maintenance_date, today, DASHBOARD_MAINTENANCE_WINDOW_DAYS).key;
+        return status === "hoje" || status === "proxima";
+    }).length;
+
+    const monthBuckets = buildLastSixMonthsBuckets(maintenances, today);
+    const currentMonth = monthBuckets[monthBuckets.length - 1];
+    const previousMonth = monthBuckets[monthBuckets.length - 2];
+
+    return {
+        totalEquipamentos: equipments.length,
+        vencidos,
+        proximos,
+        manutencoesMes: currentMonth.count,
+        manutencoesMesDelta: currentMonth.count - previousMonth.count,
+    };
+}
+
+function renderKpis(kpis) {
+    document.getElementById("kpiTotalEquipamentos").textContent = kpis.totalEquipamentos;
+    document.getElementById("kpiVencidos").textContent = kpis.vencidos;
+    document.getElementById("kpiProximos").textContent = kpis.proximos;
+    document.getElementById("kpiManutencoesMes").textContent = kpis.manutencoesMes;
+
+    document.querySelectorAll(".kpi-card__value").forEach(value => value.classList.remove("is-skeleton"));
+
+    const trend = document.getElementById("kpiManutencoesMesTrend");
+    const delta = kpis.manutencoesMesDelta;
+
+    trend.classList.remove("kpi-card__trend--up", "kpi-card__trend--down");
+
+    if (delta > 0) {
+        trend.classList.add("kpi-card__trend--up");
+        trend.textContent = `+${delta} em relação ao mês anterior`;
+    } else if (delta < 0) {
+        trend.classList.add("kpi-card__trend--down");
+        trend.textContent = `${delta} em relação ao mês anterior`;
+    } else {
+        trend.textContent = "Igual ao mês anterior";
     }
-  }
+}
 
-  function toggleEmptyState(canvasId, emptyId, estaVazio) {
+/* ===================== alertas ===================== */
+
+function buildAlertItemHtml(equipment, status) {
+    const daysLabel = status.key === "vencida"
+        ? `${Math.abs(status.diffInDays)}d atraso`
+        : status.key === "hoje"
+            ? "Hoje"
+            : `em ${status.diffInDays}d`;
+
+    return `
+        <li class="alert-item">
+            <span class="alert-item__dot"></span>
+            <span class="alert-item__info">
+                <span class="alert-item__name">${equipment.name}</span>
+                <span class="alert-item__meta">${equipment.sector}</span>
+            </span>
+            <span class="alert-item__days">${daysLabel}</span>
+        </li>
+    `;
+}
+
+// preenche uma lista de alerta (vencidos ou próximos) e alterna entre lista e estado vazio
+function renderAlertList({ listId, emptyId, countId, equipments }) {
+    const listElement = document.getElementById(listId);
+    const emptyElement = document.getElementById(emptyId);
+    const countElement = document.getElementById(countId);
+
+    countElement.textContent = equipments.length;
+
+    listElement.innerHTML = equipments
+        .map(({ equipment, status }) => buildAlertItemHtml(equipment, status))
+        .join("");
+
+    emptyElement.classList.toggle("is-visible", equipments.length === 0);
+}
+
+function renderAlerts(equipmentsStatus, today) {
+    const classified = equipmentsStatus
+        .map(equipment => ({
+            equipment,
+            status: classifyMaintenanceStatus(equipment.next_maintenance_date, today, DASHBOARD_MAINTENANCE_WINDOW_DAYS),
+        }));
+
+    const overdue = classified
+        .filter(item => item.status.key === "vencida")
+        .sort((a, b) => a.status.diffInDays - b.status.diffInDays);
+
+    const upcoming = classified
+        .filter(item => item.status.key === "hoje" || item.status.key === "proxima")
+        .sort((a, b) => a.status.diffInDays - b.status.diffInDays);
+
+    renderAlertList({ listId: "listVencidos", emptyId: "emptyVencidos", countId: "countVencidos", equipments: overdue });
+    renderAlertList({ listId: "listProximos", emptyId: "emptyProximos", countId: "countProximos", equipments: upcoming });
+}
+
+/* ===================== gráficos ===================== */
+
+// desenha (ou redesenha) um gráfico de rosca a partir de um Map label->quantidade
+function renderDistributionChart({ canvasId, emptyId, chartKey, countsMap }) {
     const canvas = document.getElementById(canvasId);
-    const empty = document.getElementById(emptyId);
-    if (canvas) canvas.style.display = estaVazio ? "none" : "block";
-    if (empty) empty.classList.toggle("is-visible", estaVazio);
-  }
+    const emptyElement = document.getElementById(emptyId);
 
-  function renderManutencoesPorMes() {
-    const { labels, valores } = getManutencoesPorMes();
-    const estaVazio = !valores || valores.length === 0;
-    toggleEmptyState("chartManutencoesPorMes", "emptyManutencoesPorMes", estaVazio);
-    if (estaVazio) return;
+    if (chartInstances[chartKey]) {
+        chartInstances[chartKey].destroy();
+        delete chartInstances[chartKey];
+    }
 
-    const ctx = document.getElementById("chartManutencoesPorMes");
-    const { textMuted, border, font } = getChartBaseOptions();
-    const cor = getCssVar("--color-chart-1");
+    if (countsMap.size === 0) {
+        emptyElement.classList.add("is-visible");
+        return;
+    }
 
-    destroyChartIfExists("manutencoesPorMes");
-    chartInstances.manutencoesPorMes = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{
-          label: "Manutenções",
-          data: valores,
-          backgroundColor: cor,
-          borderRadius: 6,
-          maxBarThickness: 36,
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: textMuted, font } },
-          y: {
-            beginAtZero: true,
-            grid: { color: border },
-            ticks: { color: textMuted, font, precision: 0 },
-          },
+    emptyElement.classList.remove("is-visible");
+
+    const palette = [
+        getCssVar("--color-chart-1"),
+        getCssVar("--color-chart-2"),
+        getCssVar("--color-chart-3"),
+        getCssVar("--color-chart-4"),
+        getCssVar("--color-chart-5"),
+    ];
+
+    const labels = [...countsMap.keys()];
+    const data = [...countsMap.values()];
+
+    chartInstances[chartKey] = new Chart(canvas, {
+        type: "doughnut",
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: labels.map((_, index) => palette[index % palette.length]),
+                borderColor: getCssVar("--color-surface"),
+                borderWidth: 2,
+            }],
         },
-      },
-    });
-  }
-
-  function renderDoughnut(canvasId, emptyId, instanceKey, labels, valores) {
-    const estaVazio = !valores || valores.length === 0;
-    toggleEmptyState(canvasId, emptyId, estaVazio);
-    if (estaVazio) return;
-
-    const ctx = document.getElementById(canvasId);
-    const { textMuted, font } = getChartBaseOptions();
-    const cores = getChartColors();
-
-    destroyChartIfExists(instanceKey);
-    chartInstances[instanceKey] = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels,
-        datasets: [{
-          data: valores,
-          backgroundColor: cores,
-          borderColor: getCssVar("--color-surface"),
-          borderWidth: 2,
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: "65%",
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: { color: textMuted, font, boxWidth: 10, boxHeight: 10, padding: 12 },
-          },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: { color: getCssVar("--color-text-secondary"), boxWidth: 10, padding: 12 },
+                },
+            },
         },
-      },
     });
-  }
+}
 
-  function renderPorSetor() {
-    const { labels, valores } = getEquipamentosPorSetor();
-    renderDoughnut("chartPorSetor", "emptyPorSetor", "porSetor", labels, valores);
-  }
-
-  function renderPorTipo() {
-    const { labels, valores } = getEquipamentosPorTipo();
-    renderDoughnut("chartPorTipo", "emptyPorTipo", "porTipo", labels, valores);
-  }
-
-  function renderStatus() {
-    const { labels, valores } = getStatusEquipamentos();
-    renderDoughnut("chartStatus", "emptyStatus", "status", labels, valores);
-  }
-
-  function renderGraficos() {
-    renderManutencoesPorMes();
-    renderPorSetor();
-    renderPorTipo();
-    renderStatus();
-  }
-
-  /* =========================================================
-     5. RENDERIZAÇÃO DOS ALERTAS
-     ========================================================= */
-
-  function renderListaAlertas({ listId, emptyId, countId, itens, montarItem }) {
-    const lista = document.getElementById(listId);
-    const empty = document.getElementById(emptyId);
-    const count = document.getElementById(countId);
-    if (!lista) return;
-
-    lista.innerHTML = "";
-
-    if (count) count.textContent = formatarNumero(itens.length);
-
-    const estaVazio = itens.length === 0;
-    if (empty) empty.classList.toggle("is-visible", estaVazio);
-    lista.style.display = estaVazio ? "none" : "block";
-
-    itens.forEach((item) => {
-      const li = document.createElement("li");
-      li.className = "alert-item";
-      li.innerHTML = montarItem(item);
-      lista.appendChild(li);
+function renderChartPorSetor(equipments) {
+    renderDistributionChart({
+        canvasId: "chartPorSetor",
+        emptyId: "emptyPorSetor",
+        chartKey: "porSetor",
+        countsMap: groupCountBy(equipments, equipment => equipment.sector),
     });
-  }
+}
 
-  function renderAlertaVencidos() {
-    const itens = getEquipamentosVencidos();
-    renderListaAlertas({
-      listId: "listVencidos",
-      emptyId: "emptyVencidos",
-      countId: "countVencidos",
-      itens,
-      montarItem: (item) => `
-        <span class="alert-item__dot" aria-hidden="true"></span>
-        <span class="alert-item__info">
-          <span class="alert-item__name">${item.nome}</span>
-          <span class="alert-item__meta">${item.setor}</span>
-        </span>
-        <span class="alert-item__days">${item.diasVencido}d vencido</span>
-      `,
+function renderChartPorTipo(equipments) {
+    renderDistributionChart({
+        canvasId: "chartPorTipo",
+        emptyId: "emptyPorTipo",
+        chartKey: "porTipo",
+        countsMap: groupCountBy(equipments, equipment => equipment.type),
     });
-  }
+}
 
-  function renderAlertaProximos() {
-    const itens = getEquipamentosProximos();
-    renderListaAlertas({
-      listId: "listProximos",
-      emptyId: "emptyProximos",
-      countId: "countProximos",
-      itens,
-      montarItem: (item) => `
-        <span class="alert-item__dot" aria-hidden="true"></span>
-        <span class="alert-item__info">
-          <span class="alert-item__name">${item.nome}</span>
-          <span class="alert-item__meta">${item.setor}</span>
-        </span>
-        <span class="alert-item__days">em ${item.diasRestantes}d</span>
-      `,
+function renderChartStatus(equipments) {
+    renderDistributionChart({
+        canvasId: "chartStatus",
+        emptyId: "emptyStatus",
+        chartKey: "status",
+        countsMap: groupCountBy(equipments, equipment => equipment.status),
     });
-  }
+}
 
-  function renderAlertas() {
-    renderAlertaVencidos();
-    renderAlertaProximos();
-  }
+// monta os últimos N meses (incluindo o atual) com a contagem de manutenções realizadas em cada um
+function buildLastSixMonthsBuckets(maintenances, today) {
+    const buckets = [];
 
-  /* =========================================================
-     6. ATUALIZAÇÃO GERAL / BOTÃO "ATUALIZAR"
-     ========================================================= */
+    for (let i = MONTHS_IN_CHART - 1; i >= 0; i--) {
+        const bucketDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
 
-  function atualizarHorario() {
-    const el = document.getElementById("lastUpdatedLabel");
-    if (!el) return;
-    const agora = new Date();
-    const horario = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    el.textContent = `Atualizado às ${horario}`;
-  }
+        buckets.push({
+            year: bucketDate.getFullYear(),
+            month: bucketDate.getMonth(),
+            label: capitalize(bucketDate.toLocaleDateString("pt-BR", { month: "short" })) + "/" + String(bucketDate.getFullYear()).slice(-2),
+            count: 0,
+        });
+    }
 
-  function carregarDashboard() {
-    renderKpis();
-    renderGraficos();
-    renderAlertas();
-    atualizarHorario();
-  }
+    maintenances.forEach(maintenance => {
+        const maintenanceDate = parseDateOnly(maintenance.maintenance_date);
 
-  function setupRefreshButton() {
-    const button = document.getElementById("refreshButton");
-    if (!button) return;
+        if (!maintenanceDate) {
+            return;
+        }
 
-    button.addEventListener("click", function () {
-      button.classList.add("is-loading");
-      button.disabled = true;
+        const bucket = buckets.find(b => b.year === maintenanceDate.getFullYear() && b.month === maintenanceDate.getMonth());
 
-      // Pequeno atraso simulando a busca de dados no backend.
-      setTimeout(function () {
-        carregarDashboard();
-        button.classList.remove("is-loading");
-        button.disabled = false;
-      }, 500);
+        if (bucket) {
+            bucket.count++;
+        }
     });
-  }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    carregarDashboard();
-    setupRefreshButton();
-  });
-})();
+    return buckets;
+}
+
+function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function renderChartManutencoesPorMes(maintenances, today) {
+    const canvas = document.getElementById("chartManutencoesPorMes");
+    const emptyElement = document.getElementById("emptyManutencoesPorMes");
+
+    if (chartInstances.porMes) {
+        chartInstances.porMes.destroy();
+        delete chartInstances.porMes;
+    }
+
+    const buckets = buildLastSixMonthsBuckets(maintenances, today);
+    const hasData = buckets.some(bucket => bucket.count > 0);
+
+    if (!hasData) {
+        emptyElement.classList.add("is-visible");
+        return;
+    }
+
+    emptyElement.classList.remove("is-visible");
+
+    chartInstances.porMes = new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels: buckets.map(bucket => bucket.label),
+            datasets: [{
+                label: "Manutenções realizadas",
+                data: buckets.map(bucket => bucket.count),
+                backgroundColor: getCssVar("--color-primary"),
+                borderRadius: 6,
+                maxBarThickness: 36,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                x: {
+                    ticks: { color: getCssVar("--color-text-secondary") },
+                    grid: { display: false },
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: getCssVar("--color-text-secondary"), precision: 0 },
+                    grid: { color: getCssVar("--color-border") },
+                },
+            },
+        },
+    });
+}
+
+/* ===================== orquestração ===================== */
+
+function updateLastUpdatedLabel() {
+    const label = document.getElementById("lastUpdatedLabel");
+    const now = new Date();
+    const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    label.textContent = `Atualizado às ${time}`;
+}
+
+function setRefreshLoading(isLoading) {
+    const button = document.getElementById("refreshDashboardButton");
+    button.classList.toggle("is-loading", isLoading);
+    button.disabled = isLoading;
+}
+
+async function loadDashboard() {
+    setRefreshLoading(true);
+
+    try {
+        const { equipments, equipmentsStatus, maintenances } = await fetchDashboardData();
+        const today = parseDateOnly(new Date().toISOString());
+
+        renderKpis(computeKpis(equipments, equipmentsStatus, maintenances, today));
+        renderAlerts(equipmentsStatus, today);
+        renderChartManutencoesPorMes(maintenances, today);
+        renderChartPorSetor(equipments);
+        renderChartPorTipo(equipments);
+        renderChartStatus(equipments);
+
+        updateLastUpdatedLabel();
+    } catch (error) {
+        console.error(error);
+        document.getElementById("lastUpdatedLabel").textContent = "Erro ao atualizar";
+    } finally {
+        setRefreshLoading(false);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadDashboard();
+
+    document.getElementById("refreshDashboardButton").addEventListener("click", loadDashboard);
+});

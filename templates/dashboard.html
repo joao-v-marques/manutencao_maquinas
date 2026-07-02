@@ -74,16 +74,13 @@
                 <h1 class="page__title">Dashboard</h1>
                 <p class="page__subtitle">Visão geral dos equipamentos e manutenções</p>
             </div>
+
             <div class="page__updated">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
                 <span id="lastUpdatedLabel">Atualizando…</span>
-                <button class="btn-refresh" id="refreshButton" aria-label="Atualizar dados do dashboard">
+                <button class="btn-refresh" id="refreshDashboardButton" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="23 4 23 10 17 10" />
-                        <polyline points="1 20 1 14 7 14" />
+                        <path d="M23 4v6h-6" />
+                        <path d="M1 20v-6h6" />
                         <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                     </svg>
                     Atualizar
@@ -108,32 +105,6 @@
                     </div>
                     <span class="kpi-card__value is-skeleton" id="kpiTotalEquipamentos">--</span>
                     <span class="kpi-card__trend">Cadastrados no sistema</span>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__head">
-                        <span class="kpi-card__label">Em operação</span>
-                        <span class="kpi-card__icon kpi-card__icon--primary">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="5 3 19 12 5 21 5 3" />
-                            </svg>
-                        </span>
-                    </div>
-                    <span class="kpi-card__value is-skeleton" id="kpiEmOperacao">--</span>
-                    <span class="kpi-card__trend">Funcionando normalmente</span>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__head">
-                        <span class="kpi-card__label">Em manutenção</span>
-                        <span class="kpi-card__icon kpi-card__icon--warning">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                            </svg>
-                        </span>
-                    </div>
-                    <span class="kpi-card__value is-skeleton" id="kpiEmManutencao">--</span>
-                    <span class="kpi-card__trend">Em intervenção agora</span>
                 </article>
 
                 <article class="kpi-card">
@@ -308,6 +279,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="{{ url_for('static', filename='js/apiHelper.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>
