@@ -29,3 +29,29 @@ def create_user():
         return jsonify({
             "message": str(e)
         }), 500
+
+@bp_users.route("/users/<int:user_id>", methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        UsersService.delete_user(user_id)
+
+        return jsonify({
+            "message": "Usuário deletado com sucesso!"
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+@bp_users.route("/users/<int:id>", methods=['PUT'])
+def update_user(id):
+    try:
+        data = request.get_json()
+
+        updated_user = UsersService.update_user(id, data)
+
+        return updated_user
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
