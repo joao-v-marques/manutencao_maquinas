@@ -98,19 +98,19 @@
 }
 
 .summary-card--primary {
-  border-color: rgba(0, 153, 93, 0.35);
+  border-color: rgba(var(--color-success-rgb), 0.35);
 }
 
 .summary-card--primary .summary-card__value {
-  color: var(--color-primary);
+  color: var(--color-success);
 }
 
 .summary-card--primary .summary-card__icon {
-  background-color: var(--color-primary-muted);
+  background-color: var(--color-success-muted);
 }
 
 .summary-card--primary .summary-card__icon svg {
-  stroke: var(--color-primary);
+  stroke: var(--color-success);
 }
 
 .summary-card--success {
@@ -175,8 +175,8 @@
 }
 
 .maintenance-status--proxima {
-  color: var(--color-primary);
-  background-color: var(--color-primary-muted);
+  color: var(--color-success);
+  background-color: var(--color-success-muted);
 }
 
 .maintenance-status--emdia {

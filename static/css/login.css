@@ -9,7 +9,7 @@
   justify-content: center;
   padding: var(--space-3);
   background:
-    radial-gradient(circle at 15% 20%, rgba(0, 153, 93, 0.16), transparent 45%),
+    radial-gradient(circle at 15% 20%, rgba(var(--color-primary-rgb), 0.16), transparent 45%),
     radial-gradient(circle at 85% 80%, rgba(164, 216, 222, 0.10), transparent 50%),
     var(--color-bg);
 }
@@ -41,7 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(0, 153, 93, 0.3);
+  box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.3);
 }
 
 .login-card__brand-icon svg {

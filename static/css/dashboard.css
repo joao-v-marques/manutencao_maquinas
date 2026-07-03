@@ -3,22 +3,25 @@
    =========================================================== */
 
 :root {
-  /* Cores base — paleta do sistema, tema escuro */
-  --color-bg: #0e1410;
-  --color-surface: #161d18;
-  --color-surface-hover: #1d251f;
-  --color-surface-raised: #1a221c;
-  --color-border: #263129;
+  /* Cores base — paleta do sistema, tema escuro (neutro, sem viés esverdeado) */
+  --color-bg: #101214;
+  --color-surface: #181b1f;
+  --color-surface-hover: #1f232a;
+  --color-surface-raised: #1b1e23;
+  --color-border: #2b2f36;
 
-  --color-primary: #00995d;
-  --color-primary-hover: #00b16c;
-  --color-primary-muted: rgba(0, 153, 93, 0.16);
+  --color-primary: #2f6fed;
+  --color-primary-hover: #4c86ff;
+  --color-primary-muted: rgba(47, 111, 237, 0.16);
+  --color-primary-rgb: 47, 111, 237;
 
-  --color-text-primary: #eef2ef;
-  --color-text-secondary: #aab8b0;
-  --color-text-muted: #74837a;
+  --color-text-primary: #eef1f4;
+  --color-text-secondary: #a6adb6;
+  --color-text-muted: #767e88;
 
   --color-success: #00995d;
+  --color-success-muted: rgba(0, 153, 93, 0.16);
+  --color-success-rgb: 0, 153, 93;
   --color-warning: #f47920;
   --color-danger: #e2574c;
   --color-info: #a4d8de;
@@ -231,8 +234,8 @@ section + section {
   stroke-width: 2;
 }
 
-.kpi-card__icon--primary { background-color: var(--color-primary-muted); }
-.kpi-card__icon--primary svg { stroke: var(--color-primary); }
+.kpi-card__icon--primary { background-color: var(--color-success-muted); }
+.kpi-card__icon--primary svg { stroke: var(--color-success); }
 
 .kpi-card__icon--info { background-color: rgba(164, 216, 222, 0.16); }
 .kpi-card__icon--info svg { stroke: var(--color-info); }
@@ -265,7 +268,7 @@ section + section {
   gap: 4px;
 }
 
-.kpi-card__trend--up { color: var(--color-primary); }
+.kpi-card__trend--up { color: var(--color-success); }
 .kpi-card__trend--down { color: var(--color-danger); }
 
 .kpi-card__trend svg {
@@ -485,7 +488,7 @@ section + section {
 .alert-empty svg {
   width: 28px;
   height: 28px;
-  stroke: var(--color-primary);
+  stroke: var(--color-success);
 }
 
 /* ===========================================================
