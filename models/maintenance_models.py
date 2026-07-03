@@ -22,7 +22,7 @@ class Maintenance:
 class MaintenanceModel:
     # GET de todas as manutenções cadastradas no sistema
     @staticmethod
-    def get_all():
+    def get_all(user_role, user_maintenance_group_id):
         conn = None
         cursor = None
         try:
@@ -33,8 +33,11 @@ class MaintenanceModel:
                 FROM maintenances m
                 INNER JOIN users u ON u.id = m.user_id
                 INNER JOIN equipments e ON e.id = m.equipment_id
+                WHERE (%s = 'administrator' OR e.maintenance_group_id = %s)
             """
-            cursor.execute(sql_query)
+            values = (user_role, user_maintenance_group_id)
+
+            cursor.execute(sql_query, values)
 
             maintenanceData = cursor.fetchall()
 
@@ -54,7 +57,7 @@ class MaintenanceModel:
     
     # GET de todas as manutenções de um equipamento puxando pelo id
     @staticmethod
-    def get_by_id(equipment_id):
+    def get_by_id(equipment_id, user_role, user_maintenance_group_id):
         conn = None
         cursor = None
         try:
@@ -65,10 +68,10 @@ class MaintenanceModel:
                 FROM maintenances m
                 INNER JOIN users u ON u.id = m.user_id
                 INNER JOIN equipments e ON e.id = m.equipment_id
-                WHERE m.equipment_id = %s
+                WHERE m.equipment_id = %s AND (%s = 'administrator' OR e.maintenance_group_id = %s)
                 ORDER BY m.maintenance_date DESC
             """
-            values = (equipment_id,)
+            values = (equipment_id, user_role, user_maintenance_group_id)
 
             cursor.execute(sql_query, values)
 

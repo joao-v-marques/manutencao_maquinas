@@ -2,18 +2,18 @@ from models.maintenance_models import MaintenanceModel, Maintenance
 
 class MaintenanceService:
     @staticmethod
-    def get_all():
+    def get_all(user_role, user_maintenance_group_id):
         try:
-            maintenances = MaintenanceModel.get_all()
+            maintenances = MaintenanceModel.get_all(user_role, user_maintenance_group_id)
 
             return maintenances
         except Exception as e:
             raise Exception(str(e))
 
     @staticmethod
-    def get_by_id(equipment_id):
+    def get_by_id(equipment_id, user_role, user_maintenance_group_id):
         try:
-            maintenances = MaintenanceModel.get_by_id(equipment_id)
+            maintenances = MaintenanceModel.get_by_id(equipment_id, user_role, user_maintenance_group_id)
 
             return maintenances
         except Exception as e:

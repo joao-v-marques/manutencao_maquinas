@@ -48,7 +48,7 @@ class Equipments:
 class EquipmentsModel:
     # GET de todos os equipamentos cadastrados
     @staticmethod
-    def get_all():
+    def get_all(user_role, user_maintenance_group_id):
         conn = None
         cursor = None
         try:
@@ -80,9 +80,11 @@ class EquipmentsModel:
                 INNER JOIN equipment_status es ON es.id = e.status_id
                 INNER JOIN locations l ON l.id = location_id
                 INNER JOIN maintenance_group mg ON mg.id = e.maintenance_group_id 
+                WHERE (%s = 'administrator' OR e.maintenance_group_id = %s)
             """
+            values = (user_role, user_maintenance_group_id)
 
-            cursor.execute(sql_query)
+            cursor.execute(sql_query, values)
             equipmentData = cursor.fetchall()
 
             # transforma cada dict do banco em objeto do model Users
@@ -102,7 +104,7 @@ class EquipmentsModel:
 
     # GET do status de manutenção de cada equipamento (última manutenção realizada, se houver, e a próxima agendada)
     @staticmethod
-    def get_maintenance_status():
+    def get_maintenance_status(user_role, user_maintenance_group_id):
         conn = None
         cursor = None
         try:
@@ -119,10 +121,12 @@ class EquipmentsModel:
                 FROM equipments e
                 INNER JOIN sectors s ON s.id = e.sector_id
                 LEFT JOIN maintenances m ON m.equipment_id = e.id
+                WHERE (%s = 'administrator' OR e.maintenance_group_id = %s)
                 ORDER BY e.id, m.maintenance_date DESC NULLS LAST
             """
+            values = (user_role, user_maintenance_group_id)
 
-            cursor.execute(sql_query)
+            cursor.execute(sql_query, values)
             equipmentsStatusData = cursor.fetchall()
 
             return equipmentsStatusData

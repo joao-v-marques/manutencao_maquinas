@@ -2,18 +2,18 @@ from models.equipments_models import EquipmentsModel, Equipments
 
 class EquipmentsService:
     @staticmethod
-    def get_all():
+    def get_all(user_role, user_maintenance_group_id):
         try:
-            equipments = EquipmentsModel.get_all()
+            equipments = EquipmentsModel.get_all(user_role, user_maintenance_group_id)
 
             return equipments
         except Exception as e:
             raise Exception(str(e))
 
     @staticmethod
-    def get_maintenance_status():
+    def get_maintenance_status(user_role, user_maintenance_group_id):
         try:
-            equipmentsStatus = EquipmentsModel.get_maintenance_status()
+            equipmentsStatus = EquipmentsModel.get_maintenance_status(user_role, user_maintenance_group_id)
 
             return equipmentsStatus
         except Exception as e:

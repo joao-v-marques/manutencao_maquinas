@@ -8,7 +8,10 @@ bp_equipments = Blueprint("bp_equipments", __name__)
 @token_required
 def get_all():
     try:
-        equipments = EquipmentsService.get_all()
+        user_role = request.user["role_description"]
+        user_maintenance_group_id = request.user["maintenance_group_id"]
+
+        equipments = EquipmentsService.get_all(user_role, user_maintenance_group_id)
 
         return jsonify([
             equipment.to_dict()
@@ -23,7 +26,10 @@ def get_all():
 @token_required
 def get_maintenance_status():
     try:
-        equipmentsStatus = EquipmentsService.get_maintenance_status()
+        user_role = request.user["role_description"]
+        user_maintenance_group_id = request.user["maintenance_group_id"]
+
+        equipmentsStatus = EquipmentsService.get_maintenance_status(user_role, user_maintenance_group_id)
 
         return jsonify(equipmentsStatus)
     except Exception as e:

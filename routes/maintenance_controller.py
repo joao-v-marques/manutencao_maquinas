@@ -8,7 +8,10 @@ bp_maintenances = Blueprint("bp_maintenances", __name__)
 @token_required
 def get_all():
     try:
-        maintenances = MaintenanceService.get_all()
+        user_role = request.user["role_description"]
+        user_maintenance_group_id = request.user["maintenance_group_id"]
+
+        maintenances = MaintenanceService.get_all(user_role, user_maintenance_group_id)
 
         return jsonify([
             maintenance.to_dict()
@@ -23,7 +26,10 @@ def get_all():
 @token_required
 def get_by_id(id):
     try:
-        maintenances = MaintenanceService.get_by_id(id)
+        user_role = request.user["role_description"]
+        user_maintenance_group_id = request.user["maintenance_group_id"]
+
+        maintenances = MaintenanceService.get_by_id(id, user_role, user_maintenance_group_id)
 
         return jsonify([
             maintenance.to_dict()

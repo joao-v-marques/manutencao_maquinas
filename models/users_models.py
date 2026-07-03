@@ -77,10 +77,20 @@ class UsersModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector, u.is_active
+                SELECT u.id,
+                    u.username,
+                    u.name,
+                    u.password_hash,
+                    u.email,
+                    u.maintenance_group_id,
+                    r.description as role,
+                    s.description as sector,
+                    mg.description AS maintenance_group,
+                    u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
+                INNER JOIN maintenance_group mg ON mg.id = u.maintenance_group_id
                 WHERE u.username = %s
             """
             values = (username,)
@@ -111,7 +121,15 @@ class UsersModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, r.description as role, s.description as sector, u.is_active
+                SELECT 
+                    u.id,
+                    u.username,
+                    u.name,
+                    u.password_hash,
+                    u.email,
+                    r.description as role,
+                    s.description as sector,
+                    u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
