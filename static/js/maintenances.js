@@ -42,13 +42,15 @@ async function populateEquipmentsStatusTable() {
                 <td>
                     <span class="maintenance-status maintenance-status--${status.key}">${status.label}</span>
                 </td>
-                <td class="table-options">
-                    <button class="icon-btn icon-btn--create maintenance-action-button" aria-label="Lançar Manutenção ${equipment.name}" title="Lançar Manutenção">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 12l2 2 4-4"/>
-                            <circle cx="12" cy="12" r="10"/>
-                        </svg>
-                    </button>
+                <td>
+                    <div class="table-options">
+                        <button class="icon-btn icon-btn--create maintenance-action-button" aria-label="Lançar Manutenção ${equipment.name}" title="Lançar Manutenção">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 12l2 2 4-4"/>
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                        </button>
+                    </div>
                 </td>
             `;
 

@@ -837,6 +837,8 @@ table.data-table {
 .table-options {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 4px;
 }
 
 /* Estado vazio genérico para abas */
