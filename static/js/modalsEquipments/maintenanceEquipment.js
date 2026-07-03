@@ -130,6 +130,12 @@ export function closeModalMaintenanceEquipment() {
 export async function submitFormCreateMaintenance(onSuccess) {
     const formCreateMaintenance = document.getElementById("maintenanceForm");
 
+    if (!formCreateMaintenance || formCreateMaintenance.dataset.submitMaintenanceBound === "true") {
+        return;
+    }
+
+    formCreateMaintenance.dataset.submitMaintenanceBound = "true";
+
     formCreateMaintenance.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -168,7 +174,7 @@ export async function submitFormCreateMaintenance(onSuccess) {
                 throw new Error(errorMessage);
             }
 
-            console.log("Cadastro da manutenção realizado com sucesso!");
+            notyf.success("Manutenção cadastrada com sucesso!");
             formCreateMaintenance.reset();
             refillHiddenMaintenanceFields();
 
@@ -178,7 +184,8 @@ export async function submitFormCreateMaintenance(onSuccess) {
                 await onSuccess();
             }
         } catch (error) {
-            console.log(error)
+            notyf.error(error);
+            console.log(error);
         }
     })
 }

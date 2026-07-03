@@ -151,7 +151,7 @@ export async function sendFormEditEquipment(onEquipmentEdited) {
                 throw new Error(errorMessage);
             }
 
-            console.log("Usuário atualizado com sucesso");
+            notyf.success("Equipamento editado cum sucesso!");
             editEquipmentForm.reset();
             closeEditEquipmentModal();
 
@@ -159,7 +159,7 @@ export async function sendFormEditEquipment(onEquipmentEdited) {
                 onEquipmentEdited();
             }
         } catch (error) {
-            console.log(error)
+            notyf.error(error);
         }
     })
 }

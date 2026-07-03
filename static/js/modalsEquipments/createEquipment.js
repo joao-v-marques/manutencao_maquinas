@@ -162,12 +162,13 @@ export async function createEquipment(onEquipmentCreated) {
 
             formCreateEquipment.reset();
             closeModal();
+            notyf.success("Equipamento cadastrado com sucesso");
 
             if (typeof onEquipmentCreated === "function") {
                 onEquipmentCreated();
             }
         } catch (error) {
-            console.log(error);
+            notyf.error(error);
         }
     })    
 }

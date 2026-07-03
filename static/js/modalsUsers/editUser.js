@@ -143,7 +143,7 @@ export async function sendFormEditUser(onUserEdited) {
                 throw new Error(errorMessage);
             }
 
-            console.log("Usuário atualizado com sucesso");
+            notyf.success("Usuário atualizado com sucesso");
             editUserForm.reset();
             closeEditUserModal();
 
@@ -151,7 +151,7 @@ export async function sendFormEditUser(onUserEdited) {
                 onUserEdited();
             }
         } catch (error) {
-            console.log(error)
+            notyf.error(error);
         }
     })
 }

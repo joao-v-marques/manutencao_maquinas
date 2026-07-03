@@ -41,13 +41,14 @@ export function deleteEquipment(onEquipmentDeleted) {
                 throw new Error(await response.text());
             }
 
+            notyf.success("Equipamento deletado com sucesso");
             closeDeleteEquipmentModal();
 
             if (typeof onEquipmentDeleted === "function") {
                 onEquipmentDeleted();
             }
         } catch (error) {
-            console.log(error);
+            notyf.error(error);
         }
     });
 }

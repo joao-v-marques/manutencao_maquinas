@@ -42,12 +42,13 @@ export function deleteUser(onUserDeleted) {
             }
 
             closeDeleteUserModal();
+            notyf.success("Usuário deletado com sucesso");
 
             if (typeof onUserDeleted === "function") {
                 onUserDeleted();
             }
         } catch (error) {
-            console.log(error);
+            notyf.error(error);
         }
     });
 }
