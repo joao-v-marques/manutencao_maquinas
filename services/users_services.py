@@ -1,4 +1,5 @@
 from models.users_models import UsersModel, Users
+from utils.security import hash_password
 
 class UsersService:
     # função para retornar todos os usuários cadastrados no sistema
@@ -22,10 +23,12 @@ class UsersService:
             if existing_user:
                 raise ValueError("Username já existe")
             
+            password_hash = hash_password(data['password_hash'])
+            
             new_user = Users(
                 username=data['username'],
                 name=data['name'],
-                password_hash=data['password_hash'],
+                password_hash=password_hash,
                 email=data['email'],
                 role=data['role'],
                 sector=data['sector'],

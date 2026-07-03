@@ -1,3 +1,4 @@
+import psycopg
 from database.connect_db import get_db_connection
 
 # classe de inicialização dos users
@@ -200,6 +201,8 @@ class UsersModel:
             conn.commit()
 
             return True
+        except psycopg.errors.ForeignKeyViolation:
+            raise ValueError("Não é possível deletar um usuário com manutenções realizadas")
         except Exception as e:
             raise Exception(str(e))
         finally:

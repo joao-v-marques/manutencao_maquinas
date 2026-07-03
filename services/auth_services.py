@@ -1,5 +1,6 @@
 from models.users_models import UsersModel
 from utils.jwt_handler import generated_token
+from utils.security import verify_password
 
 class AuthService:
     @staticmethod
@@ -15,7 +16,7 @@ class AuthService:
         if not user:
             raise ValueError("Usuário ou senha inválidos")
         
-        if user.password_hash != data['password']:
+        if not verify_password(user.password_hash, data['password']):
             raise ValueError("Usuário ou senha inválidos")
         
         token = generated_token(user)
