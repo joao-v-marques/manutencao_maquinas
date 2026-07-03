@@ -38,7 +38,19 @@ export function deleteUser(onUserDeleted) {
             });
 
             if (!response.ok) {
-                throw new Error(await response.text());
+                let errorMessage = "Houve um erro ao deletar o usuário";
+
+                try {
+                    const errorJSON = await response.json();
+
+                    if (errorJSON?.message) {
+                        errorMessage = errorJSON.message;
+                    }
+                } catch (parseError) {
+                    errorMessage = await response.text();
+                }
+
+                throw new Error(errorMessage);
             }
 
             closeDeleteUserModal();
@@ -48,7 +60,7 @@ export function deleteUser(onUserDeleted) {
                 onUserDeleted();
             }
         } catch (error) {
-            notyf.error(error);
+            notyf.error(error.message);
         }
     });
 }

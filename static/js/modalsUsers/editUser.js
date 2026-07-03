@@ -151,7 +151,7 @@ export async function sendFormEditUser(onUserEdited) {
                 onUserEdited();
             }
         } catch (error) {
-            notyf.error(error);
+            notyf.error(error.message);
         }
     })
 }

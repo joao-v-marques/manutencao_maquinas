@@ -168,7 +168,7 @@ export async function createEquipment(onEquipmentCreated) {
                 onEquipmentCreated();
             }
         } catch (error) {
-            notyf.error(error);
+            notyf.error(error.message);
         }
-    })    
+    })
 }

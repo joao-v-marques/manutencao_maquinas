@@ -159,7 +159,7 @@ export async function sendFormEditEquipment(onEquipmentEdited) {
                 onEquipmentEdited();
             }
         } catch (error) {
-            notyf.error(error);
+            notyf.error(error.message);
         }
     })
 }

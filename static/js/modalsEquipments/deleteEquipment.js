@@ -38,7 +38,19 @@ export function deleteEquipment(onEquipmentDeleted) {
             });
 
             if (!response.ok) {
-                throw new Error(await response.text());
+                let errorMessage = "Houve um erro ao deletar o equipamento";
+
+                try {
+                    const errorJSON = await response.json();
+
+                    if (errorJSON?.message) {
+                        errorMessage = errorJSON.message;
+                    }
+                } catch (parseError) {
+                    errorMessage = await response.text();
+                }
+
+                throw new Error(errorMessage);
             }
 
             notyf.success("Equipamento deletado com sucesso");
@@ -48,7 +60,7 @@ export function deleteEquipment(onEquipmentDeleted) {
                 onEquipmentDeleted();
             }
         } catch (error) {
-            notyf.error(error);
+            notyf.error(error.message);
         }
     });
 }

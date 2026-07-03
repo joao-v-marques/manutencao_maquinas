@@ -184,7 +184,7 @@ export async function submitFormCreateMaintenance(onSuccess) {
                 await onSuccess();
             }
         } catch (error) {
-            notyf.error(error);
+            notyf.error(error.message);
             console.log(error);
         }
     })

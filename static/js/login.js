@@ -56,8 +56,26 @@
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Erro ao fazer login");
+          let errorMessage = "Houve um erro ao tentar fazer login";
+
+          try {
+            const errorJSON = await response.json();
+
+            if (errorJSON?.message) {
+              errorMessage = errorJSON.message;
+            }
+
+            throw new Error(errorMessage);
+          } catch (error) {
+            if (error instanceof SyntaxError) {
+              // resposta não é JSON, tenta ler como texto
+              errorMessage = `Erro ${response.status}: Falha ao fazer login`;
+            } else {
+              errorMessage = error.message;
+            }
+          }
+
+          throw new Error(errorMessage);
         }
 
         const tokenData = await response.json();
