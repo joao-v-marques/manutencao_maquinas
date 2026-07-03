@@ -10,30 +10,11 @@
 (function () {
   "use strict";
 
-  /**
-   * Retorna os dados do usuário logado.
-   * Integração futura: buscar do backend / sessão (ex: GET /api/usuario/sessao).
-   */
-  function getUsuarioLogado() {
-    return {
-      nome: "Usuário",
-      cargo: "Cargo não informado",
-    };
-  }
-
-  function getIniciais(nomeCompleto) {
-    if (!nomeCompleto) return "--";
-    const partes = nomeCompleto.trim().split(/\s+/);
-    const primeira = partes[0]?.[0] || "";
-    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : "";
-    return (primeira + ultima).toUpperCase();
-  }
-
   async function renderUsuario() {
     const user = await getLoggedUser();
 
     let userRole = "Carregando...";
-    
+
     if (user.role == "administrator") {
       userRole = "Administrador";
     } else if (user.role == "employee") {
@@ -45,6 +26,30 @@
 
     if (nameLabel) nameLabel.textContent = user.name;
     if (roleLabel) roleLabel.textContent = userRole;
+  }
+
+  async function configNavbarLinks() {
+    try {
+      const navbarLinks = document.getElementById("navbarLinks");
+
+      const user = await getLoggedUser();
+      if (!user) {
+        return;
+      }
+
+      if (user.role === "administrator") {
+        const link = document.createElement("a");
+
+        link.id = "linkUsers";
+        link.href = "/portal-manutencao/usuarios";
+        link.textContent = "Gerenciar Usuários";
+        link.className = "nav-link";
+
+        navbarLinks.appendChild(link);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   function setupUserMenu() {
@@ -81,7 +86,7 @@
   // encerra a sessão do usuário
   function setupLogout() {
     const logoutButton = document.getElementById("logoutButton");
-    
+
     if (!logoutButton) {
       return;
     }
@@ -103,6 +108,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     renderUsuario();
     setupUserMenu();
+    configNavbarLinks();
     setupLogout();
     setupMobileToggle();
   });
