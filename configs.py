@@ -13,6 +13,7 @@ from routes.maintenance_group_controller import bp_maintenance_group
 from routes.equipment_status_routes import bp_equipment_status
 from routes.maintenance_controller import bp_maintenances
 from routes.roles_controller import bp_roles
+from routes.reports_controller import bp_reports
 
 prefix = "/portal-manutencao"
 
@@ -37,3 +38,4 @@ def config_bps(app):
     app.register_blueprint(bp_equipment_status, url_prefix=prefix)
     app.register_blueprint(bp_maintenances, url_prefix=prefix)
     app.register_blueprint(bp_roles, url_prefix=prefix)
+    app.register_blueprint(bp_reports, url_prefix=prefix)
