@@ -94,6 +94,56 @@ async function populateEquipmentsTable() {
     }
 }
 
+// função para exportar a lista de equipamentos em um arquivo .xlsx
+async function exportEquipmentsReport() {
+    try {
+        const response = await fetchWithAuth("/portal-manutencao/reports/equipments");
+
+        if (!response.ok) {
+            let errorMessage = "Houve um erro ao exportar o relatório de equipamentos";
+
+            try {
+                const errorJSON = await response.json();
+
+                if (errorJSON?.message) {
+                    errorMessage = errorJSON.message;
+                }
+            } catch (parseError) {
+                errorMessage = await response.text();
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        const blob = await response.blob();
+
+        const disposition = response.headers.get("Content-Disposition");
+        let filename = "relatorio_equipamentos.xlsx";
+
+        if (disposition) {
+            const match = disposition.match(/filename="?([^"]+)"?/);
+
+            if (match?.[1]) {
+                filename = match[1];
+            }
+        }
+
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = downloadUrl;
+        link.download = filename;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+        notyf.error(error.message);
+    }
+}
+
 // event listener para carregar a página
 document.addEventListener("DOMContentLoaded", function () {
     populateEquipmentsTable();
@@ -115,3 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
 const btnCreateEquipment = document.getElementById("openCreateModalButton");
 
 btnCreateEquipment.addEventListener("click", openModal);
+
+const btnExportEquipments = document.getElementById("exportButton");
+
+btnExportEquipments.addEventListener("click", exportEquipmentsReport);
