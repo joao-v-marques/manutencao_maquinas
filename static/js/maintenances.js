@@ -1,6 +1,9 @@
 import { openMaintenanceModal, closeModalMaintenanceEquipment, submitFormCreateMaintenance } from "./modalsEquipments/maintenanceEquipment.js";
 import { formatDateToInput, parseDateOnly, classifyMaintenanceStatus } from "./utils/maintenanceStatus.js";
 
+// mesma janela usada no dashboard, para manter o "próximo do vencimento" padronizado em todo o projeto (30 dias)
+const MAINTENANCE_WINDOW_DAYS = 30;
+
 async function populateEquipmentsStatusTable() {
     try {
         const response = await fetchWithAuth("/portal-manutencao/equipments/maintenance-status");
@@ -29,7 +32,7 @@ async function populateEquipmentsStatusTable() {
             const maintenance_date = formatDateToInput(equipment.maintenance_date) || "-";
             const next_maintenance_date = formatDateToInput(equipment.next_maintenance_date) || "-";
 
-            const status = classifyMaintenanceStatus(equipment.next_maintenance_date, today);
+            const status = classifyMaintenanceStatus(equipment.next_maintenance_date, today, MAINTENANCE_WINDOW_DAYS);
 
             trEquipment.innerHTML = `
                 <td>${equipment.name}</td>
@@ -78,7 +81,7 @@ function fillInfoCards(equipments, today) {
     let neverCount = 0;
 
     equipments.forEach(equipment => {
-        const status = classifyMaintenanceStatus(equipment.next_maintenance_date, today);
+        const status = classifyMaintenanceStatus(equipment.next_maintenance_date, today, MAINTENANCE_WINDOW_DAYS);
 
         switch (status.key) {
             case "vencida":
