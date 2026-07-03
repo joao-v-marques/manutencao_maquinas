@@ -18,7 +18,7 @@ class SectorModel:
         try:
             conn, cursor = get_db_connection()
 
-            sql_query = "SELECT s.id, s.description FROM sectors s"
+            sql_query = "SELECT s.id, s.description FROM sectors s ORDER BY description"
 
             cursor.execute(sql_query)
             sectorData = cursor.fetchall()
