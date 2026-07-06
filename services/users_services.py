@@ -16,7 +16,22 @@ class UsersService:
     @staticmethod
     def create_user(data):
         try:
-            # colocar validações de required field aqui retornando raise ValueError()
+            required_fields = [
+                "username",
+                "name",
+                "password_hash",
+                "role",
+                "sector",
+                "maintenance_group"
+            ]
+
+            for field in required_fields:
+                value = data.get(field)
+                if value is None or (isinstance(value, str) and not value.strip()):
+                    raise ValueError(f"O campo {field} não pode estar vazio")
+
+            if len(data['password_hash']) < 6:
+                raise ValueError("Senha deve ter ao menos 6 caracteres")
 
             existing_user = UsersModel.get_by_username(data['username'])
 

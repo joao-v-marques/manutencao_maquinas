@@ -22,6 +22,29 @@ class EquipmentsService:
     @staticmethod
     def create_equipment(data):
         try:
+            try:
+                maintenance_interval = int(data['maintenance_interval_months'])
+            except (TypeError, ValueError):
+                raise ValueError("Intervalo de manutenção deve ser um número inteiro")
+            if maintenance_interval <= 0:
+                raise ValueError("Intervalo de manutenção deve ser maior que zero")
+
+            # validação de required fields
+            required_fields = [
+                "name",
+                "type",
+                "location",
+                "sector",
+                "maintenance_group",
+                "maintenance_interval_months",
+                "status"
+            ]
+
+            for field in required_fields:
+                value = data.get(field)
+                if value is None or (isinstance(value, str) and not value.strip()):
+                    raise ValueError(f"O campo {field} não pode estar vazio")
+
             equipment = Equipments(
                 name=data['name'],
                 type=data['type'],
