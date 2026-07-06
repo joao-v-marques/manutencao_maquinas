@@ -80,9 +80,24 @@ class UsersService:
             if not existing_user:
                 raise ValueError("Não foi encontrado usuário com esse ID")
 
-            # colocar validações de required field aqui retornando raise ValueError()
+            required_fields = [
+                "username",
+                "name",
+                "role",
+                "sector",
+                "maintenance_group"
+            ]
+
+            for field in required_fields:
+                value = data.get(field)
+                if value is None or (isinstance(value, str) and not value.strip()):
+                    raise ValueError(f"O campo {field} não pode estar vazio")
 
             new_password = data.get('password')
+
+            if new_password and len(new_password) < 6:
+                raise ValueError("Senha deve ter ao menos 6 caracteres")
+
             password_hash = hash_password(new_password) if new_password else existing_user.password_hash
 
             updated_user = Users(
