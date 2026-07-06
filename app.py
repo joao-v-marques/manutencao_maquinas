@@ -24,4 +24,4 @@ if __name__ == '__main__':
         app.run(debug=True, port=5001)
     else:
         print("Servidor Waitress iniciado com sucesso...")
-        serve(app, host='0.0.0.0', port=5001)
+        serve(app, host='0.0.0.0', port=5001, threads=8)
