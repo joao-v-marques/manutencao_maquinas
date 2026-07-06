@@ -129,6 +129,7 @@ async function populateEquipmentsStatusTable() {
 // sempre usa a lista completa (não filtrada), pois os cards representam o panorama geral, não o resultado dos filtros
 function fillInfoCards(equipments, today) {
     let lateCount = 0;
+    let veryLateCount = 0;
     let todayCount = 0;
     let nextCount = 0;
     let okCount = 0;
@@ -140,6 +141,10 @@ function fillInfoCards(equipments, today) {
         switch (status.key) {
             case "vencida":
                 lateCount++;
+
+                if (status.diffInDays < -30) {
+                    veryLateCount++;
+                }
                 break;
             case "hoje":
                 todayCount++;
@@ -157,6 +162,7 @@ function fillInfoCards(equipments, today) {
     });
 
     document.getElementById("lateCount").textContent = lateCount;
+    document.getElementById("veryLateCount").textContent = veryLateCount;
     document.getElementById("todayCount").textContent = todayCount;
     document.getElementById("nextCount").textContent = nextCount;
     document.getElementById("okCount").textContent = okCount;
