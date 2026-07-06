@@ -89,13 +89,18 @@ class EquipmentsService:
     def update_equipment(equipment_id, data):
         # COLOCAR VALIDAÇÕES DIVERSAS NOS CAMPOS
 
+        # definindo o serial number como null para não quebrar a chave unique na atualização
+        serial_number = data.get("serial_number")
+        if isinstance(serial_number, str) and serial_number.strip() == "":
+            serial_number = None
+
         equipment = Equipments(
             id=equipment_id,
             name=data['name'],
             type=data['type'],
             brand=data['brand'],
             model=data['model'],
-            serial_number=data['serial_number'],
+            serial_number=serial_number,
             acquisition_date=data['acquisition_date'],
             ip=data['ip'],
             maintenance_interval_months=data['maintenance_interval_months'],
