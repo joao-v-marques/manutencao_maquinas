@@ -103,7 +103,7 @@ export function openEditEquipmentModal(equipment) {
     document.getElementById("edit_maintenance_group_id").value = equipment.maintenance_group_id ?? "";
 
     // Controle
-    document.getElementById("edit_acquisition_date_id").value = new Date(equipment.acquisition_date).toISOString().split("T")[0];
+    document.getElementById("edit_acquisition_date_id").value = formatDateToInput(equipment.acquisition_date);
     document.getElementById("edit_maintenance_interval_months_id").value = equipment.maintenance_interval_months ?? "1";
 
     editEquipmentModal.classList.add("is-open");
