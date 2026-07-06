@@ -147,9 +147,35 @@
         </section>
 
         <div class="toolbar">
-            
-            <!-- COLOCAR AQUI DIV DE FILTROS COM CLASS FILTERS -->
-        
+            <div class="search-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" id="searchEquipmentNameInput" placeholder="Buscar por nome do equipamento...">
+            </div>
+
+            <div class="filters">
+                <select class="filter-select" id="filterMaintenanceSector">
+                    <option value="">Todos os setores</option>
+                </select>
+                <select class="filter-select" id="filterMaintenanceStatus">
+                    <option value="">Todos os status</option>
+                    <option value="vencida">Vencida</option>
+                    <option value="hoje">Hoje</option>
+                    <option value="proxima">Próxima</option>
+                    <option value="emdia">Em dia</option>
+                    <option value="primeira">Sem manutenção</option>
+                </select>
+                <div class="filter-date-range">
+                    <label for="filterDueDateFrom">Vencimento</label>
+                    <div class="filter-date-range__inputs">
+                        <input type="date" class="filter-select" id="filterDueDateFrom" aria-label="Vencimento de">
+                        <span>até</span>
+                        <input type="date" class="filter-select" id="filterDueDateTo" aria-label="Vencimento até">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="table-card">
