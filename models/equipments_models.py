@@ -268,6 +268,11 @@ class EquipmentsModel:
         try:
             conn, cursor = get_db_connection()
 
+            if equipment.acquisition_date == "":
+                acquisition_date = None
+            else:
+                acquisition_date = equipment.acquisition_date
+
             sql_query = """
                 UPDATE equipments 
                 SET name = %s, type = %s, brand = %s, model = %s, serial_number = %s, acquisition_date = %s, ip = %s, maintenance_interval_months = %s, location_id = %s, sector_id = %s, maintenance_group_id = %s
@@ -279,7 +284,7 @@ class EquipmentsModel:
                 equipment.brand,
                 equipment.model,
                 equipment.serial_number,
-                equipment.acquisition_date,
+                acquisition_date,
                 equipment.ip,
                 equipment.maintenance_interval_months,
                 equipment.location,
