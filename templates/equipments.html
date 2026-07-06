@@ -73,8 +73,27 @@
 		</div>
 
 		<!-- TOOLBAR: busca, filtros e ações -->
-		<!-- COLOCAR FILTROS NESSA PARTE -->
 		<div class="toolbar">
+			<div class="search-field">
+				<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="11" cy="11" r="8" />
+					<line x1="21" y1="21" x2="16.65" y2="16.65" />
+				</svg>
+				<input type="text" id="searchNameInput" placeholder="Buscar por nome...">
+			</div>
+
+			<div class="filters">
+				<select class="filter-select" id="filterSector">
+					<option value="">Todos os setores</option>
+				</select>
+				<select class="filter-select" id="filterStatus">
+					<option value="">Todos os status</option>
+				</select>
+				<select class="filter-select" id="filterType">
+					<option value="">Todos os tipos</option>
+				</select>
+			</div>
+
 			<div class="toolbar__actions">
 				<button class="btn btn-secondary" id="exportButton" aria-label="Exportar lista para Excel">
 					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
