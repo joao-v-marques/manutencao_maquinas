@@ -82,7 +82,8 @@ class UsersService:
 
             # colocar validações de required field aqui retornando raise ValueError()
 
-            password_hash = data.get('password') or existing_user.password_hash
+            new_password = data.get('password')
+            password_hash = hash_password(new_password) if new_password else existing_user.password_hash
 
             updated_user = Users(
                 id=user_id,
