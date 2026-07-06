@@ -1,5 +1,5 @@
 window.notyf = new Notyf({
-    duration: 3000,
+    duration: 5000,
     position: {
         x: 'right',
         y: 'top'
