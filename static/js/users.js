@@ -169,7 +169,33 @@ async function submitCreateUserForm() {
 
             const data = Object.fromEntries(formData.entries());
 
-            // FAZER VALIDAÇÃO DE REQUIRED FIELDS
+            const fieldLabels = {
+                username: "Usuário",
+                password_hash: "Senha",
+                name: "Nome Completo",
+                role: "Cargo",
+                maintenance_group: "Grupo de Manutenção"
+            }
+
+            // VALIDAÇÃO DE REQUIRED FIELDS
+            const requiredFields = [
+                "username",
+                "password_hash",
+                "name",
+                "role",
+                "maintenance_group"
+            ];
+
+            
+            for (let field of required_fields) {
+                const value = formData.get(field);
+
+                if (!value || value === "") {
+                    const label = fieldLabels[field] || field;
+                    notyf.error(`O campo ${label} não pode estar vazio`);
+                    return;
+                }
+            }
 
             const response = await fetchWithAuth("/portal-manutencao/users", {
                 method: "POST",

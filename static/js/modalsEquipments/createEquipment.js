@@ -127,7 +127,37 @@ export async function createEquipment(onEquipmentCreated) {
 
             const data = Object.fromEntries(formData.entries());
 
-            // FAZER VALIDAÇÃO DE REQUIRED FIELDS
+            // mapeamento para passar os campos para pt-BR, utilizado no required fields mas util caso precise em outro caso
+            const fieldLabels = {
+                name: "Nome",
+                type: "Tipo",
+                location: "Unidade",
+                sector: "Setor",
+                maintenance_group: "Grupo de Manutenção",
+                maintenance_interval_months: "Intervalo de manutenções",
+                status: "Status"
+            }
+
+            // VALIDAÇÃO DE REQUIRED FIELDS
+            const required_fields = [
+                "name",
+                "type",
+                "location",
+                "sector",
+                "maintenance_group",
+                "maintenance_interval_months",
+                "status"
+            ];
+
+            for (let field of required_fields) {
+                const value = formData.get(field);
+
+                if (!value || value === "") {
+                    const label = fieldLabels[field] || field;
+                    notyf.error(`O campo ${label} não pode estar vazio`);
+                    return;
+                }
+            }
 
             const response = await fetchWithAuth("/portal-manutencao/equipments", {
                 method: "POST",
