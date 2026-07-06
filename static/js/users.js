@@ -187,7 +187,7 @@ async function submitCreateUserForm() {
             ];
 
             
-            for (let field of required_fields) {
+            for (let field of requiredFields) {
                 const value = formData.get(field);
 
                 if (!value || value === "") {
@@ -228,10 +228,11 @@ async function submitCreateUserForm() {
                 throw new Error(errorMessage);
             }
 
+            notyf.success("Usuário cadastrado com sucesso")
             formCreateUser.reset();
             populateUsersTable();
         } catch (error) {
-            console.log(error)
+            notyf.error(error.message)
         }
     })
 }
