@@ -45,12 +45,17 @@ class EquipmentsService:
                 if value is None or (isinstance(value, str) and not value.strip()):
                     raise ValueError(f"O campo {field} não pode estar vazio")
 
+            # definindo o serial number como null para não quebrar a chave unique na inserção
+            serial_number = data.get("serial_number")
+            if isinstance(serial_number, str) and serial_number.strip() == "":
+                serial_number = None
+
             equipment = Equipments(
                 name=data['name'],
                 type=data['type'],
                 brand=data['brand'],
                 model=data['model'],
-                serial_number=data['serial_number'],
+                serial_number=serial_number,
                 acquisition_date=data['acquisition_date'],
                 ip=data['ip'],
                 maintenance_interval_months=data['maintenance_interval_months'],

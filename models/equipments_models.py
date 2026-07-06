@@ -197,15 +197,28 @@ class EquipmentsModel:
         try:
             conn, cursor = get_db_connection()
 
-            sql_query = """
-                INSERT INTO equipments (
-                    name, type, brand, model, serial_number, acquisition_date, ip, maintenance_interval_months, location_id, sector_id, status_id, maintenance_group_id
-                )
-                VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                )
-            """
-            values = (equipment.name, equipment.type, equipment.brand, equipment.model, equipment.serial_number, equipment.acquisition_date, equipment.ip, equipment.maintenance_interval_months, equipment.location, equipment.sector, equipment.status, equipment.maintenance_group)
+            if equipment.acquisition_date == "":
+                sql_query = """
+                    INSERT INTO equipments (
+                        name, type, brand, model, serial_number, ip, maintenance_interval_months, location_id, sector_id, status_id, maintenance_group_id
+                    )
+                    VALUES (
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    )
+                """
+                values = (equipment.name, equipment.type, equipment.brand, equipment.model, equipment.serial_number, equipment.ip, equipment.maintenance_interval_months, equipment.location, equipment.sector, equipment.status, equipment.maintenance_group)
+            else:
+                sql_query = """
+                    INSERT INTO equipments (
+                        name, type, brand, model, serial_number, acquisition_date, ip, maintenance_interval_months, location_id, sector_id, status_id, maintenance_group_id
+                    )
+                    VALUES (
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    )
+                """
+                values = (equipment.name, equipment.type, equipment.brand, equipment.model, equipment.serial_number, equipment.acquisition_date, equipment.ip, equipment.maintenance_interval_months, equipment.location, equipment.sector, equipment.status, equipment.maintenance_group)
+
+            
 
             cursor.execute(sql_query, values)
             conn.commit()
