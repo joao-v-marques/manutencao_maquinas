@@ -198,6 +198,7 @@ export async function createEquipment(onEquipmentCreated) {
                 onEquipmentCreated();
             }
         } catch (error) {
+            console.log(error.message);
             notyf.error(error.message);
         }
     })
