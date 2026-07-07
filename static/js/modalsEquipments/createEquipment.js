@@ -16,6 +16,8 @@ export async function loadFields() {
 
         const selectLocation = document.getElementById("location_id");
 
+        selectLocation.innerHTML = ``;
+
         locationJSON.forEach(location => {
             const option = document.createElement("option");
 
@@ -35,6 +37,8 @@ export async function loadFields() {
         const sectorsJSON = await response.json();
 
         const selectSectors = document.getElementById("sector_id");
+
+        selectSectors.innerHTML = ``;
 
         sectorsJSON.forEach(sector => {
             const option = document.createElement("option");
@@ -56,6 +60,8 @@ export async function loadFields() {
 
         const selectMaintenanceGroups = document.getElementById("maintenance_group_id");
 
+        selectMaintenanceGroups.innerHTML = ``;
+
         maintenanceGroupsJSON.forEach(maintenanceGroup => {
             const option = document.createElement("option");
 
@@ -75,6 +81,8 @@ export async function loadFields() {
         const equipmentStatusJSON = await response.json();
 
         const selectEquipmentStatus = document.getElementById("status_id");
+
+        selectEquipmentStatus.innerHTML = ``;
     
         equipmentStatusJSON.forEach(status => {
             const option = document.createElement("option");
