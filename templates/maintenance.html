@@ -73,7 +73,7 @@
         <section class="summary-grid" aria-label="Resumo do status de manutenção dos equipamentos">
             <article class="summary-card summary-card--danger">
                 <div class="summary-card__head">
-                    <span class="summary-card__title">Manutenções vencidas</span>
+                    <span class="summary-card__title">Vencidas há -30 dias</span>
                     <span class="summary-card__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
@@ -83,7 +83,13 @@
                     </span>
                 </div>
                 <strong class="summary-card__value" id="lateCount">0</strong>
-                <span class="summary-card__trend">Requerem atenção imediata</span>
+                <button type="button" class="summary-card__action" id="openLateModalButton">
+                    Ver equipamentos
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                </button>
             </article>
 
             <article class="summary-card summary-card--danger">
@@ -319,6 +325,56 @@
                     </svg>
                     Cadastrar manutenção
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="lateEquipmentsModal">
+        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="lateEquipmentsModalTitle">
+            <div class="modal__header">
+                <div class="modal__title-group">
+                    <span class="modal__icon modal__icon--danger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2 class="modal__title" id="lateEquipmentsModalTitle">Vencidas há menos de 30 dias</h2>
+                        <p class="modal__subtitle">Equipamentos que requerem atenção imediata</p>
+                    </div>
+                </div>
+
+                <button class="modal__close" id="closeLateModalButton" type="button" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal__body">
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Equipamento</th>
+                                    <th>Setor</th>
+                                    <th>Última Manutenção</th>
+                                    <th>Próxima Manutenção</th>
+                                    <th>Dias em atraso</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lateEquipmentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal__footer">
+                <button class="btn btn-ghost" id="cancelLateModalButton" type="button">Fechar</button>
             </div>
         </div>
     </div>

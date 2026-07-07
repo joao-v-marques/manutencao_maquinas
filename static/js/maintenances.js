@@ -1,4 +1,5 @@
 import { openMaintenanceModal, closeModalMaintenanceEquipment, submitFormCreateMaintenance } from "./modalsEquipments/maintenanceEquipment.js";
+import { openLateModal, closeModalLateEquipments } from "./modalsEquipments/lateMaintenanceModal.js";
 import { openVeryLateModal, closeModalVeryLateEquipments } from "./modalsEquipments/veryLateMaintenanceModal.js";
 import { formatDateToInput, parseDateOnly, classifyMaintenanceStatus } from "./utils/maintenanceStatus.js";
 
@@ -7,6 +8,9 @@ const MAINTENANCE_WINDOW_DAYS = 30;
 
 // guarda a lista completa vinda da API para permitir filtrar sem novas requisições
 let allEquipments = [];
+
+// guarda os equipamentos vencidos há até 30 dias para alimentar o modal sem precisar recalcular ao clicar
+let lateEquipments = [];
 
 // guarda os equipamentos vencidos há mais de 30 dias para alimentar o modal sem precisar recalcular ao clicar
 let veryLateEquipments = [];
@@ -139,6 +143,7 @@ function fillInfoCards(equipments, today) {
     let okCount = 0;
     let neverCount = 0;
 
+    lateEquipments = [];
     veryLateEquipments = [];
 
     equipments.forEach(equipment => {
@@ -146,11 +151,12 @@ function fillInfoCards(equipments, today) {
 
         switch (status.key) {
             case "vencida":
-                lateCount++;
-
                 if (status.diffInDays < -30) {
                     veryLateCount++;
                     veryLateEquipments.push({ ...equipment, diffInDays: status.diffInDays });
+                } else {
+                    lateCount++;
+                    lateEquipments.push({ ...equipment, diffInDays: status.diffInDays });
                 }
                 break;
             case "hoje":
@@ -181,6 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     closeModalMaintenanceEquipment();
     submitFormCreateMaintenance(populateEquipmentsStatusTable);
+
+    closeModalLateEquipments();
+    document.getElementById("openLateModalButton").addEventListener("click", () => {
+        openLateModal(lateEquipments);
+    });
 
     closeModalVeryLateEquipments();
     document.getElementById("openVeryLateModalButton").addEventListener("click", () => {
