@@ -1,4 +1,5 @@
 import { openMaintenanceModal, closeModalMaintenanceEquipment, submitFormCreateMaintenance } from "./modalsEquipments/maintenanceEquipment.js";
+import { openVeryLateModal, closeModalVeryLateEquipments } from "./modalsEquipments/veryLateMaintenanceModal.js";
 import { formatDateToInput, parseDateOnly, classifyMaintenanceStatus } from "./utils/maintenanceStatus.js";
 
 // mesma janela usada no dashboard, para manter o "próximo do vencimento" padronizado em todo o projeto (30 dias)
@@ -6,6 +7,9 @@ const MAINTENANCE_WINDOW_DAYS = 30;
 
 // guarda a lista completa vinda da API para permitir filtrar sem novas requisições
 let allEquipments = [];
+
+// guarda os equipamentos vencidos há mais de 30 dias para alimentar o modal sem precisar recalcular ao clicar
+let veryLateEquipments = [];
 
 function renderEquipmentsStatusTable(equipmentsToRender, today) {
     const tbodyEquipmentsStatus = document.getElementById("equipmentsStatusTableBody");
@@ -135,6 +139,8 @@ function fillInfoCards(equipments, today) {
     let okCount = 0;
     let neverCount = 0;
 
+    veryLateEquipments = [];
+
     equipments.forEach(equipment => {
         const status = classifyMaintenanceStatus(equipment.next_maintenance_date, today, MAINTENANCE_WINDOW_DAYS);
 
@@ -144,6 +150,7 @@ function fillInfoCards(equipments, today) {
 
                 if (status.diffInDays < -30) {
                     veryLateCount++;
+                    veryLateEquipments.push({ ...equipment, diffInDays: status.diffInDays });
                 }
                 break;
             case "hoje":
@@ -174,6 +181,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     closeModalMaintenanceEquipment();
     submitFormCreateMaintenance(populateEquipmentsStatusTable);
+
+    closeModalVeryLateEquipments();
+    document.getElementById("openVeryLateModalButton").addEventListener("click", () => {
+        openVeryLateModal(veryLateEquipments);
+    });
 
     document.getElementById("searchEquipmentNameInput").addEventListener("input", applyMaintenanceFilters);
     document.getElementById("filterMaintenanceSector").addEventListener("change", applyMaintenanceFilters);

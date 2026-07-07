@@ -98,7 +98,13 @@
                     </span>
                 </div>
                 <strong class="summary-card__value" id="veryLateCount">0</strong>
-                <span class="summary-card__trend">Atraso crítico</span>
+                <button type="button" class="summary-card__action" id="openVeryLateModalButton">
+                    Ver equipamentos
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                </button>
             </article>
 
             <article class="summary-card summary-card--warning">
@@ -313,6 +319,56 @@
                     </svg>
                     Cadastrar manutenção
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="veryLateEquipmentsModal">
+        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="veryLateEquipmentsModalTitle">
+            <div class="modal__header">
+                <div class="modal__title-group">
+                    <span class="modal__icon modal__icon--danger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2 class="modal__title" id="veryLateEquipmentsModalTitle">Vencidas há mais de 30 dias</h2>
+                        <p class="modal__subtitle">Equipamentos com atraso crítico de manutenção</p>
+                    </div>
+                </div>
+
+                <button class="modal__close" id="closeVeryLateModalButton" type="button" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal__body">
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Equipamento</th>
+                                    <th>Setor</th>
+                                    <th>Última Manutenção</th>
+                                    <th>Próxima Manutenção</th>
+                                    <th>Dias em atraso</th>
+                                </tr>
+                            </thead>
+                            <tbody id="veryLateEquipmentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal__footer">
+                <button class="btn btn-ghost" id="cancelVeryLateModalButton" type="button">Fechar</button>
             </div>
         </div>
     </div>
