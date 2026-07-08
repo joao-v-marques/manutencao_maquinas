@@ -1,3 +1,4 @@
+import psycopg
 from database.connect_db import get_db_connection
 
 class Equipments:
@@ -252,6 +253,8 @@ class EquipmentsModel:
             conn.commit()
 
             return True
+        except psycopg.errors.ForeignKeyViolation:
+            raise ValueError("Não é possível excluir este equipamento pois existem manutenções registradas para ele.")
         except Exception as e:
             raise Exception(str(e))
         finally:
