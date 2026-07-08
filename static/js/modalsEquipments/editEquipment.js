@@ -1,6 +1,34 @@
 const editEquipmentModal = document.getElementById("editEquipmentModalOverlay");
 const editEquipmentForm = document.getElementById("editEquipmentForm");
 
+// habilita o flatpickr no campo de data de aquisição, na mesma abordagem usada nos demais campos de data do sistema:
+// o input real guarda o valor em aaaa-mm-dd (usado no submit) e o altInput exibe dd/mm/aaaa
+let editAcquisitionDatePicker = null;
+
+if (typeof flatpickr !== "undefined") {
+    editAcquisitionDatePicker = flatpickr(document.getElementById("editAcquisitionDateWrap"), {
+        wrap: true,
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        locale: "pt",
+    });
+}
+
+// preenche o campo de data de aquisição mantendo o flatpickr sincronizado com o valor exibido,
+// já que setar ".value" direto no input não atualiza o altInput nem o estado interno do flatpickr
+function setAcquisitionDateValue(dateValue) {
+    if (editAcquisitionDatePicker) {
+        if (dateValue) {
+            editAcquisitionDatePicker.setDate(dateValue, true);
+        } else {
+            editAcquisitionDatePicker.clear();
+        }
+    } else {
+        document.getElementById("edit_acquisition_date_id").value = dateValue;
+    }
+}
+
 function formatDateToInput(dateString) {
     if (!dateString) {
         return "";
@@ -8,10 +36,11 @@ function formatDateToInput(dateString) {
 
     const date = new Date(dateString);
 
-    // garante que vai ficar no formato YYYY-MM-DD
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0")
+    // o backend serializa a data como meia-noite UTC; usar getters locais aqui "voltaria" um dia
+    // em fusos negativos (ex: Brasil, UTC-3), então extraímos os componentes em UTC
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0")
 
     return `${year}-${month}-${day}`;
 }
@@ -103,7 +132,7 @@ export function openEditEquipmentModal(equipment) {
     document.getElementById("edit_maintenance_group_id").value = equipment.maintenance_group_id ?? "";
 
     // Controle
-    document.getElementById("edit_acquisition_date_id").value = formatDateToInput(equipment.acquisition_date);
+    setAcquisitionDateValue(formatDateToInput(equipment.acquisition_date));
     document.getElementById("edit_maintenance_interval_months_id").value = equipment.maintenance_interval_months ?? "1";
 
     editEquipmentModal.classList.add("is-open");
@@ -153,6 +182,13 @@ export async function sendFormEditEquipment(onEquipmentEdited) {
 
             notyf.success("Equipamento editado cum sucesso!");
             editEquipmentForm.reset();
+
+            // form.reset() só limpa o valor do input real; o flatpickr precisa ser limpo também para
+            // manter o altInput e o estado interno sincronizados com o valor visível
+            if (editAcquisitionDatePicker) {
+                editAcquisitionDatePicker.clear();
+            }
+
             closeEditEquipmentModal();
 
             if (typeof onEquipmentEdited === "function") {

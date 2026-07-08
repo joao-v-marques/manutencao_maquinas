@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/equipments.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/maintenances.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/maintenances.css') }}">
 </head>
 <body>
     <header class="navbar">
@@ -197,9 +198,37 @@
                 <div class="filter-date-range">
                     <label for="filterDueDateFrom">Vencimento</label>
                     <div class="filter-date-range__inputs">
-                        <input type="date" class="filter-select" id="filterDueDateFrom" aria-label="Vencimento de">
+                        <div class="date-field" id="filterDueDateFromWrap">
+                            <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            <input type="date" class="filter-select date-field__input" id="filterDueDateFrom" aria-label="Vencimento de" placeholder="Data inicial" data-input>
+                            <button type="button" class="date-field__clear" data-clear aria-label="Limpar vencimento de" tabindex="-1">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
                         <span>até</span>
-                        <input type="date" class="filter-select" id="filterDueDateTo" aria-label="Vencimento até">
+                        <div class="date-field" id="filterDueDateToWrap">
+                            <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            <input type="date" class="filter-select date-field__input" id="filterDueDateTo" aria-label="Vencimento até" placeholder="Data final" data-input>
+                            <button type="button" class="date-field__clear" data-clear aria-label="Limpar vencimento até" tabindex="-1">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -274,12 +303,34 @@
 
                             <div class="form-field form-field--required">
                                 <label for="maintenanceDate">Data da manutenção</label>
-                                <input type="date" id="maintenanceDate" name="maintenance_date" required>
+                                <div class="date-field" id="maintenanceDateWrap">
+                                    <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                    </svg>
+                                    <input type="date" id="maintenanceDate" name="maintenance_date" class="date-field__input" placeholder="Selecionar data" required data-input>
+                                    <button type="button" class="date-field__clear" data-clear aria-label="Limpar data da manutenção" tabindex="-1">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="form-field">
                                 <label for="nextMaintenanceDate">Próxima manutenção</label>
-                                <input type="date" id="nextMaintenanceDate" name="next_maintenance_date" readonly>
+                                <div class="date-field date-field--static" id="nextMaintenanceDateWrap">
+                                    <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                    </svg>
+                                    <input type="date" id="nextMaintenanceDate" name="next_maintenance_date" class="date-field__input" placeholder="Calculada automaticamente" readonly data-input>
+                                </div>
                             </div>
 
                             <div class="form-field form-field--full">
@@ -441,6 +492,8 @@
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/maintenances.js') }}"></script>
 </body>
 </html>

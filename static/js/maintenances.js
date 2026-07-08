@@ -182,6 +182,41 @@ function fillInfoCards(equipments, today) {
     document.getElementById("neverCount").textContent = neverCount;
 }
 
+// inicializa o flatpickr nos campos de vencimento (exibe dd/mm/aaaa, mas mantém o valor real em aaaa-mm-dd
+// para não quebrar o parsing feito em applyMaintenanceFilters) e trava a faixa para impedir "de" > "até"
+function initDueDateFilterPickers() {
+    if (typeof flatpickr === "undefined") {
+        return;
+    }
+
+    const pickerOptions = {
+        wrap: true,
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        locale: "pt",
+    };
+
+    let fromPicker;
+    let toPicker;
+
+    fromPicker = flatpickr(document.getElementById("filterDueDateFromWrap"), {
+        ...pickerOptions,
+        onChange: (selectedDates) => {
+            toPicker.set("minDate", selectedDates[0] || null);
+            applyMaintenanceFilters();
+        },
+    });
+
+    toPicker = flatpickr(document.getElementById("filterDueDateToWrap"), {
+        ...pickerOptions,
+        onChange: (selectedDates) => {
+            fromPicker.set("maxDate", selectedDates[0] || null);
+            applyMaintenanceFilters();
+        },
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     populateEquipmentsStatusTable();
 
@@ -201,6 +236,5 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("searchEquipmentNameInput").addEventListener("input", applyMaintenanceFilters);
     document.getElementById("filterMaintenanceSector").addEventListener("change", applyMaintenanceFilters);
     document.getElementById("filterMaintenanceStatus").addEventListener("change", applyMaintenanceFilters);
-    document.getElementById("filterDueDateFrom").addEventListener("change", applyMaintenanceFilters);
-    document.getElementById("filterDueDateTo").addEventListener("change", applyMaintenanceFilters);
+    initDueDateFilterPickers();
 });

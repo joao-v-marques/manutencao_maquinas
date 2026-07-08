@@ -584,6 +584,230 @@ table.data-table {
   border-color: var(--color-primary);
 }
 
+/* ===================== Campos de data (filtros e formulários) — flatpickr ===================== */
+
+.date-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.date-field__icon {
+  position: absolute;
+  left: 10px;
+  width: 15px;
+  height: 15px;
+  stroke: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* especificidade ".date-field .date-field__input" (2 classes) precisa vencer ".form-field input"
+   (1 classe + 1 tipo), definida acima, para funcionar dentro dos modais de formulário */
+.date-field .date-field__input {
+  width: 130px;
+  padding-left: 32px;
+  padding-right: 26px;
+  cursor: pointer;
+}
+
+.form-field .date-field .date-field__input {
+  width: 100%;
+}
+
+.date-field__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.date-field--static .date-field__input {
+  cursor: default;
+  color: var(--color-text-secondary);
+}
+
+.date-field__clear {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.date-field__clear svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+}
+
+.date-field__clear:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+/* ===========================================================
+   Flatpickr - tema escuro alinhado à paleta do sistema
+   (!important necessário: o flatpickr.min.css do CDN traz seu
+   próprio tema claro com seletores tão específicos quanto estes)
+   =========================================================== */
+
+.flatpickr-calendar {
+  background-color: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-card) !important;
+  font-family: inherit !important;
+}
+
+.flatpickr-calendar.arrowTop::before {
+  border-bottom-color: var(--color-border) !important;
+}
+
+.flatpickr-calendar.arrowTop::after {
+  border-bottom-color: var(--color-surface) !important;
+}
+
+.flatpickr-calendar.arrowBottom::before {
+  border-top-color: var(--color-border) !important;
+}
+
+.flatpickr-calendar.arrowBottom::after {
+  border-top-color: var(--color-surface) !important;
+}
+
+.flatpickr-months {
+  padding: 10px 8px 0;
+}
+
+.flatpickr-months .flatpickr-month {
+  background-color: transparent !important;
+  color: var(--color-text-primary) !important;
+  fill: var(--color-text-primary) !important;
+}
+
+.flatpickr-current-month {
+  color: var(--color-text-primary) !important;
+  font-size: 14px;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+  background-color: transparent !important;
+  color: var(--color-text-primary) !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+  background-color: var(--color-surface-hover) !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  color: var(--color-text-muted) !important;
+  fill: var(--color-text-muted) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  color: var(--color-primary) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+  fill: inherit !important;
+}
+
+.flatpickr-innerContainer,
+.flatpickr-rContainer,
+.flatpickr-days,
+.dayContainer {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+}
+
+.flatpickr-weekdays {
+  background-color: var(--color-surface) !important;
+}
+
+span.flatpickr-weekday {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-muted) !important;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.flatpickr-day {
+  color: var(--color-text-secondary) !important;
+  border-radius: var(--radius-sm);
+}
+
+.flatpickr-day.today {
+  border-color: var(--color-primary) !important;
+}
+
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+  background-color: var(--color-surface-hover) !important;
+  border-color: var(--color-surface-hover) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange,
+.flatpickr-day.endRange:hover {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+
+.flatpickr-day.inRange {
+  background-color: var(--color-primary-muted) !important;
+  border-color: var(--color-primary-muted) !important;
+  box-shadow: -5px 0 0 var(--color-primary-muted), 5px 0 0 var(--color-primary-muted) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: var(--color-text-muted) !important;
+  opacity: 0.5;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover,
+.flatpickr-day.notAllowed {
+  color: var(--color-text-muted) !important;
+  opacity: 0.35;
+}
+
+.numInputWrapper span {
+  border-color: var(--color-border) !important;
+}
+
+.numInputWrapper span:hover {
+  background: var(--color-surface-hover) !important;
+}
+
+.numInputWrapper span.arrowUp::after {
+  border-bottom-color: var(--color-text-muted) !important;
+}
+
+.numInputWrapper span.arrowDown::after {
+  border-top-color: var(--color-text-muted) !important;
+}
+
 /* ===================== Modal de Detalhes — Abas ===================== */
 
 .details-head {

@@ -2,6 +2,20 @@ const modalCreatEquipment = document.getElementById("formModalOverlay");
 
 const btnCreateEquipment = document.getElementById("formModalTitle");
 
+// habilita o flatpickr no campo de data de aquisição, na mesma abordagem usada nos demais campos de data do sistema:
+// o input real guarda o valor em aaaa-mm-dd (usado no submit) e o altInput exibe dd/mm/aaaa
+let acquisitionDatePicker = null;
+
+if (typeof flatpickr !== "undefined") {
+    acquisitionDatePicker = flatpickr(document.getElementById("acquisitionDateWrap"), {
+        wrap: true,
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        locale: "pt",
+    });
+}
+
 function closeModal() {
     modalCreatEquipment.classList.remove("is-open");
 }
@@ -199,6 +213,13 @@ export async function createEquipment(onEquipmentCreated) {
             }
 
             formCreateEquipment.reset();
+
+            // form.reset() só limpa o valor do input real; o flatpickr precisa ser limpo também para
+            // manter o altInput e o estado interno sincronizados com o valor visível
+            if (acquisitionDatePicker) {
+                acquisitionDatePicker.clear();
+            }
+
             closeModal();
             notyf.success("Equipamento cadastrado com sucesso");
 

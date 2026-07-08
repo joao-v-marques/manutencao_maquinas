@@ -2,6 +2,32 @@ const modalMaintenance = document.getElementById("maintenanceModal");
 const maintenanceDateInput = document.getElementById("maintenanceDate");
 const nextMaintenanceDateInput = document.getElementById("nextMaintenanceDate");
 
+// habilita o flatpickr nos dois campos de data do modal, com a mesma abordagem usada nos filtros da página:
+// o input real guarda o valor em aaaa-mm-dd (usado no submit) e o altInput exibe dd/mm/aaaa
+let maintenanceDatePicker = null;
+let nextMaintenanceDatePicker = null;
+
+if (typeof flatpickr !== "undefined") {
+    maintenanceDatePicker = flatpickr(document.getElementById("maintenanceDateWrap"), {
+        wrap: true,
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        locale: "pt",
+    });
+
+    // campo calculado automaticamente: mesmo visual dos demais campos de data, mas sem seleção manual
+    nextMaintenanceDatePicker = flatpickr(document.getElementById("nextMaintenanceDateWrap"), {
+        wrap: true,
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        locale: "pt",
+        clickOpens: false,
+        allowInput: false,
+    });
+}
+
 // guarda as informações do equipamento e do usuário logado enquanto o modal está aberto
 let currentMaintenanceIntervalMonths = null;
 let currentEquipmentId = null;
@@ -16,10 +42,11 @@ function formatDateToInput(dateString) {
 
     const date = new Date(dateString);
 
-    // garante que vai ficar no formato YYYY-MM-DD
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0")
+    // o backend serializa a data como meia-noite UTC; usar getters locais aqui "voltaria" um dia
+    // em fusos negativos (ex: Brasil, UTC-3), então extraímos os componentes em UTC
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0")
 
     return `${day}/${month}/${year}`;
 }
@@ -42,9 +69,23 @@ function calculateNextMaintenanceDate(maintenanceDateValue, intervalMonths) {
     return `${nextYear}-${nextMonth}-${nextDay}`;
 }
 
+// atualiza o campo (calculado) de próxima manutenção mantendo o flatpickr sincronizado com o valor exibido,
+// já que setar ".value" direto no input não atualiza o altInput nem o estado interno do flatpickr
+function setNextMaintenanceDateValue(nextDateValue) {
+    if (nextMaintenanceDatePicker) {
+        if (nextDateValue) {
+            nextMaintenanceDatePicker.setDate(nextDateValue, true);
+        } else {
+            nextMaintenanceDatePicker.clear();
+        }
+    } else {
+        nextMaintenanceDateInput.value = nextDateValue;
+    }
+}
+
 // sempre que a data da manutenção mudar, recalcula automaticamente a próxima manutenção
 maintenanceDateInput.addEventListener("change", () => {
-    nextMaintenanceDateInput.value = calculateNextMaintenanceDate(maintenanceDateInput.value, currentMaintenanceIntervalMonths);
+    setNextMaintenanceDateValue(calculateNextMaintenanceDate(maintenanceDateInput.value, currentMaintenanceIntervalMonths));
 });
 
 // função para carregar todas as manutenções cadastradas do equipamento na tabela do modal
@@ -95,8 +136,12 @@ export async function openMaintenanceModal(equipment) {
     refillHiddenMaintenanceFields();
 
     // reseta as datas para não manter o valor calculado do equipamento aberto anteriormente
-    maintenanceDateInput.value = "";
-    nextMaintenanceDateInput.value = "";
+    if (maintenanceDatePicker) {
+        maintenanceDatePicker.clear();
+    } else {
+        maintenanceDateInput.value = "";
+    }
+    setNextMaintenanceDateValue("");
 
     await loadMaintenancesTable(equipment.id);
 
@@ -139,6 +184,12 @@ export async function submitFormCreateMaintenance(onSuccess) {
     formCreateMaintenance.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        // o flatpickr esconde o input real (type="hidden"), o que remove a validação nativa "required" do HTML
+        if (!maintenanceDateInput.value) {
+            notyf.error("Informe a data da manutenção.");
+            return;
+        }
+
         try {
             const formData = new FormData(formCreateMaintenance);
             const data = Object.fromEntries(formData.entries());
@@ -176,6 +227,16 @@ export async function submitFormCreateMaintenance(onSuccess) {
 
             notyf.success("Manutenção cadastrada com sucesso!");
             formCreateMaintenance.reset();
+
+            // form.reset() só limpa o valor do input real; o flatpickr precisa ser limpo também para
+            // manter o altInput e o estado interno sincronizados com o valor visível
+            if (maintenanceDatePicker) {
+                maintenanceDatePicker.clear();
+            } else {
+                maintenanceDateInput.value = "";
+            }
+            setNextMaintenanceDateValue("");
+
             refillHiddenMaintenanceFields();
 
             await loadMaintenancesTable(currentEquipmentId);
