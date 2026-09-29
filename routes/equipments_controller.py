@@ -45,7 +45,11 @@ def create_equipment():
 
         created_equipment = EquipmentsService.create_equipment(data)
 
-        return created_equipment
+        return created_equipment, 201
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -60,6 +64,10 @@ def delete_equipment(equipment_id):
         return jsonify({
             "message": "Equipamento deletado com sucesso!"
         }), 200
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -74,6 +82,10 @@ def update_equipment(id):
         updated_equipment = EquipmentsService.update_equipment(id, data)
 
         return updated_equipment
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)

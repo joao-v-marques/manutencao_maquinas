@@ -19,31 +19,36 @@ class EquipmentsService:
         except Exception as e:
             raise Exception(str(e))
 
+    # validações comuns ao cadastro e à edição
+    @staticmethod
+    def _validate(data):
+        required_fields = [
+            "name",
+            "type",
+            "location",
+            "sector",
+            "maintenance_group",
+            "maintenance_interval_months",
+            "status"
+        ]
+
+        for field in required_fields:
+            value = data.get(field)
+            if value is None or (isinstance(value, str) and not value.strip()):
+                raise ValueError(f"O campo {field} não pode estar vazio")
+
+        try:
+            maintenance_interval = int(data['maintenance_interval_months'])
+        except (TypeError, ValueError):
+            raise ValueError("Intervalo de manutenção deve ser um número inteiro")
+
+        if maintenance_interval <= 0:
+            raise ValueError("Intervalo de manutenção deve ser maior que zero")
+
     @staticmethod
     def create_equipment(data):
         try:
-            try:
-                maintenance_interval = int(data['maintenance_interval_months'])
-            except (TypeError, ValueError):
-                raise ValueError("Intervalo de manutenção deve ser um número inteiro")
-            if maintenance_interval <= 0:
-                raise ValueError("Intervalo de manutenção deve ser maior que zero")
-
-            # validação de required fields
-            required_fields = [
-                "name",
-                "type",
-                "location",
-                "sector",
-                "maintenance_group",
-                "maintenance_interval_months",
-                "status"
-            ]
-
-            for field in required_fields:
-                value = data.get(field)
-                if value is None or (isinstance(value, str) and not value.strip()):
-                    raise ValueError(f"O campo {field} não pode estar vazio")
+            EquipmentsService._validate(data)
 
             # definindo o serial number como null para não quebrar a chave unique na inserção
             serial_number = data.get("serial_number")
@@ -68,6 +73,8 @@ class EquipmentsService:
             created_equipment = EquipmentsModel.create_equipment(equipment)
 
             return created_equipment
+        except ValueError:
+            raise
         except Exception as e:
             raise Exception(str(e))
         
@@ -82,12 +89,14 @@ class EquipmentsService:
             EquipmentsModel.delete_equipment(equipment_id)
 
             return True
+        except ValueError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 
     @staticmethod
     def update_equipment(equipment_id, data):
-        # COLOCAR VALIDAÇÕES DIVERSAS NOS CAMPOS
+        EquipmentsService._validate(data)
 
         # definindo o serial number como null para não quebrar a chave unique na atualização
         serial_number = data.get("serial_number")
@@ -106,6 +115,7 @@ class EquipmentsService:
             maintenance_interval_months=data['maintenance_interval_months'],
             location=data['location'],
             sector=data['sector'],
+            status=data['status'],
             maintenance_group=data['maintenance_group']
         )
 

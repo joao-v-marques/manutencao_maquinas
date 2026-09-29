@@ -278,7 +278,7 @@ class EquipmentsModel:
 
             sql_query = """
                 UPDATE equipments 
-                SET name = %s, type = %s, brand = %s, model = %s, serial_number = %s, acquisition_date = %s, ip = %s, maintenance_interval_months = %s, location_id = %s, sector_id = %s, maintenance_group_id = %s
+                SET name = %s, type = %s, brand = %s, model = %s, serial_number = %s, acquisition_date = %s, ip = %s, maintenance_interval_months = %s, location_id = %s, sector_id = %s, maintenance_group_id = %s, status_id = %s
                 WHERE id = %s
             """
             values = (
@@ -293,6 +293,7 @@ class EquipmentsModel:
                 equipment.location,
                 equipment.sector,
                 equipment.maintenance_group,
+                equipment.status,
                 equipment.id
             )
 
