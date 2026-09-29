@@ -53,6 +53,9 @@ class UsersService:
             created_user = UsersModel.create_user(new_user)
 
             return created_user
+        except ValueError:
+            # erros de validação seguem como ValueError para o controller responder 400
+            raise
         except Exception as e:
             raise Exception(str(e))
 
@@ -68,6 +71,9 @@ class UsersService:
             UsersModel.delete_user(user_id)
 
             return True
+        except ValueError:
+            # erros de validação seguem como ValueError para o controller responder 400
+            raise
         except Exception as e:
             raise Exception(str(e))
 
@@ -113,5 +119,8 @@ class UsersService:
             )
 
             return UsersModel.update_user(updated_user)
+        except ValueError:
+            # erros de validação seguem como ValueError para o controller responder 400
+            raise
         except Exception as e:
             raise Exception(str(e))
