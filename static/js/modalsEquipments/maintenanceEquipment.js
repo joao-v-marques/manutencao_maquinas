@@ -1,6 +1,24 @@
+import { openOverlay, closeOverlay, bindOverlayClose } from "../utils/modal.js";
+import {
+    formatDateToInput,
+    parseDateOnly,
+    classifyMaintenanceStatusDetailed,
+    formatRelativeDays,
+    formatIntervalMonths,
+    todayInputValue,
+    escapeHTML,
+    MAINTENANCE_WINDOW_DAYS,
+} from "../utils/maintenanceStatus.js";
+
 const modalMaintenance = document.getElementById("maintenanceModal");
 const maintenanceDateInput = document.getElementById("maintenanceDate");
 const nextMaintenanceDateInput = document.getElementById("nextMaintenanceDate");
+const descriptionInput = document.getElementById("description");
+
+// elementos opcionais: existem na página de manutenções, mas não necessariamente em outras páginas que usam este modal
+const descriptionCounter = document.getElementById("descriptionCounter");
+const nextMaintenanceHint = document.getElementById("nextMaintenanceHint");
+const submitButton = document.getElementById("submitMaintenanceButton");
 
 // habilita o flatpickr nos dois campos de data do modal, com a mesma abordagem usada nos filtros da página:
 // o input real guarda o valor em aaaa-mm-dd (usado no submit) e o altInput exibe dd/mm/aaaa
@@ -14,6 +32,8 @@ if (typeof flatpickr !== "undefined") {
         altFormat: "d/m/Y",
         dateFormat: "Y-m-d",
         locale: "pt",
+        // manutenção registrada é algo que já aconteceu: não faz sentido escolher uma data futura
+        maxDate: "today",
     });
 
     // campo calculado automaticamente: mesmo visual dos demais campos de data, mas sem seleção manual
@@ -33,23 +53,6 @@ let currentMaintenanceIntervalMonths = null;
 let currentEquipmentId = null;
 let currentEquipmentName = null;
 let currentUserId = null;
-
-// função para controlar a formatação de datas
-function formatDateToInput(dateString) {
-    if (!dateString) {
-        return "";
-    };
-
-    const date = new Date(dateString);
-
-    // o backend serializa a data como meia-noite UTC; usar getters locais aqui "voltaria" um dia
-    // em fusos negativos (ex: Brasil, UTC-3), então extraímos os componentes em UTC
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0")
-
-    return `${day}/${month}/${year}`;
-}
 
 // calcula a data da próxima manutenção somando o intervalo (em meses) do equipamento à data em que a manutenção foi realizada
 function calculateNextMaintenanceDate(maintenanceDateValue, intervalMonths) {
@@ -83,93 +86,141 @@ function setNextMaintenanceDateValue(nextDateValue) {
     }
 }
 
-// sempre que a data da manutenção mudar, recalcula automaticamente a próxima manutenção
-maintenanceDateInput.addEventListener("change", () => {
-    setNextMaintenanceDateValue(calculateNextMaintenanceDate(maintenanceDateInput.value, currentMaintenanceIntervalMonths));
-});
-
-// função para carregar todas as manutenções cadastradas do equipamento na tabela do modal
-export async function loadMaintenancesTable(equipmentId) {
-    try {
-        const response = await fetchWithAuth(`/portal-manutencao/maintenances/${equipmentId}`);
-
-        if (!response.ok) {
-            throw new Error("Deu erro!");
+function setMaintenanceDateValue(dateValue) {
+    if (maintenanceDatePicker) {
+        if (dateValue) {
+            maintenanceDatePicker.setDate(dateValue, true);
+        } else {
+            maintenanceDatePicker.clear();
         }
-
-        const maintenancesJSON = await response.json();
-
-        const tbodyMaintenances = document.getElementById("maintenanceTableBody");
-        tbodyMaintenances.innerHTML = ``;
-
-        const maintenancesFragment = document.createDocumentFragment();
-
-        maintenancesJSON.forEach(maintenance => {
-            const trMaintenance = document.createElement("tr");
-
-            trMaintenance.innerHTML = `
-                <td>${maintenance.id}</td>
-                <td>${formatDateToInput(maintenance.maintenance_date)}</td>
-                <td>${formatDateToInput(maintenance.next_maintenance_date)}</td>
-                <td>${maintenance.user}</td>
-                <td>${maintenance.equipment}</td>
-            `
-            maintenancesFragment.appendChild(trMaintenance);
-        })
-
-        tbodyMaintenances.appendChild(maintenancesFragment);
-    } catch (error) {
-        console.log(error)
+    } else {
+        maintenanceDateInput.value = dateValue;
     }
+
+    updateNextMaintenanceDate();
 }
 
-// função para abir o modal de manutenção com as informações necessárias já preenchidas
+// recalcula a próxima manutenção, atualiza o texto de ajuda ("data + N meses") e destaca o atalho de data selecionado
+function updateNextMaintenanceDate() {
+    setNextMaintenanceDateValue(calculateNextMaintenanceDate(maintenanceDateInput.value, currentMaintenanceIntervalMonths));
+
+    if (nextMaintenanceHint) {
+        const interval = Number(currentMaintenanceIntervalMonths);
+        nextMaintenanceHint.innerHTML = interval
+            ? `Data + <strong>${interval} ${interval === 1 ? "mês" : "meses"}</strong>`
+            : "Calculada automaticamente";
+    }
+
+    document.querySelectorAll("#maintenanceModal .date-shortcut").forEach(button => {
+        const isActive = maintenanceDateInput.value === todayInputValue(Number(button.dataset.dateOffset));
+        button.classList.toggle("is-active", isActive);
+    });
+}
+
+// sempre que a data da manutenção mudar, recalcula automaticamente a próxima manutenção
+maintenanceDateInput.addEventListener("change", updateNextMaintenanceDate);
+
+document.querySelectorAll("#maintenanceModal .date-shortcut").forEach(button => {
+    button.addEventListener("click", () => {
+        setMaintenanceDateValue(todayInputValue(Number(button.dataset.dateOffset)));
+    });
+});
+
+function updateDescriptionCounter() {
+    if (!descriptionCounter) {
+        return;
+    }
+
+    const length = descriptionInput.value.trim().length;
+    descriptionCounter.textContent = `${length} ${length === 1 ? "caractere" : "caracteres"}`;
+}
+
+descriptionInput.addEventListener("input", updateDescriptionCounter);
+
+// preenche o bloco-resumo do equipamento no topo do modal (somente se o bloco existir na página)
+function fillEquipmentSummary(equipment) {
+    const summary = document.getElementById("maintenanceEquipmentSummary");
+
+    if (!summary) {
+        return;
+    }
+
+    const today = parseDateOnly(new Date().toISOString());
+    const status = classifyMaintenanceStatusDetailed(equipment.next_maintenance_date, today, MAINTENANCE_WINDOW_DAYS);
+    const relative = formatRelativeDays(status.diffInDays);
+    const nextDate = formatDateToInput(equipment.next_maintenance_date);
+
+    document.getElementById("summaryEquipmentName").textContent = equipment.name || "–";
+    document.getElementById("summaryEquipmentSector").textContent = equipment.sector || "";
+    document.getElementById("summaryInterval").textContent = formatIntervalMonths(equipment.maintenance_interval_months) || "–";
+    document.getElementById("summaryLastMaintenance").textContent = formatDateToInput(equipment.maintenance_date) || "Nenhuma";
+    document.getElementById("summaryNextMaintenance").textContent = nextDate ? `${nextDate} (${relative})` : "–";
+    document.getElementById("summaryEquipmentStatus").innerHTML =
+        `<span class="maintenance-status status--${status.key}">${escapeHTML(status.label)}</span>`;
+}
+
+// função para abrir o modal de manutenção com as informações necessárias já preenchidas
 export async function openMaintenanceModal(equipment) {
+    // getLoggedUser (apiHelper.js) reaproveita a mesma requisição ao /me feita pela navbar
     const loggedUser = await getLoggedUser();
+
+    if (!loggedUser) {
+        notyf.error("Não foi possível identificar o usuário logado. Recarregue a página.");
+        return;
+    }
 
     currentMaintenanceIntervalMonths = equipment.maintenance_interval_months;
     currentEquipmentId = equipment.id;
     currentEquipmentName = equipment.name;
     currentUserId = loggedUser.id;
 
-    // preencher o campo da descrição da maquina automaticamente
+    document.getElementById("maintenanceForm").reset();
     refillHiddenMaintenanceFields();
+    fillEquipmentSummary(equipment);
+    updateDescriptionCounter();
 
-    // reseta as datas para não manter o valor calculado do equipamento aberto anteriormente
-    if (maintenanceDatePicker) {
-        maintenanceDatePicker.clear();
-    } else {
-        maintenanceDateInput.value = "";
-    }
-    setNextMaintenanceDateValue("");
+    // já sugere hoje como data da manutenção (caso mais comum), recalculando a próxima automaticamente
+    setMaintenanceDateValue(todayInputValue());
 
-    await loadMaintenancesTable(equipment.id);
-
-    modalMaintenance.classList.add("is-open");
+    openOverlay(modalMaintenance, { focus: descriptionInput });
 }
 
-// reatribui os campos ocultos/readonly do formulário após o reset, permitindo cadastrar várias manutenções sem reabrir o modal
+// reatribui os campos ocultos/readonly do formulário após o reset
 function refillHiddenMaintenanceFields() {
     document.getElementById("maintenanceEquipmentId").value = currentEquipmentId;
     document.getElementById("formMaintenanceUserId").value = currentUserId;
-    document.getElementById("equipmentName").value = currentEquipmentName;
+
+    const equipmentNameInput = document.getElementById("equipmentName");
+    if (equipmentNameInput) {
+        equipmentNameInput.value = currentEquipmentName;
+    }
 }
 
-// 2 funções para fechar o modal no X, cancelar e clicando fora
-function closeMaintenanceModal() {
-    modalMaintenance.classList.remove("is-open");
-}
-
+// liga o fechamento do modal no X, no cancelar, clicando fora e com Esc
 export function closeModalMaintenanceEquipment() {
-    const btnClose = document.getElementById("closeModalMaintenance");
-    const btnCancel = document.getElementById("cancelModalMaintenance");
+    bindOverlayClose(modalMaintenance, [
+        document.getElementById("closeModalMaintenance"),
+        document.getElementById("cancelModalMaintenance"),
+    ]);
+}
 
-    btnClose.addEventListener("click", closeMaintenanceModal);
-    btnCancel.addEventListener("click", closeMaintenanceModal);
+function setSubmitting(isSubmitting) {
+    if (!submitButton) {
+        return;
+    }
 
-    window.addEventListener("click", (e) => {
-        if (e.target === modalMaintenance) closeMaintenanceModal();
-    });
+    submitButton.disabled = isSubmitting;
+    submitButton.classList.toggle("is-loading", isSubmitting);
+}
+
+async function readErrorMessage(response, fallback) {
+    const text = await response.text();
+
+    try {
+        return JSON.parse(text)?.message || fallback;
+    } catch (parseError) {
+        return text || fallback;
+    }
 }
 
 export async function submitFormCreateMaintenance(onSuccess) {
@@ -190,15 +241,13 @@ export async function submitFormCreateMaintenance(onSuccess) {
             return;
         }
 
-        try {
-            const formData = new FormData(formCreateMaintenance);
-            const data = Object.fromEntries(formData.entries());
+        setSubmitting(true);
 
-            // validação remover espaços no inicio e final da string
-            for (let [key, value] of formData.entries()) {
-                if (typeof value === "string") {
-                    formData.set(key, value.trim());
-                }
+        try {
+            // remove espaços no início e no fim de todos os campos de texto antes de enviar
+            const data = {};
+            for (const [key, value] of new FormData(formCreateMaintenance).entries()) {
+                data[key] = typeof value === "string" ? value.trim() : value;
             }
 
             const response = await fetchWithAuth("/portal-manutencao/maintenances", {
@@ -210,36 +259,12 @@ export async function submitFormCreateMaintenance(onSuccess) {
             });
 
             if (!response.ok) {
-                let errorMessage = "Houve um erro ao editar o usuário";
-
-                try {
-                    const errorJSON = await response.json();
-
-                    if (errorJSON?.message) {
-                        errorMessage = errorJSON.message;
-                    }
-                } catch (parseError) {
-                    errorMessage = await response.text();
-                }
-
-                throw new Error(errorMessage);
+                throw new Error(await readErrorMessage(response, "Houve um erro ao registrar a manutenção."));
             }
 
-            notyf.success("Manutenção cadastrada com sucesso!");
-            formCreateMaintenance.reset();
+            notyf.success(`Manutenção de ${currentEquipmentName} registrada com sucesso!`);
 
-            // form.reset() só limpa o valor do input real; o flatpickr precisa ser limpo também para
-            // manter o altInput e o estado interno sincronizados com o valor visível
-            if (maintenanceDatePicker) {
-                maintenanceDatePicker.clear();
-            } else {
-                maintenanceDateInput.value = "";
-            }
-            setNextMaintenanceDateValue("");
-
-            refillHiddenMaintenanceFields();
-
-            await loadMaintenancesTable(currentEquipmentId);
+            closeOverlay(modalMaintenance);
 
             if (onSuccess) {
                 await onSuccess();
@@ -247,6 +272,8 @@ export async function submitFormCreateMaintenance(onSuccess) {
         } catch (error) {
             notyf.error(error.message);
             console.log(error);
+        } finally {
+            setSubmitting(false);
         }
     })
 }

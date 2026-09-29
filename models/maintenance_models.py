@@ -29,7 +29,7 @@ class MaintenanceModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT m.id, m.maintenance_date, m.next_maintenance_date, m.description, u.username AS user, e.name AS equipment 
+                SELECT m.id, m.maintenance_date, m.next_maintenance_date, m.description, u.name AS user, e.name AS equipment 
                 FROM maintenances m
                 INNER JOIN users u ON u.id = m.user_id
                 INNER JOIN equipments e ON e.id = m.equipment_id

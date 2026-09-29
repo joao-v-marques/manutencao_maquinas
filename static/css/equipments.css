@@ -31,21 +31,32 @@
 
 .search-field input {
   width: 100%;
-  height: 38px;
+  height: 40px;
   padding: 0 12px 0 36px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text-primary);
   font-size: 13px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
 }
 
 .search-field input::placeholder {
   color: var(--color-text-muted);
 }
 
+.search-field input:hover {
+  border-color: #3a3f48;
+}
+
 .search-field input:focus {
+  outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+}
+
+.search-field:focus-within > svg {
+  stroke: var(--color-primary);
 }
 
 .filters {
@@ -56,7 +67,7 @@
 }
 
 .filter-select {
-  height: 38px;
+  height: 40px;
   padding: 0 10px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -65,10 +76,40 @@
   font-size: 13px;
   cursor: pointer;
   min-width: 130px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+}
+
+/* selects ganham seta própria (a nativa destoa do tema escuro); inputs de data com a mesma classe não são afetados */
+select.filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23767e88' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+}
+
+select.filter-select option {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.filter-select:hover {
+  border-color: #3a3f48;
+  color: var(--color-text-primary);
 }
 
 .filter-select:focus {
+  outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+  color: var(--color-text-primary);
+}
+
+/* filtro com valor aplicado fica destacado para o usuário saber o que está restringindo a lista */
+.filter-select.has-value {
+  border-color: rgba(var(--color-primary-rgb), 0.55);
   color: var(--color-text-primary);
 }
 
@@ -79,18 +120,45 @@
 }
 
 .btn {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  height: 38px;
-  padding: 0 14px;
+  height: 40px;
+  padding: 0 16px;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
   white-space: nowrap;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform 0.1s ease, box-shadow var(--transition-fast);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* estado de carregamento: esconde o conteúdo e mostra um spinner no centro, mantendo a largura do botão */
+.btn.is-loading {
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn.is-loading svg {
+  visibility: hidden;
+}
+
+.btn.is-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  animation: spin 0.7s linear infinite;
 }
 
 .btn svg {
@@ -103,10 +171,12 @@
 .btn-primary {
   background-color: var(--color-primary);
   color: #ffffff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 4px 14px rgba(var(--color-primary-rgb), 0.35);
 }
 
 .btn-secondary {
@@ -141,9 +211,28 @@
 }
 
 .btn-sm {
-  height: 30px;
-  padding: 0 10px;
+  height: 32px;
+  padding: 0 12px;
   font-size: 12px;
+  gap: 5px;
+}
+
+.btn-sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-link {
+  height: auto;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-primary-hover);
+  font-weight: 600;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
 }
 
 .btn:disabled {
@@ -155,8 +244,13 @@
 .active-filters {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
   margin-bottom: var(--space-2);
+}
+
+.active-filters:empty {
+  display: none;
 }
 
 .filter-chip {
@@ -165,10 +259,24 @@
   gap: 6px;
   padding: 4px 6px 4px 10px;
   background-color: var(--color-primary-muted);
-  color: var(--color-primary);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+  color: #8fb3ff;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
+  animation: chip-in 0.18s var(--ease-out);
+}
+
+.filter-chip__label {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
 }
 
 .filter-chip button {
@@ -213,22 +321,76 @@ table.data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
 }
 
 .data-table thead th {
   text-align: left;
-  padding: 12px 16px;
+  padding: 11px 16px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--color-text-muted);
+  background-color: var(--color-surface-raised);
   border-bottom: 1px solid var(--color-border);
   white-space: nowrap;
 }
 
+/* cabeçalho ordenável: o botão ocupa a célula inteira e a seta indica a direção atual (aria-sort no th) */
+.data-table th.is-sortable {
+  padding: 0;
+}
+
+.th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 11px 16px;
+  background: none;
+  border: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.th-sort:hover {
+  color: var(--color-text-primary);
+}
+
+.th-sort svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  opacity: 0.35;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.th-sort:hover svg {
+  opacity: 0.7;
+}
+
+th[aria-sort="ascending"] .th-sort,
+th[aria-sort="descending"] .th-sort {
+  color: var(--color-text-primary);
+}
+
+th[aria-sort="ascending"] .th-sort svg,
+th[aria-sort="descending"] .th-sort svg {
+  opacity: 1;
+  stroke: var(--color-primary-hover);
+}
+
+th[aria-sort="descending"] .th-sort svg {
+  transform: rotate(180deg);
+}
+
 .data-table tbody td {
-  padding: 13px 16px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-secondary);
   vertical-align: middle;
@@ -239,7 +401,7 @@ table.data-table {
 }
 
 .data-table tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .data-table tbody tr:hover {
@@ -274,13 +436,19 @@ table.data-table {
   background: transparent;
   cursor: pointer;
   color: var(--color-text-muted);
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .icon-btn svg {
   width: 15px;
   height: 15px;
   stroke: currentColor;
+}
+
+.icon-btn--bordered {
+  width: 32px;
+  height: 32px;
+  border-color: var(--color-border);
 }
 
 .icon-btn:hover {
@@ -301,6 +469,11 @@ table.data-table {
 .icon-btn--create:hover {
   color: #00b72e;
   background-color: rgba(46, 180, 82, 0.12);
+}
+
+.icon-btn--history:hover {
+  color: #d98a00;
+  background-color: rgba(230, 150, 20, 0.14);
 }
 
 /* Badge de status */
@@ -333,10 +506,128 @@ table.data-table {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
   padding: 12px 16px;
   border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
   font-size: 12px;
   color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Paginação */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.pagination__size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination__size select {
+  height: 30px;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.pagination__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination__label {
+  min-width: 72px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.pagination__nav .icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+/* Skeleton de carregamento (linhas da tabela, cards, etc.) */
+.skeleton {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--color-surface-hover) 0%, #2a2f37 50%, var(--color-surface-hover) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.3s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Estado vazio / erro dentro de tabelas */
+.table-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-6) var(--space-3);
+  text-align: center;
+}
+
+.table-state__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface-hover);
+  border: 1px solid var(--color-border);
+}
+
+.table-state__icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--color-text-muted);
+}
+
+.table-state--error .table-state__icon {
+  background-color: rgba(var(--color-danger-rgb), 0.12);
+  border-color: rgba(var(--color-danger-rgb), 0.3);
+}
+
+.table-state--error .table-state__icon svg {
+  stroke: var(--color-danger);
+}
+
+.table-state__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.table-state__text {
+  max-width: 360px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.table-state .btn {
+  margin-top: 6px;
+}
+
+.data-table tbody tr.is-state-row:hover {
+  background: transparent;
 }
 
 /* ===================== Overlay / Modais ===================== */
@@ -344,8 +635,8 @@ table.data-table {
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(6, 10, 8, 0.7);
-  backdrop-filter: blur(2px);
+  background-color: rgba(5, 7, 9, 0.72);
+  backdrop-filter: blur(4px);
   display: none;
   align-items: flex-start;
   justify-content: center;
@@ -385,6 +676,29 @@ table.data-table {
 
 .overlay.is-open {
   display: flex;
+  animation: overlay-in 0.18s ease-out;
+}
+
+.overlay.is-open .modal {
+  animation: modal-in 0.24s var(--ease-out);
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+
+/* trava o scroll da página enquanto houver modal aberto (classe controlada por utils/modal.js) */
+body.has-modal-open {
+  overflow: hidden;
 }
 
 .modal {
@@ -392,10 +706,14 @@ table.data-table {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - var(--space-4) * 2);
+}
+
+.modal--sm {
+  max-width: 560px;
 }
 
 .modal--form {
@@ -489,11 +807,45 @@ table.data-table {
 
 .modal__footer {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: var(--space-1);
   padding: var(--space-2) var(--space-3);
   border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   flex-shrink: 0;
+}
+
+.modal__footer-hint {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--color-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background-color: var(--color-bg);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay.is-open,
+  .overlay.is-open .modal,
+  .filter-chip,
+  .skeleton {
+    animation: none;
+  }
 }
 
 /* ===================== Formulário (cadastro/edição) ===================== */
@@ -556,11 +908,27 @@ table.data-table {
   color: var(--color-text-primary);
   font-size: 13px;
   width: 100%;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .form-field input:focus,
 .form-field select:focus {
+  outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+}
+
+/* campos somente leitura (não de data) aparecem como "valor exibido", não como campo editável */
+.form-field input[readonly]:not(.date-field__input) {
+  background-color: var(--color-surface-raised);
+  border-style: dashed;
+  color: var(--color-text-secondary);
+  cursor: default;
+}
+
+.form-field input[readonly]:not(.date-field__input):focus {
+  box-shadow: none;
+  border-color: var(--color-border);
 }
 
 .form-field__hint {
@@ -578,10 +946,28 @@ table.data-table {
   border-radius: var(--radius-sm);
   color: var(--color-text-primary);
   font: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-field textarea::placeholder {
+  color: var(--color-text-muted);
 }
 
 .form-field textarea:focus {
+  outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+}
+
+.form-field__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-1);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===================== Campos de data (filtros e formulários) — flatpickr ===================== */

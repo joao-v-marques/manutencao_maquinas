@@ -62,3 +62,68 @@ export function classifyMaintenanceStatus(nextMaintenanceDate, today, windowDays
 
     return { key: "emdia", label: "Em dia", diffInDays };
 }
+
+// janela usada na página de manutenções para "próximo do vencimento" (mesma do dashboard: 30 dias)
+export const MAINTENANCE_WINDOW_DAYS = 30;
+
+// dias de atraso a partir dos quais uma manutenção vencida é considerada crítica
+export const CRITICAL_OVERDUE_DAYS = 30;
+
+// refina a classificação separando as vencidas há mais de 30 dias (críticas) das vencidas recentes;
+// a chave resultante é usada como filtro, cor e rótulo em toda a página de manutenções
+export function classifyMaintenanceStatusDetailed(nextMaintenanceDate, today, windowDays = DEFAULT_NEXT_MAINTENANCE_WINDOW_DAYS) {
+    const status = classifyMaintenanceStatus(nextMaintenanceDate, today, windowDays);
+
+    if (status.key === "vencida" && status.diffInDays < -CRITICAL_OVERDUE_DAYS) {
+        return { ...status, key: "vencida_critica", label: "Crítica" };
+    }
+
+    return status;
+}
+
+// texto relativo ao dia de hoje: "hoje", "amanhã", "em 12 dias", "ontem", "há 45 dias"
+export function formatRelativeDays(diffInDays) {
+    if (diffInDays === null || diffInDays === undefined) {
+        return "";
+    }
+
+    if (diffInDays === 0) return "hoje";
+    if (diffInDays === 1) return "amanhã";
+    if (diffInDays === -1) return "ontem";
+
+    const absDays = Math.abs(diffInDays);
+    return diffInDays > 0 ? `em ${absDays} dias` : `há ${absDays} dias`;
+}
+
+// "a cada 1 mês" / "a cada 6 meses"
+export function formatIntervalMonths(months) {
+    const value = Number(months);
+
+    if (!value) {
+        return "";
+    }
+
+    return value === 1 ? "a cada 1 mês" : `a cada ${value} meses`;
+}
+
+// data de hoje no formato aaaa-mm-dd (horário local), usada como valor padrão dos campos de data
+export function todayInputValue(offsetDays = 0) {
+    const date = new Date();
+    date.setDate(date.getDate() + offsetDays);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+// escapa texto vindo da API antes de interpolar em innerHTML
+export function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}

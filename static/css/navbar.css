@@ -1,33 +1,51 @@
-/* Navbar padrão — reutilizada em todas as páginas do sistema */
+/* ===========================================================
+   Navbar padrão — renderizada por static/js/navbar.js em todas as páginas
+   (os templates só têm o ponto de montagem <header class="navbar" id="appNavbar">)
+   =========================================================== */
 
 .navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  padding: 0 24px;
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+  padding: 0 24px;
+  background-color: rgba(24, 27, 31, 0.86);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
+
+.navbar.is-scrolled {
+  background-color: rgba(24, 27, 31, 0.94);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ===================== Marca ===================== */
 
 .navbar__brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  gap: 10px;
+  flex-shrink: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-text-primary);
+  text-decoration: none;
   white-space: nowrap;
+  border-radius: 10px;
 }
 
 .navbar__brand-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background-color: var(--color-primary);
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 4px 12px rgba(var(--color-primary-rgb), 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,95 +58,113 @@
   stroke: #ffffff;
 }
 
-/* Espaço reservado para os links de navegação (adicionados depois) */
+.navbar__brand-short {
+  display: none;
+}
+
+/* ===================== Links ===================== */
+
+/* .navbar__links é o painel (desktop: faixa de links; mobile: painel suspenso com links + usuário) */
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-end;
   flex: 1;
-  margin-left: 32px;
+  min-width: 0;
+}
+
+.navbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .nav-link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
-
   height: 38px;
-  padding: 0 14px;
-
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-
-  background-color: transparent;
-
+  padding: 0 12px;
+  border-radius: 9px;
   color: var(--color-text-secondary);
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
-
-  transition:
-    background-color .15s ease,
-    border-color .15s ease,
-    color .15s ease,
-    transform .1s ease,
-    box-shadow .15s ease;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .nav-link svg {
   width: 16px;
   height: 16px;
   stroke: currentColor;
+  flex-shrink: 0;
+  opacity: 0.8;
 }
 
-/* Hover */
 .nav-link:hover {
   background-color: var(--color-surface-hover);
-  border-color: rgba(var(--color-primary-rgb), .3);
   color: var(--color-text-primary);
-  box-shadow: 0 0 0 1px rgba(var(--color-primary-rgb), .08);
 }
 
-/* Clique */
-.nav-link:active {
-  transform: scale(.98);
-}
-
-/* Foco */
 .nav-link:focus-visible {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), .15);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
 }
 
-/* Página ativa */
 .nav-link.is-active {
   background-color: var(--color-primary-muted);
-  border-color: rgba(var(--color-primary-rgb), .35);
-  color: var(--color-primary);
+  color: #dbe6ff;
 }
+
+.nav-link.is-active svg {
+  stroke: var(--color-primary-hover);
+  opacity: 1;
+}
+
+/* indicador da página atual colado na borda inferior da navbar */
+.nav-link.is-active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -13px;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background-color: var(--color-primary-hover);
+}
+
+/* ===================== Área do usuário ===================== */
 
 .navbar__actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.navbar__menu {
+  position: relative;
 }
 
 .navbar__user {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px 6px 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  border: none;
+  gap: 10px;
+  height: 44px;
+  padding: 0 8px 0 5px;
+  border: 1px solid transparent;
+  border-radius: 12px;
   background: transparent;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .navbar__user:hover,
-.navbar__user:focus-visible {
+.navbar__user[aria-expanded="true"] {
   background-color: var(--color-surface-hover);
+  border-color: var(--color-border);
 }
 
 .navbar__user:focus-visible {
@@ -137,30 +173,43 @@
 }
 
 .navbar__avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background-color: var(--color-primary-muted);
-  color: var(--color-primary);
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35), rgba(var(--color-primary-rgb), 0.15));
+  border: 1px solid rgba(var(--color-primary-rgb), 0.4);
+  color: #dbe6ff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   flex-shrink: 0;
+}
+
+.navbar__avatar--lg {
+  width: 42px;
+  height: 42px;
+  font-size: 14px;
 }
 
 .navbar__user-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1.2;
+  line-height: 1.25;
+  max-width: 200px;
 }
 
 .navbar__user-name {
+  max-width: 100%;
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar__user-role {
@@ -173,30 +222,118 @@
   height: 16px;
   stroke: var(--color-text-muted);
   flex-shrink: 0;
+  transition: transform 0.2s var(--ease-out);
 }
 
-/* Menu suspenso do usuário */
-.navbar__menu {
-  position: relative;
+.navbar__user[aria-expanded="true"] .navbar__chevron {
+  transform: rotate(180deg);
 }
+
+/* ===================== Dropdown do usuário ===================== */
 
 .navbar__dropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  min-width: 200px;
+  width: 280px;
+  padding: 6px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  padding: 6px;
+  border-radius: 14px;
+  box-shadow: var(--shadow-elevated);
   display: none;
   flex-direction: column;
   gap: 2px;
+  transform-origin: top right;
 }
 
 .navbar__dropdown.is-open {
   display: flex;
+  animation: navbar-pop 0.18s var(--ease-out);
+}
+
+@keyframes navbar-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+.navbar__profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+}
+
+.navbar__profile-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+/* no perfil o nome completo pode quebrar linha (na barra ele é truncado) */
+.navbar__profile-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.navbar__profile-email {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar__role-badge {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background-color: var(--color-primary-muted);
+  color: #b3cbff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.navbar__meta {
+  display: grid;
+  gap: 6px;
+  margin: 2px 4px 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.navbar__meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.navbar__meta-row dt {
+  color: var(--color-text-muted);
+}
+
+.navbar__meta-row dd {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar__dropdown-divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 4px 2px;
 }
 
 .navbar__dropdown-item {
@@ -209,60 +346,158 @@
   background: transparent;
   border-radius: 8px;
   font-size: 13px;
+  font-weight: 500;
   color: var(--color-text-primary);
   text-align: left;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .navbar__dropdown-item:hover,
 .navbar__dropdown-item:focus-visible {
   background-color: var(--color-surface-hover);
-}
-
-.navbar__dropdown-item:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
+  outline: none;
 }
 
 .navbar__dropdown-item svg {
   width: 16px;
   height: 16px;
-  stroke: var(--color-text-muted);
+  stroke: currentColor;
   flex-shrink: 0;
 }
 
 .navbar__dropdown-item--danger {
-  color: var(--color-danger);
+  color: #f0837a;
 }
 
-.navbar__dropdown-item--danger svg {
-  stroke: var(--color-danger);
+.navbar__dropdown-item--danger:hover,
+.navbar__dropdown-item--danger:focus-visible {
+  background-color: rgba(var(--color-danger-rgb), 0.12);
 }
 
-.navbar__dropdown-divider {
-  height: 1px;
-  background-color: var(--color-border);
-  margin: 4px 2px;
+.navbar__dropdown-item:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }
 
-/* Botão hambúrguer (mobile) — reservado para quando os links entrarem */
+/* ===================== Skeleton (enquanto o /me carrega) ===================== */
+
+.navbar__skeleton {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--color-surface-hover) 0%, #2a2f37 50%, var(--color-surface-hover) 100%);
+  background-size: 200% 100%;
+  animation: navbar-shimmer 1.3s ease-in-out infinite;
+}
+
+.navbar__skeleton--link {
+  width: 118px;
+  height: 30px;
+  margin: 0 4px;
+}
+
+.navbar__skeleton--avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+
+.navbar__skeleton--text {
+  width: 120px;
+  height: 12px;
+}
+
+.navbar__user--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+@keyframes navbar-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ===================== Botão hambúrguer (mobile) ===================== */
+
 .navbar__toggle {
   display: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   border: 1px solid var(--color-border);
   background: transparent;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-fast);
+}
+
+.navbar__toggle:hover {
+  background-color: var(--color-surface-hover);
 }
 
 .navbar__toggle svg {
-  width: 18px;
-  height: 18px;
-  stroke: var(--color-text-primary);
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+.navbar__toggle line {
+  transform-origin: 12px 12px;
+  transition: transform 0.2s var(--ease-out), opacity 0.15s ease;
+}
+
+.navbar__toggle[aria-expanded="true"] line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.navbar__toggle[aria-expanded="true"] line:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar__toggle[aria-expanded="true"] line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* bloco do usuário que só aparece dentro do painel mobile */
+.navbar__mobile-user {
+  display: none;
+}
+
+/* ===================== Responsividade ===================== */
+
+/* desktop: links alinhados à direita, separados do menu do usuário por um divisor vertical */
+@media (min-width: 769px) {
+  .navbar__actions {
+    padding-left: 16px;
+    border-left: 1px solid var(--color-border);
+    height: 32px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .navbar__user-info {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    gap: 12px;
+  }
+
+  .nav-link {
+    padding: 0 10px;
+  }
+
+  .nav-link svg {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -270,11 +505,98 @@
     padding: 0 16px;
   }
 
-  .navbar__user-info {
+  .navbar__toggle {
+    display: flex;
+  }
+
+  /* no mobile o chip do usuário vai para dentro do painel */
+  .navbar__menu {
     display: none;
   }
 
-  .navbar__toggle {
+  /* links viram um painel abaixo da navbar, aberto pelo hambúrguer */
+  .navbar__links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    padding: 12px 16px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+
+  .navbar__links.is-open {
     display: flex;
+    animation: navbar-pop 0.18s var(--ease-out);
+  }
+
+  .navbar__nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nav-link {
+    height: 46px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .nav-link svg {
+    display: block;
+  }
+
+  .nav-link.is-active::after {
+    left: 0;
+    right: auto;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    height: auto;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .navbar__skeleton--link {
+    display: none;
+  }
+
+  .navbar__mobile-user {
+    display: block;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .navbar__mobile-user .navbar__meta {
+    margin: 0 0 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .navbar__brand-full {
+    display: none;
+  }
+
+  .navbar__brand-short {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar__dropdown.is-open,
+  .navbar__links.is-open,
+  .navbar__skeleton {
+    animation: none;
+  }
+
+  .navbar__toggle line,
+  .navbar__chevron {
+    transition: none;
   }
 }

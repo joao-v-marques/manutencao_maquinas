@@ -2,6 +2,7 @@ import { openModal, closeModalCreateEquipment, createEquipment } from "./modalsE
 import { openDeleteEquipmentModal, closeModalDeleteEquipment, deleteEquipment } from "./modalsEquipments/deleteEquipment.js";
 import { closeModalEditEquipment, loadFieldsEdit, openEditEquipmentModal, sendFormEditEquipment } from "./modalsEquipments/editEquipment.js";
 import { closeModalMaintenanceEquipment, openMaintenanceModal, submitFormCreateMaintenance } from "./modalsEquipments/maintenanceEquipment.js";
+import { closeModalMaintenanceHistory, openMaintenanceHistoryModal } from "./modalsEquipments/maintenanceHistoryModal.js";
 import { formatDateToInput } from "./utils/maintenanceStatus.js";
 
 // guarda a lista completa vinda da API para permitir filtrar sem novas requisições
@@ -53,6 +54,13 @@ function renderEquipmentsTable(equipmentsToRender) {
                             <circle cx="12" cy="12" r="10"/>
                         </svg>
                     </button>
+                    <button class="icon-btn icon-btn--history maintenance-history-button" aria-label="Histórico de Manutenções ${equipment.name}" title="Histórico de Manutenções">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+                            <polyline points="3 3 3 8 8 8"/>
+                            <polyline points="12 7 12 12 15 15"/>
+                        </svg>
+                    </button>
                 </div>
             </td>
         `;
@@ -83,6 +91,12 @@ function renderEquipmentsTable(equipmentsToRender) {
     tbodyEquipments.querySelectorAll(".maintenance-action-button").forEach((button, index) => {
         button.addEventListener("click", () => {
             openMaintenanceModal(equipmentsToRender[index])
+        })
+    })
+
+    tbodyEquipments.querySelectorAll(".maintenance-history-button").forEach((button, index) => {
+        button.addEventListener("click", () => {
+            openMaintenanceHistoryModal(equipmentsToRender[index])
         })
     })
 }
@@ -215,6 +229,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     closeModalMaintenanceEquipment();
     submitFormCreateMaintenance();
+
+    closeModalMaintenanceHistory();
 
     document.getElementById("searchNameInput").addEventListener("input", applyEquipmentsFilters);
     document.getElementById("filterSector").addEventListener("change", applyEquipmentsFilters);

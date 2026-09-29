@@ -17,12 +17,12 @@ class Users:
         self.maintenance_group_id = maintenance_group_id
         self.is_active = is_active
 
+    # o password_hash nunca deve ir para o cliente: continua disponível só como atributo (usado na autenticação)
     def to_dict(self):
         return {
             "id": self.id,
             "username": self.username,
             "name": self.name,
-            "password_hash": self.password_hash,
             "email": self.email,
             "role": self.role,
             "role_id": self.role_id,

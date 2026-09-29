@@ -23,8 +23,12 @@
   --color-success-muted: rgba(0, 153, 93, 0.16);
   --color-success-rgb: 0, 153, 93;
   --color-warning: #f47920;
+  --color-warning-rgb: 244, 121, 32;
   --color-danger: #e2574c;
+  --color-danger-rgb: 226, 87, 76;
   --color-info: #a4d8de;
+  --color-info-rgb: 164, 216, 222;
+  --color-muted-rgb: 118, 126, 136;
 
   --color-chart-1: #00995d;
   --color-chart-2: #a4d8de;
@@ -45,6 +49,11 @@
   --radius-lg: 16px;
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.3);
+
+  /* Movimento */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast: 0.15s var(--ease-out);
 }
 
 /* ===========================================================

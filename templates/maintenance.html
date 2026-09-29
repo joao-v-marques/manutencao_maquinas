@@ -12,126 +12,101 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/maintenances.css') }}">
 </head>
 <body>
-    <header class="navbar">
-        <div class="navbar__brand">
-            <span class="navbar__brand-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-            </span>
-            <span>Manutenção de Máquinas</span>
-        </div>
-
-        <div class="navbar__actions">
-            <nav id="navbarLinks" class="navbar__links" aria-label="Navegação principal">
-                <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('bp_render_equipments.render_equipments') }}" class="nav-link">Equipamentos</a>
-                <a href="{{ url_for('bp_render_maintenance.render_maintenance') }}" class="nav-link">Manutenções</a>
-            </nav>
-
-            <button class="navbar__toggle" aria-label="Abrir menu de navegação" aria-expanded="false">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <line x1="3" y1="12" x2="21" y2="12"/>
-                    <line x1="3" y1="18" x2="21" y2="18"/>
-                </svg>
-            </button>
-
-            <div class="navbar__menu">
-                <button class="navbar__user" id="userMenuButton" aria-haspopup="true" aria-expanded="false" aria-controls="userMenuDropdown">
-                    <span class="navbar__user-info">
-                        <span class="navbar__user-name" id="userNameLabel">Carregando...</span>
-                        <span class="navbar__user-role" id="userRoleLabel">&nbsp;</span>
-                    </span>
-                    <svg class="navbar__chevron" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"/>
-                    </svg>
-                </button>
-
-                <div class="navbar__dropdown" id="userMenuDropdown" role="menu">
-                    <div class="navbar__dropdown-divider"></div>
-                    <button class="navbar__dropdown-item navbar__dropdown-item--danger" role="menuitem" id="logoutButton">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16 17 21 12 16 7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        Sair
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- navbar renderizada por static/js/navbar.js -->
+    <header class="navbar" id="appNavbar" data-active="manutencao"></header>
 
     <main class="page">
         <div class="page__header">
             <div>
                 <h1 class="page__title">Manutenções</h1>
-                <p class="page__subtitle">Acompanhe o status de manutenção dos equipamentos.</p>
+                <p class="page__subtitle">Acompanhe prazos, registre manutenções e consulte o histórico de cada equipamento.</p>
+            </div>
+
+            <div class="page__updated">
+                <span id="lastUpdatedLabel" aria-live="polite">Atualizando…</span>
+                <button class="btn-refresh" id="refreshButton" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 4v6h-6" />
+                        <path d="M1 20v-6h6" />
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                    </svg>
+                    Atualizar
+                </button>
             </div>
         </div>
 
-        <section class="summary-grid" aria-label="Resumo do status de manutenção dos equipamentos">
-            <article class="summary-card summary-card--danger">
-                <div class="summary-card__head">
-                    <span class="summary-card__title">Vencidas há -30 dias</span>
-                    <span class="summary-card__icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="8" x2="12" y2="12" />
-                            <line x1="12" y1="16" x2="12.01" y2="16" />
-                        </svg>
-                    </span>
+        <!-- ===================== SAÚDE GERAL ===================== -->
+        <section class="health" aria-labelledby="healthTitle">
+            <div class="health__head">
+                <h2 class="health__title" id="healthTitle">Conformidade da manutenção preventiva</h2>
+                <div class="health__score">
+                    <strong id="healthScore">–</strong>
+                    <span id="healthScoreCaption">dos equipamentos sem atraso</span>
                 </div>
-                <strong class="summary-card__value" id="lateCount">0</strong>
-                <button type="button" class="summary-card__action" id="openLateModalButton">
-                    Ver equipamentos
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                        <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                </button>
-            </article>
+            </div>
+            <div class="health__bar" id="healthBar" role="img" aria-label="Distribuição dos equipamentos por status de manutenção"></div>
+            <ul class="health__legend" id="healthLegend"></ul>
+        </section>
 
-            <article class="summary-card summary-card--danger">
-                <div class="summary-card__head">
-                    <span class="summary-card__title">Vencidas há +30 dias</span>
-                    <span class="summary-card__icon">
+        <!-- ===================== CARDS DE STATUS (FILTROS) ===================== -->
+        <section class="status-cards" aria-label="Filtrar equipamentos por status de manutenção">
+            <button type="button" class="status-card status--vencida_critica" data-status-filter="vencida_critica" aria-pressed="false">
+                <span class="status-card__head">
+                    <span class="status-card__title">Vencidas há +30 dias</span>
+                    <span class="status-card__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
                             <line x1="12" y1="9" x2="12" y2="13" />
                             <line x1="12" y1="17" x2="12.01" y2="17" />
                         </svg>
                     </span>
-                </div>
-                <strong class="summary-card__value" id="veryLateCount">0</strong>
-                <button type="button" class="summary-card__action" id="openVeryLateModalButton">
-                    Ver equipamentos
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                        <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                </button>
-            </article>
+                </span>
+                <strong class="status-card__value" data-count><span class="skeleton"></span></strong>
+                <span class="status-card__hint">Atraso crítico</span>
+                <span class="status-card__check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+            </button>
 
-            <article class="summary-card summary-card--warning">
-                <div class="summary-card__head">
-                    <span class="summary-card__title">Vencem hoje</span>
-                    <span class="summary-card__icon">
+            <button type="button" class="status-card status--vencida" data-status-filter="vencida" aria-pressed="false">
+                <span class="status-card__head">
+                    <span class="status-card__title">Vencidas há até 30 dias</span>
+                    <span class="status-card__icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </span>
+                </span>
+                <strong class="status-card__value" data-count><span class="skeleton"></span></strong>
+                <span class="status-card__hint">Requer atenção imediata</span>
+                <span class="status-card__check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+            </button>
+
+            <button type="button" class="status-card status--hoje" data-status-filter="hoje" aria-pressed="false">
+                <span class="status-card__head">
+                    <span class="status-card__title">Vencem hoje</span>
+                    <span class="status-card__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                         </svg>
                     </span>
-                </div>
-                <strong class="summary-card__value" id="todayCount">0</strong>
-                <span class="summary-card__trend">Agende o quanto antes</span>
-            </article>
+                </span>
+                <strong class="status-card__value" data-count><span class="skeleton"></span></strong>
+                <span class="status-card__hint">Agende o quanto antes</span>
+                <span class="status-card__check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+            </button>
 
-            <article class="summary-card summary-card--primary">
-                <div class="summary-card__head">
-                    <span class="summary-card__title">Próximas manutenções</span>
-                    <span class="summary-card__icon">
+            <button type="button" class="status-card status--proxima" data-status-filter="proxima" aria-pressed="false">
+                <span class="status-card__head">
+                    <span class="status-card__title">Próximos 30 dias</span>
+                    <span class="status-card__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="4" width="18" height="18" rx="2" />
                             <line x1="16" y1="2" x2="16" y2="6" />
@@ -139,112 +114,163 @@
                             <line x1="3" y1="10" x2="21" y2="10" />
                         </svg>
                     </span>
-                </div>
-                <strong class="summary-card__value" id="nextCount">0</strong>
-                <span class="summary-card__trend">Vencem nos próximos 30 dias</span>
-            </article>
+                </span>
+                <strong class="status-card__value" data-count><span class="skeleton"></span></strong>
+                <span class="status-card__hint">Planeje a execução</span>
+                <span class="status-card__check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+            </button>
 
-            <article class="summary-card summary-card--success">
-                <div class="summary-card__head">
-                    <span class="summary-card__title">Equipamentos em dia</span>
-                    <span class="summary-card__icon">
+            <button type="button" class="status-card status--emdia" data-status-filter="emdia" aria-pressed="false">
+                <span class="status-card__head">
+                    <span class="status-card__title">Em dia</span>
+                    <span class="status-card__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
                     </span>
-                </div>
-                <strong class="summary-card__value" id="okCount">0</strong>
-                <span class="summary-card__trend">Nenhuma ação necessária</span>
-            </article>
+                </span>
+                <strong class="status-card__value" data-count><span class="skeleton"></span></strong>
+                <span class="status-card__hint">Nenhuma ação necessária</span>
+                <span class="status-card__check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+            </button>
 
-            <article class="summary-card summary-card--muted">
-                <div class="summary-card__head">
-                    <span class="summary-card__title">Sem manutenção registrada</span>
-                    <span class="summary-card__icon">
+            <button type="button" class="status-card status--primeira" data-status-filter="primeira" aria-pressed="false">
+                <span class="status-card__head">
+                    <span class="status-card__title">Sem registro</span>
+                    <span class="status-card__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                             <line x1="12" y1="17" x2="12.01" y2="17" />
                         </svg>
                     </span>
-                </div>
-                <strong class="summary-card__value" id="neverCount">0</strong>
-                <span class="summary-card__trend">Aguardando primeiro registro</span>
-            </article>
+                </span>
+                <strong class="status-card__value" data-count><span class="skeleton"></span></strong>
+                <span class="status-card__hint">Aguardando 1º registro</span>
+                <span class="status-card__check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+            </button>
         </section>
 
-        <div class="toolbar">
-            <div class="search-field">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <input type="text" id="searchEquipmentNameInput" placeholder="Buscar por nome do equipamento...">
-            </div>
+        <!-- ===================== FILTROS ===================== -->
+        <section class="filter-panel" aria-label="Filtros">
+            <div class="toolbar">
+                <div class="search-field" id="searchField">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" id="searchEquipmentNameInput" placeholder="Buscar equipamento..." autocomplete="off" aria-label="Buscar por nome do equipamento">
+                    <kbd class="search-field__kbd" title="Pressione / para buscar">/</kbd>
+                    <button type="button" class="search-field__clear" id="clearSearchButton" aria-label="Limpar busca">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
 
-            <div class="filters">
-                <select class="filter-select" id="filterMaintenanceSector">
-                    <option value="">Todos os setores</option>
-                </select>
-                <select class="filter-select" id="filterMaintenanceStatus">
-                    <option value="">Todos os status</option>
-                    <option value="vencida">Vencida</option>
-                    <option value="hoje">Hoje</option>
-                    <option value="proxima">Próxima</option>
-                    <option value="emdia">Em dia</option>
-                    <option value="primeira">Sem manutenção</option>
-                </select>
-                <div class="filter-date-range">
-                    <label for="filterDueDateFrom">Vencimento</label>
-                    <div class="filter-date-range__inputs">
-                        <div class="date-field" id="filterDueDateFromWrap">
-                            <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" />
-                                <line x1="16" y1="2" x2="16" y2="6" />
-                                <line x1="8" y1="2" x2="8" y2="6" />
-                                <line x1="3" y1="10" x2="21" y2="10" />
-                            </svg>
-                            <input type="date" class="filter-select date-field__input" id="filterDueDateFrom" aria-label="Vencimento de" placeholder="Data inicial" data-input>
-                            <button type="button" class="date-field__clear" data-clear aria-label="Limpar vencimento de" tabindex="-1">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                <div class="filters">
+                    <select class="filter-select" id="filterMaintenanceSector" aria-label="Filtrar por setor">
+                        <option value="">Todos os setores</option>
+                    </select>
+                    <select class="filter-select" id="filterMaintenanceStatus" aria-label="Filtrar por status">
+                        <option value="">Todos os status</option>
+                        <option value="vencida_critica">Vencidas há +30 dias</option>
+                        <option value="vencida">Vencidas há até 30 dias</option>
+                        <option value="hoje">Vencem hoje</option>
+                        <option value="proxima">Próximos 30 dias</option>
+                        <option value="emdia">Em dia</option>
+                        <option value="primeira">Sem registro</option>
+                    </select>
+                    <div class="filter-date-range">
+                        <span class="filter-date-range__label" id="dueDateRangeLabel">Vencimento</span>
+                        <div class="filter-date-range__inputs" role="group" aria-labelledby="dueDateRangeLabel">
+                            <div class="date-field" id="filterDueDateFromWrap">
+                                <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
-                            </button>
-                        </div>
-                        <span>até</span>
-                        <div class="date-field" id="filterDueDateToWrap">
-                            <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" />
-                                <line x1="16" y1="2" x2="16" y2="6" />
-                                <line x1="8" y1="2" x2="8" y2="6" />
-                                <line x1="3" y1="10" x2="21" y2="10" />
-                            </svg>
-                            <input type="date" class="filter-select date-field__input" id="filterDueDateTo" aria-label="Vencimento até" placeholder="Data final" data-input>
-                            <button type="button" class="date-field__clear" data-clear aria-label="Limpar vencimento até" tabindex="-1">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                <input type="date" class="filter-select date-field__input" id="filterDueDateFrom" aria-label="Vencimento de" placeholder="De" data-input>
+                                <button type="button" class="date-field__clear" data-clear aria-label="Limpar vencimento de" tabindex="-1">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span>–</span>
+                            <div class="date-field" id="filterDueDateToWrap">
+                                <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
-                            </button>
+                                <input type="date" class="filter-select date-field__input" id="filterDueDateTo" aria-label="Vencimento até" placeholder="Até" data-input>
+                                <button type="button" class="date-field__clear" data-clear aria-label="Limpar vencimento até" tabindex="-1">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+            <div class="filter-panel__summary">
+                <span class="results-label" id="resultsLabel" aria-live="polite"></span>
+                <div class="active-filters" id="activeFilters"></div>
+            </div>
+        </section>
+
+        <!-- ===================== TABELA ===================== -->
         <div class="table-card">
             <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table maintenance-table">
                     <thead>
                         <tr>
-                            <th>Equipamento</th>
-                            <th>Setor</th>
-                            <th>Última Manutenção</th>
-                            <th>Próxima Manutenção</th>
-                            <th>Status</th>
-                            <th style="text-align: center;">Ações</th>
+                            <th class="is-sortable" aria-sort="none">
+                                <button type="button" class="th-sort" data-sort-key="name">
+                                    Equipamento
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                                </button>
+                            </th>
+                            <th class="is-sortable" aria-sort="none">
+                                <button type="button" class="th-sort" data-sort-key="sector">
+                                    Setor
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                                </button>
+                            </th>
+                            <th class="is-sortable" aria-sort="none">
+                                <button type="button" class="th-sort" data-sort-key="maintenance_date">
+                                    Última manutenção
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                                </button>
+                            </th>
+                            <th class="is-sortable" aria-sort="none">
+                                <button type="button" class="th-sort" data-sort-key="next_maintenance_date">
+                                    Próxima manutenção
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                                </button>
+                            </th>
+                            <th class="is-sortable" aria-sort="none">
+                                <button type="button" class="th-sort" data-sort-key="status">
+                                    Status
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                                </button>
+                            </th>
+                            <th style="text-align: right;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="equipmentsStatusTableBody"></tbody>
@@ -252,24 +278,46 @@
             </div>
 
             <div class="table-footer">
-                <span id="resultsCount">0 Equipamentos</span>
+                <span id="resultsCount">–</span>
+
+                <div class="pagination">
+                    <label class="pagination__size">
+                        Por página
+                        <select class="filter-select" id="pageSizeSelect">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </label>
+
+                    <div class="pagination__nav">
+                        <button type="button" class="icon-btn icon-btn--bordered" id="prevPageButton" aria-label="Página anterior">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <span class="pagination__label" id="pageLabel">1 de 1</span>
+                        <button type="button" class="icon-btn icon-btn--bordered" id="nextPageButton" aria-label="Próxima página">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
-	<div class="overlay" id="maintenanceModal">
+    <!-- ==== MODAL: REGISTRAR NOVA MANUTENÇÃO DO EQUIPAMENTO ==== -->
+    <div class="overlay" id="maintenanceModal">
         <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="maintenanceModalTitle">
             <div class="modal__header">
                 <div class="modal__title-group">
                     <span class="modal__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 12l2 2 4-4"/>
-                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                         </svg>
                     </span>
                     <div>
-                        <h2 class="modal__title" id="maintenanceModalTitle">Realizar manutenção</h2>
-                        <p class="modal__subtitle">Registrar manutenção preventiva</p>
+                        <h2 class="modal__title" id="maintenanceModalTitle">Registrar manutenção</h2>
+                        <p class="modal__subtitle">Manutenção preventiva realizada no equipamento</p>
                     </div>
                 </div>
 
@@ -282,122 +330,119 @@
             </div>
 
             <div class="modal__body">
+                <div class="equip-summary" id="maintenanceEquipmentSummary">
+                    <div>
+                        <div class="equip-summary__name" id="summaryEquipmentName">–</div>
+                        <div class="equip-summary__sector" id="summaryEquipmentSector"></div>
+                    </div>
+                    <div id="summaryEquipmentStatus"></div>
+
+                    <dl class="equip-summary__stats">
+                        <div class="equip-summary__stat">
+                            <dt>Periodicidade</dt>
+                            <dd id="summaryInterval">–</dd>
+                        </div>
+                        <div class="equip-summary__stat">
+                            <dt>Última manutenção</dt>
+                            <dd id="summaryLastMaintenance">–</dd>
+                        </div>
+                        <div class="equip-summary__stat">
+                            <dt>Vencimento atual</dt>
+                            <dd id="summaryNextMaintenance">–</dd>
+                        </div>
+                    </dl>
+                </div>
+
                 <form id="maintenanceForm">
                     <input type="hidden" id="maintenanceEquipmentId" name="equipment_id">
-					<input type="hidden" id="formMaintenanceUserId" name="user_id">
+                    <input type="hidden" id="formMaintenanceUserId" name="user_id">
 
-                    <div class="form-section">
-                        <h3 class="form-section__title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 12l2 2 4-4"/>
-                                <circle cx="12" cy="12" r="10"/>
-                            </svg>
-                            Informações
-                        </h3>
-
-                        <div class="form-grid">
-                            <div class="form-field">
-                                <label for="equipmentName">Equipamento</label>
-                                <input id="equipmentName" readonly>
-                            </div>
-
-                            <div class="form-field form-field--required">
+                    <div class="form-grid">
+                        <div class="form-field form-field--required">
+                            <div class="form-field__label-row">
                                 <label for="maintenanceDate">Data da manutenção</label>
-                                <div class="date-field" id="maintenanceDateWrap">
-                                    <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" />
-                                        <line x1="16" y1="2" x2="16" y2="6" />
-                                        <line x1="8" y1="2" x2="8" y2="6" />
-                                        <line x1="3" y1="10" x2="21" y2="10" />
-                                    </svg>
-                                    <input type="date" id="maintenanceDate" name="maintenance_date" class="date-field__input" placeholder="Selecionar data" required data-input>
-                                    <button type="button" class="date-field__clear" data-clear aria-label="Limpar data da manutenção" tabindex="-1">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18"/>
-                                            <line x1="6" y1="6" x2="18" y2="18"/>
-                                        </svg>
-                                    </button>
+                                <div class="date-shortcuts">
+                                    <button type="button" class="date-shortcut" data-date-offset="0">Hoje</button>
+                                    <button type="button" class="date-shortcut" data-date-offset="-1">Ontem</button>
                                 </div>
                             </div>
+                            <div class="date-field" id="maintenanceDateWrap">
+                                <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                <input type="date" id="maintenanceDate" name="maintenance_date" class="date-field__input" placeholder="Selecionar data" required data-input>
+                                <button type="button" class="date-field__clear" data-clear aria-label="Limpar data da manutenção" tabindex="-1">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
 
-                            <div class="form-field">
+                        <div class="form-field">
+                            <div class="form-field__label-row">
                                 <label for="nextMaintenanceDate">Próxima manutenção</label>
-                                <div class="date-field date-field--static" id="nextMaintenanceDateWrap">
-                                    <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" />
-                                        <line x1="16" y1="2" x2="16" y2="6" />
-                                        <line x1="8" y1="2" x2="8" y2="6" />
-                                        <line x1="3" y1="10" x2="21" y2="10" />
-                                    </svg>
-                                    <input type="date" id="nextMaintenanceDate" name="next_maintenance_date" class="date-field__input" placeholder="Calculada automaticamente" readonly data-input>
-                                </div>
+                                <span class="next-date-hint" id="nextMaintenanceHint">Calculada automaticamente</span>
                             </div>
+                            <div class="date-field date-field--static" id="nextMaintenanceDateWrap">
+                                <svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                <input type="date" id="nextMaintenanceDate" name="next_maintenance_date" class="date-field__input" placeholder="Calculada automaticamente" readonly data-input>
+                            </div>
+                        </div>
 
-                            <div class="form-field form-field--full">
-                                <label for="description">Descrição</label>
-                                <textarea id="description" rows="6" placeholder="Descreva o serviço realizado..." name="description"></textarea>
+                        <div class="form-field form-field--full">
+                            <label for="description">Descrição do serviço</label>
+                            <textarea id="description" rows="5" placeholder="Ex.: troca de filtros, lubrificação dos rolamentos, limpeza geral..." name="description"></textarea>
+                            <div class="form-field__meta">
+                                <span>Descreva o que foi feito, peças trocadas e observações.</span>
+                                <span id="descriptionCounter">0 caracteres</span>
                             </div>
                         </div>
                     </div>
                 </form>
-
-				<h3 class="form-section__title" style="margin-top: 16px;">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M9 12l2 2 4-4"/>
-						<circle cx="12" cy="12" r="10"/>
-					</svg>
-					Histórico de Manutenções
-				</h3>
-				<div class="table-card">
-					<div class="table-scroll">
-						<table class="data-table">
-							<thead>
-								<tr>
-									<th>ID</th>
-									<th>Data da Manutenção</th>
-									<th>Próxima Manutenção</th>
-									<th>Usuário</th>
-									<th>Equipamento</th>
-								</tr>
-							</thead>
-							<tbody id="maintenanceTableBody"></tbody>
-						</table>
-					</div>
-				</div>
             </div>
 
             <div class="modal__footer">
+                <span class="modal__footer-hint"><kbd>Esc</kbd> para fechar</span>
                 <button class="btn btn-ghost" id="cancelModalMaintenance" type="button">Cancelar</button>
-                <button class="btn btn-primary" type="submit" form="maintenanceForm">
+                <button class="btn btn-primary" id="submitMaintenanceButton" type="submit" form="maintenanceForm">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
+                        <polyline points="20 6 9 17 4 12"/>
                     </svg>
-                    Cadastrar manutenção
+                    Registrar manutenção
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="overlay" id="lateEquipmentsModal">
-        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="lateEquipmentsModalTitle">
+    <!-- ==== MODAIS: HISTÓRICO DE MANUTENÇÕES DO EQUIPAMENTO E DETALHES DE UMA MANUTENÇÃO ==== -->
+    <div class="overlay" id="maintenanceHistoryModal">
+        <div class="modal modal--details" role="dialog" aria-modal="true" aria-labelledby="maintenanceHistoryModalTitle">
             <div class="modal__header">
                 <div class="modal__title-group">
-                    <span class="modal__icon modal__icon--danger">
+                    <span class="modal__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="8" x2="12" y2="12" />
-                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+                            <polyline points="3 3 3 8 8 8"/>
+                            <polyline points="12 7 12 12 15 15"/>
                         </svg>
                     </span>
                     <div>
-                        <h2 class="modal__title" id="lateEquipmentsModalTitle">Vencidas há menos de 30 dias</h2>
-                        <p class="modal__subtitle">Equipamentos que requerem atenção imediata</p>
+                        <h2 class="modal__title" id="maintenanceHistoryModalTitle">Histórico de Manutenções</h2>
+                        <p class="modal__subtitle" id="maintenanceHistoryEquipmentName"></p>
                     </div>
                 </div>
 
-                <button class="modal__close" id="closeLateModalButton" type="button" aria-label="Fechar">
+                <button class="modal__close" id="closeMaintenanceHistoryModalButton" type="button" aria-label="Fechar">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
@@ -406,48 +451,65 @@
             </div>
 
             <div class="modal__body">
+                <div class="history-summary" id="maintenanceHistorySummary">
+                    <div class="history-summary__item">
+                        <div class="history-summary__label">Registros</div>
+                        <div class="history-summary__value" id="historyTotalCount">–</div>
+                    </div>
+                    <div class="history-summary__item">
+                        <div class="history-summary__label">Última manutenção</div>
+                        <div class="history-summary__value" id="historyLastDate">–</div>
+                    </div>
+                    <div class="history-summary__item">
+                        <div class="history-summary__label">Próxima prevista</div>
+                        <div class="history-summary__value" id="historyNextDate">–</div>
+                    </div>
+                </div>
+
                 <div class="table-card">
                     <div class="table-scroll">
-                        <table class="data-table">
+                        <table class="data-table history-table">
                             <thead>
                                 <tr>
-                                    <th>Equipamento</th>
-                                    <th>Setor</th>
-                                    <th>Última Manutenção</th>
+                                    <th>ID</th>
+                                    <th>Data da Manutenção</th>
                                     <th>Próxima Manutenção</th>
-                                    <th>Dias em atraso</th>
+                                    <th>Usuário</th>
+                                    <th>Equipamento</th>
+                                    <th style="text-align: center;">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="lateEquipmentsTableBody"></tbody>
+                            <tbody id="maintenanceTableBody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
             <div class="modal__footer">
-                <button class="btn btn-ghost" id="cancelLateModalButton" type="button">Fechar</button>
+                <button class="btn btn-ghost" id="cancelMaintenanceHistoryModalButton" type="button">Fechar</button>
             </div>
         </div>
     </div>
 
-    <div class="overlay" id="veryLateEquipmentsModal">
-        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="veryLateEquipmentsModalTitle">
+    <div class="overlay" id="maintenanceDetailModal">
+        <div class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="maintenanceDetailModalTitle">
             <div class="modal__header">
                 <div class="modal__title-group">
-                    <span class="modal__icon modal__icon--danger">
+                    <span class="modal__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
-                            <line x1="12" y1="9" x2="12" y2="13" />
-                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
                         </svg>
                     </span>
                     <div>
-                        <h2 class="modal__title" id="veryLateEquipmentsModalTitle">Vencidas há mais de 30 dias</h2>
-                        <p class="modal__subtitle">Equipamentos com atraso crítico de manutenção</p>
+                        <h2 class="modal__title" id="maintenanceDetailModalTitle">Detalhes da manutenção</h2>
+                        <p class="modal__subtitle" id="detailMaintenanceSubtitle">Informações completas do registro</p>
                     </div>
                 </div>
 
-                <button class="modal__close" id="closeVeryLateModalButton" type="button" aria-label="Fechar">
+                <button class="modal__close" id="closeMaintenanceDetailModalButton" type="button" aria-label="Fechar">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
@@ -456,36 +518,35 @@
             </div>
 
             <div class="modal__body">
-                <div class="table-card">
-                    <div class="table-scroll">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Equipamento</th>
-                                    <th>Setor</th>
-                                    <th>Última Manutenção</th>
-                                    <th>Próxima Manutenção</th>
-                                    <th>Dias em atraso</th>
-                                </tr>
-                            </thead>
-                            <tbody id="veryLateEquipmentsTableBody"></tbody>
-                        </table>
+                <dl class="detail-list">
+                    <div class="detail-list__item">
+                        <dt>Equipamento</dt>
+                        <dd id="detailMaintenanceEquipment">–</dd>
                     </div>
+                    <div class="detail-list__item">
+                        <dt>Registrado por</dt>
+                        <dd id="detailMaintenanceUser">–</dd>
+                    </div>
+                    <div class="detail-list__item">
+                        <dt>Data da manutenção</dt>
+                        <dd id="detailMaintenanceDate">–</dd>
+                    </div>
+                    <div class="detail-list__item">
+                        <dt>Próxima manutenção</dt>
+                        <dd id="detailNextMaintenanceDate">–</dd>
+                    </div>
+                </dl>
+
+                <div class="detail-description">
+                    <div class="detail-description__label">Descrição do serviço</div>
+                    <div class="detail-description__text" id="detailMaintenanceDescription"></div>
                 </div>
             </div>
 
             <div class="modal__footer">
-                <button class="btn btn-ghost" id="cancelVeryLateModalButton" type="button">Fechar</button>
+                <button class="btn btn-ghost" id="cancelMaintenanceDetailModalButton" type="button">Fechar</button>
             </div>
         </div>
-    </div>
-
-    <div class="toast" id="toast">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        <span id="toastMessage">Manutenção registrada.</span>
     </div>
 
     <script src="{{ url_for('static', filename='js/apiHelper.js') }}"></script>
