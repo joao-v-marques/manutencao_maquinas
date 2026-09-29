@@ -1,66 +1,80 @@
+import { openOverlay, closeOverlay, bindOverlayClose } from "../utils/modal.js";
+import { escapeHTML } from "../utils/maintenanceStatus.js";
+
 const deleteEquipmentModal = document.getElementById("deleteEquipmentModalOverlay");
 const deleteEquipmentForm = document.getElementById("deleteEquipmentForm");
 const deleteEquipmentId = document.getElementById("deleteEquipmentId");
-const deleteEquipmentName = document.getElementById("deleteEquipmentName");
+const deleteEquipmentSummary = document.getElementById("deleteEquipmentSummary");
+const confirmButton = document.getElementById("confirmDeleteEquipmentButton");
 
-function closeDeleteEquipmentModal() {
-    deleteEquipmentModal.classList.remove("is-open");
-}
+let currentEquipmentName = "";
 
+// abre a confirmação mostrando qual equipamento será excluído
 export function openDeleteEquipmentModal(equipment) {
     deleteEquipmentId.value = equipment.id;
-    deleteEquipmentName.textContent = equipment.name;
+    currentEquipmentName = equipment.name;
 
-    deleteEquipmentModal.classList.add("is-open");
+    const meta = [equipment.type, equipment.sector, equipment.location].filter(Boolean).map(escapeHTML).join(" · ");
+
+    deleteEquipmentSummary.innerHTML = `
+        <span class="delete-summary__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </span>
+        <div>
+            <div class="delete-summary__name">${escapeHTML(equipment.name)}</div>
+            <div class="delete-summary__meta">${meta}</div>
+        </div>
+    `;
+
+    // foco no "Cancelar": numa ação destrutiva o padrão seguro é não excluir
+    openOverlay(deleteEquipmentModal, { focus: document.getElementById("cancelDeleteEquipmentButton") });
 }
 
 export function closeModalDeleteEquipment() {
-    const btnClose = document.getElementById("closeDeleteEquipmentModalButton");
-    const btnCancel = document.getElementById("cancelDeleteEquipmentButton");
+    bindOverlayClose(deleteEquipmentModal, [
+        document.getElementById("closeDeleteEquipmentModalButton"),
+        document.getElementById("cancelDeleteEquipmentButton"),
+    ]);
+}
 
-    btnClose.addEventListener("click", closeDeleteEquipmentModal);
-    btnCancel.addEventListener("click", closeDeleteEquipmentModal);
+async function readErrorMessage(response) {
+    const text = await response.text();
 
-    window.addEventListener("click", (e) => {
-        if (e.target === deleteEquipmentModal) closeDeleteEquipmentModal();
-    });
+    try {
+        return JSON.parse(text)?.message || "Houve um erro ao excluir o equipamento.";
+    } catch (error) {
+        return "Houve um erro ao excluir o equipamento.";
+    }
 }
 
 export function deleteEquipment(onEquipmentDeleted) {
     deleteEquipmentForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        try {
-            const equipmentId = deleteEquipmentId.value;
+        confirmButton.disabled = true;
+        confirmButton.classList.add("is-loading");
 
-            const response = await fetchWithAuth(`/portal-manutencao/equipments/${equipmentId}`, {
+        try {
+            const response = await fetchWithAuth(`/portal-manutencao/equipments/${deleteEquipmentId.value}`, {
                 method: "DELETE"
             });
 
+            // o backend já responde com a mensagem clara quando há manutenções vinculadas
             if (!response.ok) {
-                let errorMessage = "Houve um erro ao deletar o equipamento";
-
-                try {
-                    const errorJSON = await response.json();
-
-                    if (errorJSON?.message) {
-                        errorMessage = errorJSON.message;
-                    }
-                } catch (parseError) {
-                    errorMessage = await response.text();
-                }
-
-                throw new Error(errorMessage);
+                throw new Error(await readErrorMessage(response));
             }
 
-            notyf.success("Equipamento deletado com sucesso");
-            closeDeleteEquipmentModal();
+            closeOverlay(deleteEquipmentModal);
+            notyf.success(`Equipamento ${currentEquipmentName} excluído.`);
 
             if (typeof onEquipmentDeleted === "function") {
-                onEquipmentDeleted();
+                await onEquipmentDeleted();
             }
         } catch (error) {
             notyf.error(error.message);
+        } finally {
+            confirmButton.disabled = false;
+            confirmButton.classList.remove("is-loading");
         }
     });
 }

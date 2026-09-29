@@ -7,6 +7,7 @@ import {
     MAINTENANCE_WINDOW_DAYS,
     ONE_DAY_IN_MS,
 } from "./utils/maintenanceStatus.js";
+import { operationalStatusTone, OPERATIONAL_TONE_COLORS } from "./utils/equipmentStatus.js";
 
 const BASE_PATH = "/portal-manutencao";
 const MAINTENANCE_PAGE = `${BASE_PATH}/manutencao`;
@@ -559,23 +560,15 @@ function categoricalColors(names) {
     return colors;
 }
 
-// status operacional: cor semântica por palavra-chave; o que não for reconhecido recebe cor categórica
+// status operacional: cor semântica por palavra-chave (utils/equipmentStatus.js); o que não for reconhecido recebe cor categórica
 function operationalStatusColors(names) {
-    const normalize = text => text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-    const rules = [
-        [/inativ|baixad|descart|desativ/, "#767e88"],
-        [/parad|defeit|quebr|avari/, "#e2574c"],
-        [/manut|reparo|conserto/, "#f47920"],
-        [/ativ|opera|funcion|uso/, "#2fc486"],
-    ];
-
     const colors = {};
     const unmatched = [];
 
     names.forEach(name => {
-        const rule = rules.find(([pattern]) => pattern.test(normalize(name)));
-        if (rule) {
-            colors[name] = rule[1];
+        const tone = operationalStatusTone(name);
+        if (tone) {
+            colors[name] = OPERATIONAL_TONE_COLORS[tone];
         } else {
             unmatched.push(name);
         }

@@ -12,43 +12,18 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
-	<!-- ===================== NAVBAR PADRÃO ===================== -->
 	<!-- navbar renderizada por static/js/navbar.js -->
 	<header class="navbar" id="appNavbar" data-active="equipamentos"></header>
 
-	<!-- ===================== CONTEÚDO ===================== -->
 	<main class="page">
 		<div class="page__header">
 			<div>
 				<h1 class="page__title">Equipamentos</h1>
-				<p class="page__subtitle">Gerencie o cadastro e o histórico dos equipamentos</p>
-			</div>
-		</div>
-
-		<!-- TOOLBAR: busca, filtros e ações -->
-		<div class="toolbar">
-			<div class="search-field">
-				<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<circle cx="11" cy="11" r="8" />
-					<line x1="21" y1="21" x2="16.65" y2="16.65" />
-				</svg>
-				<input type="text" id="searchNameInput" placeholder="Buscar por nome...">
+				<p class="page__subtitle">Cadastre, organize e acompanhe cada equipamento e sua manutenção preventiva.</p>
 			</div>
 
-			<div class="filters">
-				<select class="filter-select" id="filterSector">
-					<option value="">Todos os setores</option>
-				</select>
-				<select class="filter-select" id="filterStatus">
-					<option value="">Todos os status</option>
-				</select>
-				<select class="filter-select" id="filterType">
-					<option value="">Todos os tipos</option>
-				</select>
-			</div>
-
-			<div class="toolbar__actions">
-				<button class="btn btn-secondary" id="exportButton" aria-label="Exportar lista para Excel">
+			<div class="page__actions">
+				<button type="button" class="btn btn-secondary" id="exportButton">
 					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 						<polyline points="7 10 12 15 17 10" />
@@ -56,7 +31,7 @@
 					</svg>
 					Exportar Excel
 				</button>
-				<button class="btn btn-primary" id="openCreateModalButton">
+				<button type="button" class="btn btn-primary" id="openCreateModalButton">
 					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<line x1="12" y1="5" x2="12" y2="19" />
 						<line x1="5" y1="12" x2="19" y2="12" />
@@ -66,55 +41,213 @@
 			</div>
 		</div>
 
-		<!-- Chips de filtros ativos -->
-		<div class="active-filters" id="activeFilters"></div>
+		<!-- ===================== RESUMO (também são filtros) ===================== -->
+		<section class="user-stats" aria-label="Resumo dos equipamentos">
+			<button type="button" class="user-stat" data-stat-filter="all" aria-pressed="false">
+				<span class="user-stat__icon user-stat__icon--primary">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+				</span>
+				<span class="user-stat__text">
+					<strong data-count="total"><span class="skeleton"></span></strong>
+					<span>Equipamentos</span>
+				</span>
+			</button>
+			<button type="button" class="user-stat" data-stat-filter="ok" aria-pressed="false">
+				<span class="user-stat__icon user-stat__icon--success">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+				</span>
+				<span class="user-stat__text">
+					<strong data-count="ok"><span class="skeleton"></span></strong>
+					<span>Manutenção em dia</span>
+				</span>
+			</button>
+			<button type="button" class="user-stat" data-stat-filter="overdue" aria-pressed="false">
+				<span class="user-stat__icon user-stat__icon--danger">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+				</span>
+				<span class="user-stat__text">
+					<strong data-count="overdue"><span class="skeleton"></span></strong>
+					<span>Manutenção vencida</span>
+				</span>
+			</button>
+			<button type="button" class="user-stat" data-stat-filter="none" aria-pressed="false">
+				<span class="user-stat__icon user-stat__icon--muted">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+				</span>
+				<span class="user-stat__text">
+					<strong data-count="none"><span class="skeleton"></span></strong>
+					<span>Sem manutenção registrada</span>
+				</span>
+			</button>
+		</section>
+
+		<!-- ===================== FILTROS ===================== -->
+		<section class="users-filters" aria-label="Filtros">
+			<div class="toolbar">
+				<div class="search-field" id="searchField">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="11" cy="11" r="8" />
+						<line x1="21" y1="21" x2="16.65" y2="16.65" />
+					</svg>
+					<input type="text" id="searchNameInput" placeholder="Buscar por nome, marca, modelo, IP ou nº de série..." autocomplete="off" aria-label="Buscar equipamentos">
+					<kbd class="search-field__kbd" title="Pressione / para buscar">/</kbd>
+					<button type="button" class="search-field__clear" id="clearSearchButton" aria-label="Limpar busca">
+						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="18" y1="6" x2="6" y2="18"/>
+							<line x1="6" y1="6" x2="18" y2="18"/>
+						</svg>
+					</button>
+				</div>
+
+				<div class="filters">
+					<select class="filter-select" id="filterSector" aria-label="Filtrar por setor">
+						<option value="">Todos os setores</option>
+					</select>
+					<select class="filter-select" id="filterType" aria-label="Filtrar por tipo">
+						<option value="">Todos os tipos</option>
+					</select>
+					<select class="filter-select" id="filterStatus" aria-label="Filtrar por status">
+						<option value="">Todos os status</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="users-filters__summary">
+				<span class="results-label" id="resultsLabel" aria-live="polite"></span>
+				<div class="active-filters" id="activeFilters"></div>
+			</div>
+		</section>
 
 		<!-- ===================== TABELA ===================== -->
 		<div class="table-card">
 			<div class="table-scroll">
-				<table class="data-table">
+				<table class="data-table equipment-table">
 					<thead>
 						<tr>
-							<th>Nome</th>
-							<th>Tipo</th>
-							<th>Marca</th>
-							<th>Modelo</th>
-							<th>Data de Aquisição</th>
-							<th>Setor</th>
-							<th>Status</th>
-							<th style="text-align: center;">Opções</th>
+							<th class="is-sortable" aria-sort="ascending">
+								<button type="button" class="th-sort" data-sort-key="name">
+									Equipamento
+									<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+								</button>
+							</th>
+							<th class="is-sortable" aria-sort="none">
+								<button type="button" class="th-sort" data-sort-key="sector">
+									Setor / Unidade
+									<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+								</button>
+							</th>
+							<th class="is-sortable" aria-sort="none">
+								<button type="button" class="th-sort" data-sort-key="status">
+									Status
+									<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+								</button>
+							</th>
+							<th class="is-sortable" aria-sort="none">
+								<button type="button" class="th-sort" data-sort-key="next">
+									Próxima manutenção
+									<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+								</button>
+							</th>
+							<th style="text-align: right;">Ações</th>
 						</tr>
 					</thead>
-					<tbody id="equipmentTbody">
-						<!-- Linhas renderizadas via JS -->
-					</tbody>
+					<tbody id="equipmentTbody"></tbody>
 				</table>
 			</div>
 
 			<div class="table-footer">
-				<span id="resultsCountLabel">0 equipamentos cadastrados</span>
-				<!-- CRIAR UMA LÓGICA DE PÁGINAÇÃO NO FUTURO -->
+				<span id="resultsCountLabel">–</span>
+
+				<div class="pagination">
+					<label class="pagination__size">
+						Por página
+						<select class="filter-select" id="pageSizeSelect">
+							<option value="10">10</option>
+							<option value="25" selected>25</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+						</select>
+					</label>
+					<div class="pagination__nav">
+						<button type="button" class="icon-btn icon-btn--bordered" id="prevPageButton" aria-label="Página anterior">
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+						</button>
+						<span class="pagination__label" id="pageLabel">1 de 1</span>
+						<button type="button" class="icon-btn icon-btn--bordered" id="nextPageButton" aria-label="Próxima página">
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+						</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</main>
 
-	<!-- ===================== MODAL: CADASTRO ===================== -->
-	<div class="overlay" id="formModalOverlay">
-		<div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+	<!-- menu de ações da linha ("⋯"): um único menu flutuante reposicionado junto ao botão clicado -->
+	<div class="action-menu" id="rowActionMenu" role="menu" hidden>
+		<button type="button" class="action-menu__item" role="menuitem" data-menu-action="details">
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+			Ver detalhes
+		</button>
+		<button type="button" class="action-menu__item" role="menuitem" data-menu-action="history">
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 15 15"/></svg>
+			Histórico de manutenções
+		</button>
+		<button type="button" class="action-menu__item" role="menuitem" data-menu-action="edit">
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+			Editar
+		</button>
+		<div class="action-menu__divider" role="separator"></div>
+		<button type="button" class="action-menu__item action-menu__item--danger" role="menuitem" data-menu-action="delete">
+			<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+			Excluir
+		</button>
+	</div>
+
+	<!-- ==== PAINEL LATERAL: DETALHES DO EQUIPAMENTO ==== -->
+	<div class="overlay overlay--drawer" id="equipmentDrawer">
+		<aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+			<div class="drawer__header">
+				<div class="drawer__heading">
+					<span class="drawer__eyebrow" id="drawerEyebrow"></span>
+					<h2 class="drawer__title" id="drawerTitle">Equipamento</h2>
+					<div class="drawer__badges" id="drawerBadges"></div>
+				</div>
+				<button class="modal__close" id="closeDrawerButton" type="button" aria-label="Fechar detalhes">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="18" y1="6" x2="6" y2="18" />
+						<line x1="6" y1="6" x2="18" y2="18" />
+					</svg>
+				</button>
+			</div>
+
+			<div class="drawer__actions">
+				<button type="button" class="btn btn-primary btn-sm" data-drawer-action="register">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+					Registrar manutenção
+				</button>
+				<button type="button" class="btn btn-secondary btn-sm" data-drawer-action="history">Histórico</button>
+				<button type="button" class="btn btn-secondary btn-sm" data-drawer-action="edit">Editar</button>
+				<button type="button" class="icon-btn icon-btn--bordered icon-btn--danger" data-drawer-action="delete" aria-label="Excluir equipamento" title="Excluir equipamento">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+				</button>
+			</div>
+
+			<div class="drawer__body" id="drawerBody"></div>
+		</aside>
+	</div>
+
+	<!-- ==== MODAL: CADASTRAR / EDITAR EQUIPAMENTO ==== -->
+	<div class="overlay" id="equipmentModal">
+		<div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="equipmentModalTitle">
 			<div class="modal__header">
 				<div class="modal__title-group">
-					<span class="modal__icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<rect x="2" y="7" width="20" height="14" rx="2" />
-							<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-						</svg>
-					</span>
+					<span class="modal__icon" id="equipmentModalIcon"></span>
 					<div>
-						<h2 class="modal__title" id="formModalTitle">Novo equipamento</h2>
-						<p class="modal__subtitle" id="formModalSubtitle">Preencha os dados para cadastrar</p>
+						<h2 class="modal__title" id="equipmentModalTitle">Novo equipamento</h2>
+						<p class="modal__subtitle" id="equipmentModalSubtitle">Preencha os dados para cadastrar</p>
 					</div>
 				</div>
-				<button class="modal__close" id="closeFormModalButton" aria-label="Fechar formulário">
+				<button class="modal__close" id="closeEquipmentModalButton" type="button" aria-label="Fechar formulário">
 					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<line x1="18" y1="6" x2="6" y2="18" />
 						<line x1="6" y1="6" x2="18" y2="18" />
@@ -123,148 +256,105 @@
 			</div>
 
 			<div class="modal__body">
-				<form id="equipmentForm">
-					<input type="hidden" id="equipmentId">
-
-					<!-- Identificação -->
+				<form id="equipmentForm" novalidate>
 					<div class="form-section">
 						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M9 12l2 2 4-4" />
-								<circle cx="12" cy="12" r="10" />
-							</svg>
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="10" /></svg>
 							Identificação
 						</h3>
 						<div class="form-grid">
 							<div class="form-field form-field--required">
-								<label for="name_id">Nome</label>
-								<input type="text" id="name_id" name="name" placeholder="Ex: PC-JOAO" required>
+								<label for="eqName">Nome</label>
+								<input type="text" id="eqName" placeholder="Ex: PC-RECEPCAO-01" autocomplete="off" aria-describedby="eqNameError">
+								<span class="form-field__error" id="eqNameError"></span>
 							</div>
 							<div class="form-field">
-								<label for="ip_id">IP</label>
-								<input type="text" id="ip_id" name="ip" placeholder="Ex: 192.168.1.*">
+								<label for="eqIp">IP</label>
+								<input type="text" id="eqIp" placeholder="Ex: 192.168.1.20" autocomplete="off">
 							</div>
 							<div class="form-field form-field--full">
-								<label for="serial_number_id">Numero de Série</label>
-								<input type="text" id="serial_number_id" name="serial_number" placeholder="Ex: C5C369A3-FDB0-4CFF-B24C-201B7D92544F">
+								<label for="eqSerial">Número de série</label>
+								<input type="text" id="eqSerial" placeholder="Ex: C5C369A3-FDB0-4CFF-B24C-201B7D92544F" autocomplete="off">
+								<span class="form-field__hint">Opcional, mas precisa ser único quando informado.</span>
 							</div>
 						</div>
 					</div>
 
-					<!-- Características -->
 					<div class="form-section">
 						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-							</svg>
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
 							Características
 						</h3>
 						<div class="form-grid">
 							<div class="form-field form-field--required">
-								<label for="type_id">Tipo</label>
-								<select id="type_id" name="type" required>
-									<option value="PC">PC</option>
-									<option value="Notebook">Notebook</option>
-									<option value="Ar Condicionado">Ar Condicionado</option>
-									<option value="Limpeza Geral">Limpeza Geral</option>
-									<option value="Automotivo">Automotivo</option>
-									<option value="Outro">Outro</option>
+								<label for="eqType">Tipo</label>
+								<select id="eqType" aria-describedby="eqTypeError">
+									<option value="">Selecione…</option>
 								</select>
+								<span class="form-field__error" id="eqTypeError"></span>
 							</div>
 							<div class="form-field">
-								<label for="brand_id">Marca / Prestador responsável pela MP</label>
-								<input type="text" id="brand_id" name="brand" placeholder="Ex: DELL, HP, etc.">
+								<label for="eqBrand">Marca / prestador da MP</label>
+								<input type="text" id="eqBrand" placeholder="Ex: DELL, HP, empresa terceirizada" autocomplete="off">
 							</div>
 							<div class="form-field form-field--full">
-								<label for="model_id">Modelo</label>
-								<input type="text" id="model_id" name="model" placeholder="Ex: CNC-3000X">
+								<label for="eqModel">Modelo</label>
+								<input type="text" id="eqModel" placeholder="Ex: Optiplex 3000" autocomplete="off">
 							</div>
 						</div>
 					</div>
 
-					<!-- Localização -->
 					<div class="form-section">
 						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z" />
-								<circle cx="12" cy="10" r="3" />
-							</svg>
-							Localização
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+							Localização e responsáveis
 						</h3>
 						<div class="form-grid">
 							<div class="form-field form-field--required">
-								<label for="location_id">Unidade</label>
-								<select id="location_id" name="location" required>
-									<!-- opções preenchidas via JS -->
-								</select>
+								<label for="eqLocation">Unidade</label>
+								<select id="eqLocation" aria-describedby="eqLocationError"><option value="">Selecione…</option></select>
+								<span class="form-field__error" id="eqLocationError"></span>
 							</div>
 							<div class="form-field form-field--required">
-								<label for="sector_id">Setor</label>
-								<select id="sector_id" name="sector" required>
-									<!-- opções preenchidas via JS -->
-								</select>
+								<label for="eqSector">Setor</label>
+								<select id="eqSector" aria-describedby="eqSectorError"><option value="">Selecione…</option></select>
+								<span class="form-field__error" id="eqSectorError"></span>
 							</div>
 							<div class="form-field form-field--required form-field--full">
-								<label for="maintenance_group_id">Grupo de Manutenção (Quem será responsável por fazer as manutenções)</label>
-								<select id="maintenance_group_id" name="maintenance_group" required>
-									<!-- opções preenchidas via JS -->
-								</select>
+								<label for="eqGroup">Grupo de manutenção</label>
+								<select id="eqGroup" aria-describedby="eqGroupError eqGroupHint"><option value="">Selecione…</option></select>
+								<span class="form-field__hint" id="eqGroupHint">Equipe responsável por realizar as manutenções deste equipamento.</span>
+								<span class="form-field__error" id="eqGroupError"></span>
 							</div>
 						</div>
 					</div>
 
-					<!-- Controle -->
 					<div class="form-section">
 						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect x="3" y="4" width="18" height="18" rx="2" />
-								<line x1="16" y1="2" x2="16" y2="6" />
-								<line x1="8" y1="2" x2="8" y2="6" />
-								<line x1="3" y1="10" x2="21" y2="10" />
-							</svg>
+							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
 							Controle
 						</h3>
 						<div class="form-grid">
 							<div class="form-field">
-								<label for="acquisition_date_id">Data de aquisição</label>
-								<div class="date-field" id="acquisitionDateWrap">
-									<svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<rect x="3" y="4" width="18" height="18" rx="2" />
-										<line x1="16" y1="2" x2="16" y2="6" />
-										<line x1="8" y1="2" x2="8" y2="6" />
-										<line x1="3" y1="10" x2="21" y2="10" />
-									</svg>
-									<input type="date" id="acquisition_date_id" name="acquisition_date" class="date-field__input" placeholder="Selecionar data" data-input>
+								<label for="eqAcquisition">Data de aquisição</label>
+								<div class="date-field" id="eqAcquisitionWrap">
+									<svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+									<input type="date" id="eqAcquisition" class="date-field__input" placeholder="Selecionar data" data-input>
 									<button type="button" class="date-field__clear" data-clear aria-label="Limpar data de aquisição" tabindex="-1">
-										<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-											<line x1="18" y1="6" x2="6" y2="18"/>
-											<line x1="6" y1="6" x2="18" y2="18"/>
-										</svg>
+										<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
 									</button>
 								</div>
 							</div>
 							<div class="form-field form-field--required">
-								<label for="maintenance_interval_months_id">Periodicidade da manutenção (Meses)</label>
-								<select id="maintenance_interval_months_id" name="maintenance_interval_months" required>
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-									<option value="4">4</option>
-									<option value="5">5</option>
-									<option value="6">6</option>
-									<option value="7">7</option>
-									<option value="8">8</option>
-									<option value="9">9</option>
-									<option value="10">10</option>
-									<option value="11">11</option>
-									<option value="12">12</option>
-								</select>
+								<label for="eqInterval">Periodicidade da manutenção</label>
+								<select id="eqInterval" aria-describedby="eqIntervalError eqIntervalHint"><option value="">Selecione…</option></select>
+								<span class="form-field__hint" id="eqIntervalHint">Usada para calcular a próxima manutenção.</span>
+								<span class="form-field__error" id="eqIntervalError"></span>
 							</div>
-							<div class="form-field form-field--full form-field--required">
-								<label for="status_id">Status</label>
-								<select id="status_id" name="status" required>
-									<!-- opções preenchidas via JS -->
-								</select>
+							<div class="form-field form-field--required form-field--full">
+								<label for="eqStatus">Status operacional</label>
+								<select id="eqStatus" aria-describedby="eqStatusError"><option value="">Selecione…</option></select>
+								<span class="form-field__error" id="eqStatusError"></span>
 							</div>
 						</div>
 					</div>
@@ -272,259 +362,49 @@
 			</div>
 
 			<div class="modal__footer">
-				<button class="btn btn-ghost" id="cancelFormButton" type="button">Cancelar</button>
-				<button class="btn btn-primary" id="saveFormButton" type="submit" form="equipmentForm">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-						<polyline points="17 21 17 13 7 13 7 21"/>
-						<polyline points="7 3 7 8 15 8"/>
-					</svg>
-					Salvar equipamento
+				<span class="modal__footer-hint"><kbd>Esc</kbd> para fechar</span>
+				<button class="btn btn-ghost" id="cancelEquipmentModalButton" type="button">Cancelar</button>
+				<button class="btn btn-primary" id="saveEquipmentButton" type="submit" form="equipmentForm">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+					<span id="saveEquipmentButtonLabel">Cadastrar equipamento</span>
 				</button>
 			</div>
 		</div>
 	</div>
 
-	<!-- ==== MODAL: EXCLUIR UM EQUIPAMENTO ==== -->
+	<!-- ==== MODAL: EXCLUIR EQUIPAMENTO ==== -->
 	<div class="overlay" id="deleteEquipmentModalOverlay">
-		<div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="deleteEquipmentModalTitle">
+		<div class="modal modal--sm" role="alertdialog" aria-modal="true" aria-labelledby="deleteEquipmentModalTitle" aria-describedby="deleteEquipmentModalText">
 			<div class="modal__header">
 				<div class="modal__title-group">
-					<span class="modal__icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M3 6h18"/>
-							<path d="M8 6V4h8v2"/>
-							<path d="M19 6l-1 14H6L5 6"/>
-							<path d="M10 11v6"/>
-							<path d="M14 11v6"/>
-						</svg>
+					<span class="modal__icon modal__icon--danger">
+						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
 					</span>
 					<div>
-						<h2 class="modal__title" id="deleteEquipmentModalTitle">Excluir Equipamento</h2>
-						<p class="modal__subtitle" id="deleteEquipmentModalSubtitle">
-							Confirme a exclusão do equipamento
-						</p>
+						<h2 class="modal__title" id="deleteEquipmentModalTitle">Excluir equipamento</h2>
+						<p class="modal__subtitle">Esta ação não pode ser desfeita</p>
 					</div>
 				</div>
-
-				<button class="modal__close" id="closeDeleteEquipmentModalButton" type="button" aria-label="Fechar formulario de edicao">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="18" y1="6" x2="6" y2="18" />
-						<line x1="6" y1="6" x2="18" y2="18" />
-					</svg>
+				<button class="modal__close" id="closeDeleteEquipmentModalButton" type="button" aria-label="Fechar">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
 				</button>
 			</div>
 
 			<div class="modal__body">
 				<form id="deleteEquipmentForm">
-					<input type="hidden" id="deleteEquipmentId" name="equipment_id">
-
-					<p class="modalMessageDelete">
-						<span>Tem certeza que deseja excluir o equipamento</span>
-						<strong id="deleteEquipmentName">selecionado</strong>
+					<input type="hidden" id="deleteEquipmentId">
+					<div class="delete-summary" id="deleteEquipmentSummary"></div>
+					<p class="delete-warning" id="deleteEquipmentModalText">
+						O equipamento será removido do cadastro. Equipamentos com manutenções registradas não podem ser excluídos — nesse caso, <strong>altere o status</strong> na edição.
 					</p>
 				</form>
 			</div>
 
 			<div class="modal__footer">
-				<button class="btn btn-ghost" id="cancelDeleteEquipmentButton" type="button">
-					Cancelar
-				</button>
-
-				<button class="btn btn-primary" id="confirmDeleteEquipmentButton" type="submit" form="deleteEquipmentForm">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M3 6h18"/>
-						<path d="M8 6V4h8v2"/>
-						<path d="M19 6l-1 14H6L5 6"/>
-						<path d="M10 11v6"/>
-						<path d="M14 11v6"/>
-					</svg>
+				<button class="btn btn-ghost" id="cancelDeleteEquipmentButton" type="button">Cancelar</button>
+				<button class="btn btn-danger" id="confirmDeleteEquipmentButton" type="submit" form="deleteEquipmentForm">
+					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
 					Excluir equipamento
-				</button>
-			</div>
-		</div>
-	</div>
-
-	<!-- ==== MODAL: EDITAR UM EQUIPAMENTO ==== -->
-	<div class="overlay" id="editEquipmentModalOverlay">
-		<div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="editEquipmentModalTitle">
-			<div class="modal__header">
-				<div class="modal__title-group">
-					<span class="modal__icon modal__icon--edit">
-						<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-							<path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-						</svg>
-					</span>
-					<div>
-						<h2 class="modal__title" id="editEquipmentModalTitle">Editar equipamento</h2>
-						<p class="modal__subtitle" id="editEquipmentModalSubtitle">
-							Realize as alterações no equipamento e confirme.
-						</p>
-					</div>
-				</div>
-
-				<button class="modal__close" id="closeEditEquipmentModalButton" aria-label="Fechar modal de edição">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="18" y1="6" x2="6" y2="18" />
-						<line x1="6" y1="6" x2="18" y2="18" />
-					</svg>
-				</button>
-			</div>
-
-			<div class="modal__body">
-				<form id="editEquipmentForm">
-					<input type="hidden" id="editEquipmentId">
-
-					<!-- Identificação -->
-					<div class="form-section">
-						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M9 12l2 2 4-4" />
-								<circle cx="12" cy="12" r="10" />
-							</svg>
-							Identificação
-						</h3>
-						<div class="form-grid">
-							<div class="form-field form-field--required">
-								<label for="edit_name_id">Nome</label>
-								<input type="text" id="edit_name_id" name="name" placeholder="Ex: PC-JOAO" required>
-							</div>
-							<div class="form-field">
-								<label for="edit_ip_id">IP</label>
-								<input type="text" id="edit_ip_id" name="ip" placeholder="Ex: 192.168.1.*">
-							</div>
-							<div class="form-field form-field--full">
-								<label for="edit_serial_number_id">Numero de Série</label>
-								<input type="text" id="edit_serial_number_id" name="serial_number" placeholder="Ex: C5C369A3-FDB0-4CFF-B24C-201B7D92544F">
-							</div>
-						</div>
-					</div>
-
-					<!-- Características -->
-					<div class="form-section">
-						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-							</svg>
-							Características
-						</h3>
-						<div class="form-grid">
-							<div class="form-field form-field--required">
-								<label for="edit_type_id">Tipo</label>
-								<select id="edit_type_id" name="type" required>
-									<option value="PC">PC</option>
-									<option value="Notebook">Notebook</option>
-									<option value="Ar Condicionado">Ar Condicionado</option>
-									<option value="Limpeza Geral">Limpeza Geral</option>
-									<option value="Automotivo">Automotivo</option>
-									<option value="Outro">Outro</option>
-								</select>
-							</div>
-							<div class="form-field">
-								<label for="edit_brand_id">Marca / Prestador responsável pela MP</label>
-								<input type="text" id="edit_brand_id" name="brand" placeholder="Ex: DELL, HP, etc.">
-							</div>
-							<div class="form-field form-field--full">
-								<label for="edit_model_id">Modelo</label>
-								<input type="text" id="edit_model_id" name="model" placeholder="Ex: CNC-3000X">
-							</div>
-						</div>
-					</div>
-
-					<!-- Localização -->
-					<div class="form-section">
-						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z" />
-								<circle cx="12" cy="10" r="3" />
-							</svg>
-							Localização
-						</h3>
-						<div class="form-grid">
-							<div class="form-field form-field--required">
-								<label for="edit_location_id">Unidade</label>
-								<select id="edit_location_id" name="location" required>
-									<!-- opções preenchidas via JS -->
-								</select>
-							</div>
-							<div class="form-field form-field--required">
-								<label for="edit_sector_id">Setor</label>
-								<select id="edit_sector_id" name="sector" required>
-									<!-- opções preenchidas via JS -->
-								</select>
-							</div>
-							<div class="form-field form-field--required form-field--full">
-								<label for="edit_maintenance_group_id">Grupo de Manutenção (Quem será responsável por fazer as manutenções)</label>
-								<select id="edit_maintenance_group_id" name="maintenance_group" required>
-									<!-- opções preenchidas via JS -->
-								</select>
-							</div>
-						</div>
-					</div>
-
-					<!-- Controle -->
-					<div class="form-section">
-						<h3 class="form-section__title">
-							<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect x="3" y="4" width="18" height="18" rx="2"/>
-								<line x1="16" y1="2" x2="16" y2="6"/>
-								<line x1="8" y1="2" x2="8" y2="6"/>
-								<line x1="3" y1="10" x2="21" y2="10"/>
-							</svg>
-							Controle
-						</h3>
-						<div class="form-grid">
-							<div class="form-field">
-								<label for="edit_acquisition_date_id">Data de aquisição</label>
-								<div class="date-field" id="editAcquisitionDateWrap">
-									<svg class="date-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<rect x="3" y="4" width="18" height="18" rx="2" />
-										<line x1="16" y1="2" x2="16" y2="6" />
-										<line x1="8" y1="2" x2="8" y2="6" />
-										<line x1="3" y1="10" x2="21" y2="10" />
-									</svg>
-									<input type="date" id="edit_acquisition_date_id" name="acquisition_date" class="date-field__input" placeholder="Selecionar data" data-input>
-									<button type="button" class="date-field__clear" data-clear aria-label="Limpar data de aquisição" tabindex="-1">
-										<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-											<line x1="18" y1="6" x2="6" y2="18"/>
-											<line x1="6" y1="6" x2="18" y2="18"/>
-										</svg>
-									</button>
-								</div>
-							</div>
-							<div class="form-field form-field--required">
-								<label for="edit_maintenance_interval_months_id">Periodicidade da manutenção (Meses)</label>
-								<select id="edit_maintenance_interval_months_id" name="maintenance_interval_months" required>
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-									<option value="4">4</option>
-									<option value="5">5</option>
-									<option value="6">6</option>
-									<option value="7">7</option>
-									<option value="8">8</option>
-									<option value="9">9</option>
-									<option value="10">10</option>
-									<option value="11">11</option>
-									<option value="12">12</option>
-								</select>
-							</div>
-						</div>
-					</div>
-				</form>
-			</div>
-
-			<div class="modal__footer">
-				<button class="btn btn-ghost" id="cancelEditEquipmentButton" type="button">
-					Cancelar
-				</button>
-
-				<button class="btn btn-primary" id="saveEditEquipmentButton" type="submit" form="editEquipmentForm">
-					<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M20 6L9 17l-5-5"/>
-					</svg>
-					Confirmar Edição
 				</button>
 			</div>
 		</div>
