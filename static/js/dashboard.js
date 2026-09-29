@@ -203,12 +203,69 @@ function renderDistributionChart({ canvasId, emptyId, chartKey, countsMap }) {
     });
 }
 
-function renderChartPorSetor(equipments) {
-    renderDistributionChart({
-        canvasId: "chartPorSetor",
-        emptyId: "emptyPorSetor",
-        chartKey: "porSetor",
-        countsMap: groupCountBy(equipments, equipment => equipment.sector),
+// ranking dos equipamentos com mais manutenções lançadas, sinalizando candidatos à substituição
+const TOP_EQUIPMENT_RANKING_SIZE = 3;
+
+function renderChartTopEquipamentos(maintenances) {
+    const canvas = document.getElementById("chartTopEquipamentos");
+    const emptyElement = document.getElementById("emptyTopEquipamentos");
+
+    if (chartInstances.topEquipamentos) {
+        chartInstances.topEquipamentos.destroy();
+        delete chartInstances.topEquipamentos;
+    }
+
+    const countsMap = groupCountBy(maintenances, maintenance => maintenance.equipment);
+
+    if (countsMap.size === 0) {
+        emptyElement.classList.add("is-visible");
+        return;
+    }
+
+    emptyElement.classList.remove("is-visible");
+
+    const topEntries = [...countsMap.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, TOP_EQUIPMENT_RANKING_SIZE);
+
+    const labels = topEntries.map(([label]) => label);
+    const data = topEntries.map(([, count]) => count);
+
+    chartInstances.topEquipamentos = new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: getCssVar("--color-warning"),
+                borderRadius: 4,
+                maxBarThickness: 36,
+            }],
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: context => `${context.parsed.x} manutenção(ões)`,
+                    },
+                },
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { color: getCssVar("--color-text-secondary"), precision: 0 },
+                    grid: { color: getCssVar("--color-border") },
+                },
+                y: {
+                    ticks: { color: getCssVar("--color-text-secondary") },
+                    grid: { display: false },
+                },
+            },
+        },
     });
 }
 
@@ -344,7 +401,7 @@ async function loadDashboard() {
         renderKpis(computeKpis(equipments, equipmentsStatus, maintenances, today));
         renderAlerts(equipmentsStatus, today);
         renderChartManutencoesPorMes(maintenances, today);
-        renderChartPorSetor(equipments);
+        renderChartTopEquipamentos(maintenances);
         renderChartPorTipo(equipments);
         renderChartStatus(equipments);
 

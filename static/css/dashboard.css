@@ -326,6 +326,7 @@ section + section {
   max-width: 100%;
 }
 
+
 .chart-card__empty {
   position: absolute;
   inset: 0;
