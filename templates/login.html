@@ -6,92 +6,167 @@
     <title>Entrar · Manutenção de Máquinas</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
 </head>
-<body>
-    <main class="login-page">
-        <div class="login-card">
-
-            <div class="login-card__brand">
-                <span class="login-card__brand-icon">
+<body class="login-body">
+    <main class="login">
+        <!-- ===================== VITRINE (desktop) ===================== -->
+        <section class="login-showcase" aria-labelledby="showcaseTitle">
+            <div class="login-showcase__brand">
+                <span class="login-brand-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                     </svg>
                 </span>
-                <div>
-                    <h1 class="login-card__title">Manutenção de Máquinas</h1>
-                    <p class="login-card__subtitle">Entre com sua conta para continuar</p>
-                </div>
+                <span>Manutenção de Máquinas</span>
             </div>
 
-            <div class="login-alert" id="loginAlert" role="alert">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                <span id="loginAlertMessage">Usuário ou senha inválidos.</span>
+            <div class="login-showcase__content">
+                <h2 class="login-showcase__title" id="showcaseTitle">Manutenção preventiva<br><span>sob controle.</span></h2>
+                <p class="login-showcase__text">Acompanhe prazos, registre serviços e consulte o histórico de cada equipamento em um só lugar.</p>
+
+                <ul class="login-features">
+                    <li>
+                        <span class="login-features__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </span>
+                        <div>
+                            <strong>Prazos sempre à vista</strong>
+                            <span>Saiba o que está vencido, o que vence hoje e o que vem pela frente.</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="login-features__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                        </span>
+                        <div>
+                            <strong>Registro em segundos</strong>
+                            <span>A próxima manutenção é calculada automaticamente.</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="login-features__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 15 15"/></svg>
+                        </span>
+                        <div>
+                            <strong>Histórico completo</strong>
+                            <span>Quem fez, quando e o que foi feito em cada equipamento.</span>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
-            <form class="login-form" id="loginForm" novalidate>
-                <div class="login-field">
-                    <label for="username">Usuário</label>
-                    <div class="login-field__control">
-                        <svg class="login-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
+            <!-- ilustração decorativa: miniatura do painel de manutenções (dados fictícios) -->
+            <div class="login-preview" aria-hidden="true">
+                <div class="login-preview__head">
+                    <span>Conformidade da manutenção preventiva</span>
+                    <strong>86%</strong>
+                </div>
+                <div class="login-preview__bar">
+                    <span style="flex-basis: 8%; background: #e2574c;"></span>
+                    <span style="flex-basis: 6%; background: #f47920;"></span>
+                    <span style="flex-basis: 16%; background: #ffd66b;"></span>
+                    <span style="flex-basis: 62%; background: #2fc486;"></span>
+                    <span style="flex-basis: 8%; background: #767e88;"></span>
+                </div>
+                <div class="login-preview__cards">
+                    <div class="login-preview__card" style="--accent: #e2574c;"><small>Vencidas</small><b>3</b></div>
+                    <div class="login-preview__card" style="--accent: #ffd66b;"><small>Próximas</small><b>7</b></div>
+                    <div class="login-preview__card" style="--accent: #2fc486;"><small>Em dia</small><b>28</b></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== FORMULÁRIO ===================== -->
+        <section class="login-panel">
+            <div class="login-card" id="loginCard">
+                <div class="login-card__brand">
+                    <span class="login-brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                         </svg>
-                        <input type="text" id="username" name="username" placeholder="Digite seu usuário" autocomplete="username" required>
-                    </div>
+                    </span>
+                    <span>Manutenção de Máquinas</span>
                 </div>
 
-                <div class="login-field login-field--password">
-                    <label for="password">Senha</label>
-                    <div class="login-field__control">
-                        <svg class="login-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                <header class="login-card__header">
+                    <h1 class="login-card__title">Bem-vindo de volta</h1>
+                    <p class="login-card__subtitle">Entre com sua conta para acessar o sistema.</p>
+                </header>
+
+                <div class="login-alert" id="loginAlert" role="alert" hidden>
+                    <svg class="login-alert__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+                    <span id="loginAlertMessage"></span>
+                </div>
+
+                <form class="login-form" id="loginForm" novalidate>
+                    <div class="login-field" data-field="username">
+                        <label for="username">Usuário</label>
+                        <div class="login-field__control">
+                            <svg class="login-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <input type="text" id="username" name="username" placeholder="Seu usuário" autocomplete="username" autocapitalize="none" spellcheck="false" required aria-describedby="usernameError">
+                        </div>
+                        <span class="login-field__error" id="usernameError"></span>
+                    </div>
+
+                    <div class="login-field login-field--password" data-field="password">
+                        <label for="password">Senha</label>
+                        <div class="login-field__control">
+                            <svg class="login-field__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input type="password" id="password" name="password" placeholder="Sua senha" autocomplete="current-password" required aria-describedby="passwordError capsLockWarning">
+                            <button type="button" class="password-toggle" id="togglePasswordButton" aria-label="Mostrar senha" aria-pressed="false">
+                                <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="login-field__error" id="passwordError"></span>
+                        <span class="login-field__hint login-field__hint--warning" id="capsLockWarning" hidden>
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            Caps Lock está ativado
+                        </span>
+                    </div>
+
+                    <label class="login-remember">
+                        <input type="checkbox" id="rememberUser">
+                        <span class="login-remember__box" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </span>
+                        Lembrar meu usuário neste dispositivo
+                    </label>
+
+                    <button type="submit" class="btn-login" id="loginButton">
+                        <span class="spinner" aria-hidden="true"></span>
+                        <span class="btn-login__label">Entrar</span>
+                        <svg class="btn-login__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
                         </svg>
-                        <input type="password" id="password" name="password" placeholder="Digite sua senha" autocomplete="current-password" required>
-                        <button type="button" class="password-toggle" id="togglePasswordButton" aria-label="Mostrar senha" aria-pressed="false">
-                            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                                <line x1="1" y1="1" x2="23" y2="23" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+                    </button>
+                </form>
 
-                <button type="submit" class="btn-login" id="loginButton">
-                    <span class="spinner" aria-hidden="true"></span>
-                    <svg class="btn-login__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                        <polyline points="10 17 15 12 10 7" />
-                        <line x1="15" y1="12" x2="3" y2="12" />
-                    </svg>
-                    <span class="btn-login__label">Fazer login</span>
-                </button>
+                <p class="login-help">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Esqueceu a senha? Fale com o administrador do sistema.
+                </p>
+            </div>
 
-                <p id="messageLogin"></p>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                {% for category, message in messages %}
-                <div class="error">
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
-            </form>
-        </div>
+            <footer class="login-footer">
+                © <span id="currentYear"></span> Manutenção de Máquinas
+            </footer>
+        </section>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-    <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 </body>
 </html>

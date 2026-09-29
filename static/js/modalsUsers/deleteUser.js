@@ -1,66 +1,82 @@
+import { openOverlay, closeOverlay, bindOverlayClose } from "../utils/modal.js";
+import { escapeHTML } from "../utils/maintenanceStatus.js";
+
 const deleteUserModal = document.getElementById("deleteUserModalOverlay");
 const deleteUserForm = document.getElementById("deleteUserForm");
 const deleteUserId = document.getElementById("deleteUserId");
-const deleteUserName = document.getElementById("deleteUserName");
+const deleteUserSummary = document.getElementById("deleteUserSummary");
+const confirmButton = document.getElementById("confirmDeleteUserButton");
 
-function closeDeleteUserModal() {
-    deleteUserModal.classList.remove("is-open");
-}
+let currentUserName = "";
 
-export function openDeleteUserModal(user) {
+// abre a confirmação mostrando quem será excluído (avatar, nome, @usuario e cargo)
+export function openDeleteUserModal(user, { initials, role }) {
     deleteUserId.value = user.id;
-    deleteUserName.textContent = user.name;
+    currentUserName = user.name;
 
-    deleteUserModal.classList.add("is-open");
+    deleteUserSummary.innerHTML = `
+        <span class="user-avatar user-avatar--lg" aria-hidden="true">${escapeHTML(initials)}</span>
+        <div>
+            <div class="delete-summary__name">${escapeHTML(user.name)}</div>
+            <div class="delete-summary__meta">@${escapeHTML(user.username)} · ${escapeHTML(role)}${user.sector ? ` · ${escapeHTML(user.sector)}` : ""}</div>
+        </div>
+    `;
+
+    // foco no "Cancelar": numa ação destrutiva o padrão seguro é não excluir
+    openOverlay(deleteUserModal, { focus: document.getElementById("cancelDeleteUserButton") });
 }
 
 export function closeModalDeleteUser() {
-    const btnClose = document.getElementById("closeDeleteUserModalButton");
-    const btnCancel = document.getElementById("cancelDeleteUserButton");
+    bindOverlayClose(deleteUserModal, [
+        document.getElementById("closeDeleteUserModalButton"),
+        document.getElementById("cancelDeleteUserButton"),
+    ]);
+}
 
-    btnClose.addEventListener("click", closeDeleteUserModal);
-    btnCancel.addEventListener("click", closeDeleteUserModal);
+async function readErrorMessage(response) {
+    const text = await response.text();
 
-    window.addEventListener("click", (e) => {
-        if (e.target === deleteUserModal) closeDeleteUserModal();
-    });
+    try {
+        const message = JSON.parse(text)?.message || "";
+
+        // usuário com registros vinculados (ex.: manutenções) não pode ser removido pelo banco
+        if (/foreign key|violates|viola/i.test(message)) {
+            return "Este usuário tem manutenções registradas e não pode ser excluído. Marque-o como inativo na edição.";
+        }
+
+        return message || "Houve um erro ao excluir o usuário.";
+    } catch (error) {
+        return "Houve um erro ao excluir o usuário.";
+    }
 }
 
 export function deleteUser(onUserDeleted) {
     deleteUserForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        try {
-            const userId = deleteUserId.value;
+        confirmButton.disabled = true;
+        confirmButton.classList.add("is-loading");
 
-            const response = await fetchWithAuth(`/portal-manutencao/users/${userId}`, {
+        try {
+            const response = await fetchWithAuth(`/portal-manutencao/users/${deleteUserId.value}`, {
                 method: "DELETE"
             });
 
             if (!response.ok) {
-                let errorMessage = "Houve um erro ao deletar o usuário";
-
-                try {
-                    const errorJSON = await response.json();
-
-                    if (errorJSON?.message) {
-                        errorMessage = errorJSON.message;
-                    }
-                } catch (parseError) {
-                    errorMessage = await response.text();
-                }
-
-                throw new Error(errorMessage);
+                throw new Error(await readErrorMessage(response));
             }
 
-            closeDeleteUserModal();
-            notyf.success("Usuário deletado com sucesso");
+            closeOverlay(deleteUserModal);
+            notyf.success(`Usuário ${currentUserName} excluído.`);
 
             if (typeof onUserDeleted === "function") {
-                onUserDeleted();
+                await onUserDeleted();
             }
         } catch (error) {
             notyf.error(error.message);
+        } finally {
+            confirmButton.disabled = false;
+            confirmButton.classList.remove("is-loading");
         }
     });
 }

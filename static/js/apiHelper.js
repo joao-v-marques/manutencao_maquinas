@@ -73,7 +73,7 @@ async function handlerLogout() {
         localStorage.removeItem("token");
 
         // redirecionar para a tela de login
-        window.location.href = "/portal-manutencao/login";
+        window.location.href = "/portal-manutencao/login?motivo=saiu";
     } catch (error) {
         console.error("Erro ao fazer logout: ", error);
 

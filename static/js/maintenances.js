@@ -614,8 +614,25 @@ function bindEvents() {
     });
 }
 
+// filtros iniciais vindos da URL (ex.: links do dashboard: ?status=vencida_critica ou ?busca=Nome)
+function applyFiltersFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    const search = params.get("busca");
+
+    if (status && STATUS_ORDER.includes(status)) {
+        state.filters.status = status;
+    }
+
+    if (search) {
+        state.filters.name = search;
+        elements.searchInput.value = search;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     elements.pageSizeSelect.value = String(state.pageSize);
+    applyFiltersFromURL();
 
     closeModalMaintenanceEquipment();
     submitFormCreateMaintenance(loadEquipments);

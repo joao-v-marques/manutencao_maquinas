@@ -271,58 +271,6 @@
   margin-bottom: 12px;
 }
 
-.search-field__kbd {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.search-field__clear {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.search-field__clear svg {
-  position: static;
-  transform: none;
-  width: 13px;
-  height: 13px;
-  stroke: currentColor;
-}
-
-.search-field__clear:hover {
-  background-color: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.search-field.has-value .search-field__clear {
-  display: flex;
-}
-
-.search-field.has-value .search-field__kbd,
-.search-field:focus-within .search-field__kbd {
-  display: none;
-}
-
-.search-field input {
-  padding-right: 40px;
-}
-
 .filter-date-range {
   display: flex;
   align-items: center;
@@ -358,17 +306,6 @@
 
 .filter-panel__summary .active-filters {
   margin-bottom: 0;
-}
-
-.results-label {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.results-label strong {
-  color: var(--color-text-primary);
-  font-weight: 600;
 }
 
 /* ===================== Tabela de equipamentos ===================== */

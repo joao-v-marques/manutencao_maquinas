@@ -378,7 +378,8 @@
 
     // sessão expirada ou inválida: nenhuma página funciona sem ela, então volta para o login
     if (status === 401) {
-      window.location.replace(`${BASE_PATH}/login`);
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.replace(`${BASE_PATH}/login?motivo=sessao&next=${next}`);
       return;
     }
 

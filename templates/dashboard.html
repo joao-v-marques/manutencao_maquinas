@@ -6,23 +6,22 @@
     <title>Dashboard · Manutenção de Máquinas</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/maintenances.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
 </head>
 <body>
-    <!-- ===================== NAVBAR PADRÃO ===================== -->
     <!-- navbar renderizada por static/js/navbar.js -->
     <header class="navbar" id="appNavbar" data-active="dashboard"></header>
 
-    <!-- ===================== CONTEÚDO ===================== -->
-    <main class="page">
+    <main class="page page--wide">
         <div class="page__header">
             <div>
-                <h1 class="page__title">Dashboard</h1>
-                <p class="page__subtitle">Visão geral dos equipamentos e manutenções</p>
+                <h1 class="page__title" id="greetingTitle">Dashboard</h1>
+                <p class="page__subtitle" id="greetingSubtitle">Visão geral dos equipamentos e manutenções</p>
             </div>
 
             <div class="page__updated">
-                <span id="lastUpdatedLabel">Atualizando…</span>
+                <span id="lastUpdatedLabel" aria-live="polite">Atualizando…</span>
                 <button class="btn-refresh" id="refreshDashboardButton" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M23 4v6h-6" />
@@ -34,189 +33,239 @@
             </div>
         </div>
 
-        <!-- ===================== CARDS (KPIs) ===================== -->
-        <section aria-labelledby="kpiSectionTitle">
-            <h2 class="section__title" id="kpiSectionTitle">Indicadores</h2>
-            <div class="kpi-grid" id="kpiGrid">
+        <div class="dash-error" id="dashboardError" role="alert">
+            <strong>Não foi possível carregar o dashboard</strong>
+            <span>Verifique sua conexão e tente novamente.</span>
+            <button type="button" class="btn-refresh" id="retryDashboardButton">Tentar novamente</button>
+        </div>
 
-                <article class="kpi-card">
-                    <div class="kpi-card__head">
-                        <span class="kpi-card__label">Total de equipamentos</span>
-                        <span class="kpi-card__icon kpi-card__icon--info">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="7" width="20" height="14" rx="2" />
-                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                            </svg>
-                        </span>
-                    </div>
-                    <span class="kpi-card__value is-skeleton" id="kpiTotalEquipamentos">--</span>
-                    <span class="kpi-card__trend">Todos os equipamentos cadastrados</span>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__head">
-                        <span class="kpi-card__label">Manutenção vencida</span>
-                        <span class="kpi-card__icon kpi-card__icon--danger">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="8" x2="12" y2="12" />
-                                <line x1="12" y1="16" x2="12.01" y2="16" />
-                            </svg>
-                        </span>
-                    </div>
-                    <span class="kpi-card__value is-skeleton" id="kpiVencidos">--</span>
-                    <span class="kpi-card__trend kpi-card__trend--down">Precisam de manutenção agora</span>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__head">
-                        <span class="kpi-card__label">Próx. da manutenção</span>
-                        <span class="kpi-card__icon kpi-card__icon--warning">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                        </span>
-                    </div>
-                    <span class="kpi-card__value is-skeleton" id="kpiProximos">--</span>
-                    <span class="kpi-card__trend">Vão vencer nos próximos 30 dias</span>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__head">
-                        <span class="kpi-card__label">Manutenções no mês</span>
-                        <span class="kpi-card__icon kpi-card__icon--primary">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                <polyline points="22 4 12 14.01 9 11.01" />
-                            </svg>
-                        </span>
-                    </div>
-                    <span class="kpi-card__value is-skeleton" id="kpiManutencoesMes">--</span>
-                    <span class="kpi-card__trend kpi-card__trend--up" id="kpiManutencoesMesTrend">Realizadas neste mês</span>
-                </article>
-
+        <!-- ===================== INDICADORES ===================== -->
+        <section class="dash-section" aria-labelledby="kpiSectionTitle">
+            <div class="dash-section__head">
+                <h2 class="section__title" id="kpiSectionTitle">Indicadores</h2>
             </div>
-        </section>
 
-        <!-- ===================== GRÁFICOS ===================== -->
-        <section aria-labelledby="chartsSectionTitle">
-            <h2 class="section__title" id="chartsSectionTitle">Gráficos</h2>
-            <div class="chart-grid">
-                <article class="chart-card">
-                    <div class="chart-card__head">
-                        <span class="chart-card__title">Top 3 equipamentos com mais manutenções</span>
-                        <span class="chart-card__caption">Candidatos à substituição</span>
-                    </div>
-                    <div class="chart-card__body">
-                        <canvas id="chartTopEquipamentos" role="img" aria-label="Gráfico com o ranking dos 3 equipamentos com mais manutenções"></canvas>
-                        <div class="chart-card__empty" id="emptyTopEquipamentos">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 3v18h18"/>
-                            </svg>
-                            Sem dados para exibir
-                        </div>
-                    </div>
-                </article>
+            <div class="stat-grid">
+                <a class="stat-tile stat-tile--success" id="tileCompliance" href="/portal-manutencao/manutencao">
+                    <span class="stat-tile__head">
+                        <span class="stat-tile__label">Conformidade</span>
+                        <span class="stat-tile__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                        </span>
+                    </span>
+                    <span class="stat-tile__value" data-value><span class="skeleton"></span></span>
+                    <span class="stat-tile__foot" data-foot><span class="mini-bar" id="complianceBar"></span></span>
+                </a>
 
-                <article class="chart-card">
-                    <div class="chart-card__head">
-                        <span class="chart-card__title">Manutenções por mês</span>
-                        <span class="chart-card__caption">Últimos 6 meses</span>
-                    </div>
-                    <div class="chart-card__body">
-                        <canvas id="chartManutencoesPorMes" role="img" aria-label="Gráfico de manutenções realizadas por mês"></canvas>
-                        <div class="chart-card__empty" id="emptyManutencoesPorMes">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 3v18h18" />
-                            </svg>
-                            Sem dados para exibir
-                        </div>
-                    </div>
-                </article>
+                <a class="stat-tile stat-tile--danger" id="tileOverdue" href="/portal-manutencao/manutencao?status=vencida_critica">
+                    <span class="stat-tile__head">
+                        <span class="stat-tile__label">Manutenções vencidas</span>
+                        <span class="stat-tile__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        </span>
+                    </span>
+                    <span class="stat-tile__value" data-value><span class="skeleton"></span></span>
+                    <span class="stat-tile__foot" data-foot>&nbsp;</span>
+                </a>
 
-                <article class="chart-card">
-                    <div class="chart-card__head">
-                        <span class="chart-card__title">Equipamentos por tipo</span>
-                        <span class="chart-card__caption">Distribuição atual</span>
-                    </div>
-                    <div class="chart-card__body">
-                        <canvas id="chartPorTipo" role="img" aria-label="Gráfico de quantidade de equipamentos por tipo"></canvas>
-                        <div class="chart-card__empty" id="emptyPorTipo">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 3v18h18"/>
-                            </svg>
-                            Sem dados para exibir
-                        </div>
-                    </div>
-                </article>
+                <a class="stat-tile stat-tile--warning" id="tileUpcoming" href="/portal-manutencao/manutencao?status=proxima">
+                    <span class="stat-tile__head">
+                        <span class="stat-tile__label">Vencem em 30 dias</span>
+                        <span class="stat-tile__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </span>
+                    </span>
+                    <span class="stat-tile__value" data-value><span class="skeleton"></span></span>
+                    <span class="stat-tile__foot" data-foot>&nbsp;</span>
+                </a>
 
-                <article class="chart-card">
-                    <div class="chart-card__head">
-                        <span class="chart-card__title">Status dos equipamentos</span>
-                        <span class="chart-card__caption">Visão geral</span>
-                    </div>
-                    <div class="chart-card__body">
-                        <canvas id="chartStatus" role="img" aria-label="Gráfico de status dos equipamentos"></canvas>
-                        <div class="chart-card__empty" id="emptyStatus">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 3v18h18"/>
-                            </svg>
-                            Sem dados para exibir
-                        </div>
-                    </div>
-                </article>
+                <a class="stat-tile" id="tileMonth" href="#chartMonthlyCard">
+                    <span class="stat-tile__head">
+                        <span class="stat-tile__label">Manutenções no mês</span>
+                        <span class="stat-tile__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                        </span>
+                    </span>
+                    <span class="stat-tile__value" data-value><span class="skeleton"></span></span>
+                    <span class="stat-tile__foot" data-foot>&nbsp;</span>
+                </a>
 
+                <a class="stat-tile" id="tileEquipments" href="/portal-manutencao/equipamentos">
+                    <span class="stat-tile__head">
+                        <span class="stat-tile__label">Equipamentos</span>
+                        <span class="stat-tile__icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        </span>
+                    </span>
+                    <span class="stat-tile__value" data-value><span class="skeleton"></span></span>
+                    <span class="stat-tile__foot" data-foot>&nbsp;</span>
+                </a>
             </div>
         </section>
 
         <!-- ===================== ALERTAS ===================== -->
-        <section aria-labelledby="alertsSectionTitle">
-            <h2 class="section__title" id="alertsSectionTitle">Alertas</h2>
-            <div class="alert-grid">
+        <section class="dash-section" aria-labelledby="alertsSectionTitle">
+            <div class="dash-section__head">
+                <h2 class="section__title" id="alertsSectionTitle">Precisam de atenção</h2>
+                <a class="dash-link" href="/portal-manutencao/manutencao">
+                    Abrir manutenções
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+            </div>
 
+            <div class="alert-grid">
                 <article class="alert-card alert-card--danger">
                     <div class="alert-card__head">
-                        <span class="alert-card__title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="8" x2="12" y2="12" />
-                                <line x1="12" y1="16" x2="12.01" y2="16" />
-                            </svg>
-                            Equipamentos vencidos
-                        </span>
-                        <span class="alert-card__count" id="countVencidos">--</span>
+                        <h3 class="alert-card__title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            Manutenções vencidas
+                        </h3>
+                        <span class="alert-card__count" id="countOverdue">–</span>
                     </div>
-                    <ul class="alert-list" id="listVencidos" aria-label="Lista de equipamentos com manutenção vencida">
-                    </ul>
-                    <div class="alert-empty" id="emptyVencidos">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
-                        Nenhum equipamento vencido
+                    <div id="alertOverdue" class="alert-card__content">
+                        <div class="alert-skeleton"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></div>
                     </div>
                 </article>
 
                 <article class="alert-card alert-card--warning">
                     <div class="alert-card__head">
-                        <span class="alert-card__title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
+                        <h3 class="alert-card__title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             Vencem nos próximos 30 dias
-                        </span>
-                        <span class="alert-card__count" id="countProximos">--</span>
+                        </h3>
+                        <span class="alert-card__count" id="countUpcoming">–</span>
                     </div>
-                    <ul class="alert-list" id="listProximos" aria-label="Lista de equipamentos com manutenção próxima do vencimento"></ul>
-                    <div class="alert-empty" id="emptyProximos">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
-                        Nenhum vencimento próximo
+                    <div id="alertUpcoming" class="alert-card__content">
+                        <div class="alert-skeleton"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></div>
                     </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ===================== GRÁFICOS ===================== -->
+        <section class="dash-section" aria-labelledby="chartsSectionTitle">
+            <div class="dash-section__head">
+                <h2 class="section__title" id="chartsSectionTitle">Análises</h2>
+            </div>
+
+            <div class="chart-grid">
+                <article class="chart-card is-loading" id="chartMonthlyCard">
+                    <div class="chart-card__head">
+                        <div>
+                            <h3 class="chart-card__title">Manutenções realizadas por mês</h3>
+                            <p class="chart-card__caption" id="monthlyCaption">Últimos 6 meses</p>
+                        </div>
+                        <div class="chart-card__actions">
+                            <div class="segmented" role="group" aria-label="Período do gráfico">
+                                <button type="button" data-months="6" aria-pressed="true">6 meses</button>
+                                <button type="button" data-months="12" aria-pressed="false">12 meses</button>
+                            </div>
+                            <button type="button" class="chip-btn" data-toggle-table aria-pressed="false">Tabela</button>
+                        </div>
+                    </div>
+                    <div class="chart-card__body">
+                        <div class="chart-card__view"><canvas id="chartMonthly" role="img" aria-label="Gráfico de barras com as manutenções realizadas por mês"></canvas></div>
+                        <div class="chart-card__table" data-table></div>
+                        <div class="chart-card__skeleton" aria-hidden="true"><span class="skeleton" style="height: 40%"></span><span class="skeleton" style="height: 65%"></span><span class="skeleton" style="height: 30%"></span><span class="skeleton" style="height: 80%"></span><span class="skeleton" style="height: 55%"></span><span class="skeleton" style="height: 70%"></span></div>
+                        <div class="chart-card__empty"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>Nenhuma manutenção registrada no período</div>
+                    </div>
+                </article>
+
+                <article class="chart-card is-loading" id="chartSituationCard">
+                    <div class="chart-card__head">
+                        <div>
+                            <h3 class="chart-card__title">Situação da manutenção preventiva</h3>
+                            <p class="chart-card__caption">Equipamentos por status de prazo</p>
+                        </div>
+                        <div class="chart-card__actions">
+                            <button type="button" class="chip-btn" data-toggle-table aria-pressed="false">Tabela</button>
+                        </div>
+                    </div>
+                    <div class="chart-card__body">
+                        <div class="chart-card__view"><canvas id="chartSituation" role="img" aria-label="Gráfico de barras com a quantidade de equipamentos em cada status de manutenção"></canvas></div>
+                        <div class="chart-card__table" data-table></div>
+                        <div class="chart-card__skeleton" aria-hidden="true"><span class="skeleton" style="height: 30%"></span><span class="skeleton" style="height: 50%"></span><span class="skeleton" style="height: 20%"></span><span class="skeleton" style="height: 45%"></span><span class="skeleton" style="height: 85%"></span><span class="skeleton" style="height: 25%"></span></div>
+                        <div class="chart-card__empty"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/></svg>Nenhum equipamento cadastrado</div>
+                    </div>
+                </article>
+
+                <article class="chart-card is-loading" id="chartTopCard">
+                    <div class="chart-card__head">
+                        <div>
+                            <h3 class="chart-card__title">Equipamentos com mais manutenções</h3>
+                            <p class="chart-card__caption">Candidatos à revisão ou substituição</p>
+                        </div>
+                        <div class="chart-card__actions">
+                            <button type="button" class="chip-btn" data-toggle-table aria-pressed="false">Tabela</button>
+                        </div>
+                    </div>
+                    <div class="chart-card__body">
+                        <div class="chart-card__view"><canvas id="chartTop" role="img" aria-label="Gráfico de barras com os equipamentos que mais receberam manutenções"></canvas></div>
+                        <div class="chart-card__table" data-table></div>
+                        <div class="chart-card__skeleton" aria-hidden="true"><span class="skeleton" style="height: 85%"></span><span class="skeleton" style="height: 60%"></span><span class="skeleton" style="height: 45%"></span><span class="skeleton" style="height: 35%"></span><span class="skeleton" style="height: 20%"></span></div>
+                        <div class="chart-card__empty"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/></svg>Nenhuma manutenção registrada</div>
+                    </div>
+                </article>
+
+                <article class="chart-card is-loading" id="chartTypeCard">
+                    <div class="chart-card__head">
+                        <div>
+                            <h3 class="chart-card__title">Equipamentos por tipo</h3>
+                            <p class="chart-card__caption">Distribuição do parque atual</p>
+                        </div>
+                        <div class="chart-card__actions">
+                            <button type="button" class="chip-btn" data-toggle-table aria-pressed="false">Tabela</button>
+                        </div>
+                    </div>
+                    <div class="chart-card__body chart-card__body--donut">
+                        <div class="chart-card__view donut">
+                            <div class="donut__chart">
+                                <canvas id="chartType" role="img" aria-label="Gráfico de rosca com a quantidade de equipamentos por tipo"></canvas>
+                                <div class="donut__center"><strong data-donut-total>–</strong><span>equipamentos</span></div>
+                            </div>
+                            <ul class="legend" data-legend></ul>
+                        </div>
+                        <div class="chart-card__table" data-table></div>
+                        <div class="chart-card__skeleton" aria-hidden="true"><span class="skeleton" style="height: 100%; border-radius: 50%; flex: 0 0 200px;"></span></div>
+                        <div class="chart-card__empty"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>Nenhum equipamento cadastrado</div>
+                    </div>
+                </article>
+
+                <article class="chart-card is-loading" id="chartStatusCard">
+                    <div class="chart-card__head">
+                        <div>
+                            <h3 class="chart-card__title">Status operacional</h3>
+                            <p class="chart-card__caption">Situação cadastrada de cada equipamento</p>
+                        </div>
+                        <div class="chart-card__actions">
+                            <button type="button" class="chip-btn" data-toggle-table aria-pressed="false">Tabela</button>
+                        </div>
+                    </div>
+                    <div class="chart-card__body chart-card__body--donut">
+                        <div class="chart-card__view donut">
+                            <div class="donut__chart">
+                                <canvas id="chartStatus" role="img" aria-label="Gráfico de rosca com a quantidade de equipamentos por status operacional"></canvas>
+                                <div class="donut__center"><strong data-donut-total>–</strong><span>equipamentos</span></div>
+                            </div>
+                            <ul class="legend" data-legend></ul>
+                        </div>
+                        <div class="chart-card__table" data-table></div>
+                        <div class="chart-card__skeleton" aria-hidden="true"><span class="skeleton" style="height: 100%; border-radius: 50%; flex: 0 0 200px;"></span></div>
+                        <div class="chart-card__empty"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>Nenhum equipamento cadastrado</div>
+                    </div>
+                </article>
+
+                <!-- ===================== ATIVIDADE RECENTE ===================== -->
+                <article class="chart-card" id="activityCard">
+                    <div class="chart-card__head">
+                        <div>
+                            <h3 class="chart-card__title">Atividade recente</h3>
+                            <p class="chart-card__caption">Últimas manutenções registradas</p>
+                        </div>
+                    </div>
+                    <ul class="activity__list" id="activityList">
+                        <li class="alert-skeleton"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></li>
+                    </ul>
                 </article>
             </div>
         </section>

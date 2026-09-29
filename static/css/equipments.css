@@ -59,6 +59,80 @@
   stroke: var(--color-primary);
 }
 
+/* dica do atalho "/" e botão de limpar dentro da busca (o JS alterna .has-value) */
+.search-field__kbd {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-field__clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.search-field__clear svg {
+  position: static;
+  transform: none;
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+}
+
+.search-field__clear:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.search-field.has-value .search-field__clear {
+  display: flex;
+}
+
+.search-field.has-value .search-field__kbd,
+.search-field:focus-within .search-field__kbd {
+  display: none;
+}
+
+.search-field input {
+  padding-right: 40px;
+}
+
+/* contador de resultados ao lado dos filtros */
+.results-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.results-label strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* ícone de modal em tom destrutivo (excluir) */
+.modal__icon--danger {
+  background-color: rgba(var(--color-danger-rgb), 0.16);
+}
+
+.modal__icon--danger svg {
+  stroke: var(--color-danger);
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -208,6 +282,18 @@ select.filter-select option {
 
 .btn-danger-ghost:hover {
   background-color: rgba(226, 87, 76, 0.12);
+}
+
+/* ação destrutiva confirmada (ex.: excluir) */
+.btn-danger {
+  background-color: #d4483d;
+  color: #ffffff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.btn-danger:hover {
+  background-color: var(--color-danger);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 4px 14px rgba(var(--color-danger-rgb), 0.35);
 }
 
 .btn-sm {
@@ -555,25 +641,6 @@ th[aria-sort="descending"] .th-sort svg {
   color: var(--color-text-muted);
 }
 
-/* Skeleton de carregamento (linhas da tabela, cards, etc.) */
-.skeleton {
-  display: block;
-  height: 12px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, var(--color-surface-hover) 0%, #2a2f37 50%, var(--color-surface-hover) 100%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.3s ease-in-out infinite;
-}
-
-@keyframes skeleton-shimmer {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
-  }
-}
-
 /* Estado vazio / erro dentro de tabelas */
 .table-state {
   display: flex;
@@ -918,6 +985,22 @@ kbd {
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
 }
 
+.form-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23767e88' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+  cursor: pointer;
+}
+
+.form-field select option {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
 /* campos somente leitura (não de data) aparecem como "valor exibido", não como campo editável */
 .form-field input[readonly]:not(.date-field__input) {
   background-color: var(--color-surface-raised);
@@ -934,6 +1017,29 @@ kbd {
 .form-field__hint {
   font-size: 11px;
   color: var(--color-text-muted);
+}
+
+/* validação por campo: borda de erro + mensagem sob o campo (o JS alterna .is-invalid e aria-invalid) */
+.form-field__error {
+  display: none;
+  font-size: 12px;
+  color: #f0837a;
+}
+
+.form-field.is-invalid .form-field__error {
+  display: block;
+}
+
+.form-field.is-invalid input,
+.form-field.is-invalid select,
+.form-field.is-invalid textarea {
+  border-color: rgba(var(--color-danger-rgb), 0.8);
+}
+
+.form-field.is-invalid input:focus,
+.form-field.is-invalid select:focus,
+.form-field.is-invalid textarea:focus {
+  box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.18);
 }
 
 .form-field textarea {
